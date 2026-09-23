@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login Admin - NubaraPlay</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+  <style>
+    body { background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .login-box { max-width: 400px; }
+    .login-logo { font-size: 2em; background: linear-gradient(90deg, #e50914, #ff6b6b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <div class="login-logo">
+      <b>📺 NubaraPlay</b><br>Admin
+    </div>
+    <div class="card">
+      <div class="card-body login-card-body">
+        <p class="login-box-msg">Ingresa la contraseña de administrador</p>
+
+        <div class="input-group mb-3">
+          <input type="password" id="adminPass" class="form-control" placeholder="Contraseña" onkeypress="if(event.key==='Enter')login()">
+          <div class="input-group-append">
+            <div class="input-group-text"><span class="fas fa-lock"></span></div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <button onclick="login()" class="btn btn-danger btn-block"><i class="fas fa-sign-in-alt"></i> Ingresar</button>
+          </div>
+        </div>
+        <p class="mb-0 mt-3 text-center">
+          <a href="index.html" class="text-center">← Volver a la web pública</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="config.js"></script>
+  <script>
+    // Si ya está autenticado, ir directo al admin
+    if (localStorage.getItem('nubaraPlayAdmin') === 'true') {
+      window.location.href = 'admin.html';
+    }
+
+    function login() {
+      const pass = document.getElementById('adminPass').value;
+      if (iniciarSesionAdmin(pass)) {
+        window.location.href = 'admin.html';
+      } else {
+        alert('❌ Contraseña incorrecta');
+      }
+    }
+  </script>
+</body>
+</html>
