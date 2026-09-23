@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canales TV - NubaraPlay</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #141414; color: #fff; min-height: 100vh; }
+        
+        .navbar { position: fixed; top: 0; width: 100%; padding: 20px 4%; display: flex; justify-content: space-between; align-items: center; z-index: 1000; background: #141414; border-bottom: 1px solid #222; }
+        .logo { color: #e50914; font-size: 28px; font-weight: bold; text-decoration: none; }
+        .nav-links { display: flex; gap: 20px; list-style: none; }
+        .nav-links a { color: #e5e5e5; text-decoration: none; font-size: 14px; }
+        .nav-links a:hover { color: #fff; }
+        .nav-links a.active { color: #e50914; font-weight: bold; }
+        .navbar-right { display: flex; align-items: center; gap: 20px; }
+        .user-info { background: #e50914; padding: 5px 12px; border-radius: 4px; font-size: 13px; font-weight: bold; }
+        .logout-btn { background: transparent; border: 1px solid #fff; color: #fff; padding: 7px 15px; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        
+        .page-header { padding: 120px 4% 40px; background: linear-gradient(to bottom, rgba(229,9,20,0.2), #141414); }
+        .page-title { font-size: 48px; font-weight: 700; margin-bottom: 10px; }
+        .page-subtitle { color: #808080; font-size: 16px; }
+        
+        .content-section { padding: 20px 4%; }
+        .categoria-section { margin-bottom: 60px; }
+        .categoria-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #e50914; }
+        .categoria-icon { font-size: 32px; }
+        .categoria-title { font-size: 28px; font-weight: 700; }
+        .categoria-count { color: #808080; font-size: 14px; margin-left: auto; }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        
+        .card { background: #181818; border-radius: 6px; overflow: hidden; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; position: relative; }
+        .card:hover { transform: scale(1.05); box-shadow: 0 10px 30px rgba(229,9,20,0.3); }
+        .card img { width: 100%; height: 130px; object-fit: contain; background: #000; padding: 15px; }
+        .card-body { padding: 15px; }
+        .card-title { font-size: 16px; font-weight: bold; margin-bottom: 8px; }
+        .card-info { font-size: 12px; color: #46d369; display: flex; gap: 10px; }
+        .fav-btn { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.8); border: none; color: #fff; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 16px; z-index: 10; }
+        .fav-btn.active { color: #ffd700; }
+        
+        .no-results { text-align: center; padding: 60px 20px; color: #808080; font-size: 20px; }
+        
+        @media (max-width: 768px) {
+            .page-title { font-size: 32px; }
+            .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
+            .card img { height: 90px; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div style="display: flex; align-items: center; gap: 25px;">
+            <a href="index.html" class="logo">NUBARAPLAY</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="ver-canales.html" class="active">Canales TV</a></li>
+                <li><a href="ver-peliculas.html">Películas</a></li>
+            </ul>
+        </div>
+        <div class="navbar-right">
+            <span class="user-info" id="userInfo">Usuario</span>
+            <button class="logout-btn" onclick="cerrarSesion()">Salir</button>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <h1 class="page-title">📺 Canales de TV en Vivo</h1>
+        <p class="page-subtitle">Todos los canales organizados por categoría</p>
+    </div>
+
+    <div class="content-section" id="contenido"></div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAEw7jfxJxbF3r5YvftUD6yJwpyEMmg9tQ",
+            authDomain: "nubaraplay.firebaseapp.com",
+            projectId: "nubaraplay",
+            storageBucket: "nubaraplay.firebasestorage.app",
+            messagingSenderId: "873822057409",
+            appId: "1:873822057409:web:f854a974f457eedd0c7540"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        const iconosCategoria = {
+            'Deportes': '⚽',
+            'Noticias': '📰',
+            'Entretenimiento': '📺',
+            'Musica': '🎵',
+            'Default': '📡'
+        };
+
+        document.getElementById('userInfo').textContent = localStorage.getItem('nubaraPlayUser') ? JSON.parse(localStorage.getItem('nubaraPlayUser')).nombre : 'Usuario';
+
+        function cerrarSesion() { localStorage.removeItem('nubaraPlayUser'); localStorage.removeItem('nubaraPlayUserExpiry'); window.location.href = 'index.html'; }
+
+        db.collection("canales").onSnapshot((snapshot) => {
+            const contenido = document.getElementById('contenido');
+            contenido.innerHTML = '';
+            
+            if (snapshot.empty) {
+                contenido.innerHTML = '<div class="no-results">No hay canales disponibles</div>';
+                return;
+            }
+
+            // Agrupar canales por categoría
+            const categorias = {};
+            snapshot.forEach((doc) => {
+                const canal = doc.data();
+                if (canal.categoria === 'Peliculas') return;
+                const cat = canal.categoria || 'Default';
+                if (!categorias[cat]) categorias[cat] = [];
+                categorias[cat].push({ id: doc.id, ...canal });
+            });
+
+            // Crear sección por cada categoría
+            for (const [categoria, canales] of Object.entries(categorias)) {
+                const section = document.createElement('div');
+                section.className = 'categoria-section';
+                
+                const icono = iconosCategoria[categoria] || '📡';
+                section.innerHTML = `
+                    <div class="categoria-header">
+                        <span class="categoria-icon">${icono}</span>
+                        <h2 class="categoria-title">${categoria}</h2>
+                        <span class="categoria-count">${canales.length} canales</span>
+                    </div>
+                    <div class="grid" id="grid-${categoria.replace(/\s/g, '')}"></div>
+                `;
+                contenido.appendChild(section);
+
+                const grid = section.querySelector('.grid');
+                canales.forEach(canal => {
+                    const favoritos = JSON.parse(localStorage.getItem('nubaraPlayFavoritos') || '[]');
+                    const esFav = favoritos.includes(canal.id);
+                    
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <img src="${canal.logo}" alt="${canal.nombre}" loading="lazy" onerror="this.src='https://via.placeholder.com/220x130/141414/fff?text=TV'">
+                        <button class="fav-btn ${esFav ? 'active' : ''}" onclick="toggleFavorito('${canal.id}', event)">${esFav ? '★' : '☆'}</button>
+                        <div class="card-body">
+                            <div class="card-title">${canal.nombre}</div>
+                            <div class="card-info"><span>👁 ${canal.visitas || 0} vistas</span></div>
+                        </div>
+                    `;
+                    card.onclick = (e) => {
+                        if (!e.target.classList.contains('fav-btn')) {
+                            window.open(canal.url, '_blank');
+                        }
+                    };
+                    grid.appendChild(card);
+                });
+            }
+        });
+
+        function toggleFavorito(id, event) {
+            event.stopPropagation();
+            let favoritos = JSON.parse(localStorage.getItem('nubaraPlayFavoritos') || '[]');
+            const index = favoritos.indexOf(id);
+            if (index > -1) favoritos.splice(index, 1); else favoritos.push(id);
+            localStorage.setItem('nubaraPlayFavoritos', JSON.stringify(favoritos));
+            location.reload();
+        }
+    </script>
+</body>
+</html>
