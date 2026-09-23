@@ -1,140 +1,378 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚙️ Admin - NubaraPlay</title>
-    <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #0a0a0c; color: #fff; padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; }
-        h1 { color: #e50914; text-align: center; }
-        .form-box { background: #16161a; padding: 20px; border-radius: 10px; margin-bottom: 30px; border: 1px solid #333; }
-        input, select { width: 100%; padding: 10px; margin: 8px 0; background: #0a0a0c; border: 1px solid #333; color: #fff; border-radius: 5px; }
-        button { background: #e50914; color: white; border: none; padding: 12px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; }
-        button:hover { background: #ff1f2c; }
-        .btn-delete { background: #333; width: auto; padding: 5px 10px; font-size: 0.8em; }
-        .btn-edit { background: #007bff; width: auto; padding: 5px 10px; font-size: 0.8em; margin-right: 5px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #333; }
-        th { color: #e50914; }
-        .hidden { display: none; }
-        #loginScreen { text-align: center; margin-top: 100px; }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>⚙️ Admin - NubaraPlay</title>
+  
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+  <!-- OverlayScrollbars -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/overlayscrollbars/2.3.0/styles/overlayScrollbars.min.css">
 </head>
-<body>
-    <div id="loginScreen" class="container">
-        <h1>🔒 Acceso Administrador</h1>
-        <input type="password" id="adminPass" placeholder="Contraseña de administrador">
-        <button onclick="checkLogin()">Entrar</button>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+
+  <!-- Navbar -->
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <a href="#" class="navbar-brand">
+      <span class="brand-text font-weight-bold">📺 NubaraPlay Admin</span>
+    </a>
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="index.html" target="_blank">
+          <i class="fas fa-external-link-alt"></i> Ver Web
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#" onclick="cerrarSesion()">
+          <i class="fas fa-sign-out-alt"></i> Salir
+        </a>
+      </li>
+    </ul>
+  </nav>
+  <!-- /.navbar -->
+
+  <!-- Main Sidebar Container -->
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <a href="#" class="brand-link">
+      <span class="brand-text font-weight-light">NubaraPlay</span>
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <!-- Sidebar Menu -->
+      <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
+          <li class="nav-item">
+            <a href="#" class="nav-link active">
+              <i class="nav-icon fas fa-tv"></i>
+              <p>Gestionar Canales</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="index.html" class="nav-link" target="_blank">
+              <i class="nav-icon fas fa-play"></i>
+              <p>Ver Reproductor</p>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </aside>
+
+  <!-- Content Wrapper -->
+  <div class="content-wrapper">
+    <!-- Content Header -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0"> Gestión de Canales</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Inicio</a></li>
+              <li class="breadcrumb-item active">Canales</li>
+            </ol>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div id="adminPanel" class="container hidden">
-        <h1>⚙️ Panel de Canales</h1>
-        <a href="index.html" style="color: #aaa; text-decoration: none; display:block; margin-bottom:20px;">← Volver a la web pública</a>
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
         
-        <div class="form-box">
-            <h3 id="formTitle">Agregar Nuevo Canal</h3>
-            <input type="hidden" id="channelId">
-            <input type="text" id="nombre" placeholder="Nombre del Canal (ej: TUDN)">
-            <input type="text" id="logo" placeholder="URL del Logo (ej: https://...png)">
-            <input type="text" id="url" placeholder="URL del Stream (.php, .m3u8, .html)">
-            <select id="categoria">
-                <option value="Deportes">⚽ Deportes</option>
-                <option value="Noticias">📰 Noticias</option>
-                <option value="Entretenimiento">📺 Entretenimiento</option>
-                <option value="Peliculas">🎬 Películas</option>
-            </select>
-            <button onclick="guardarCanal()" id="btnGuardar">💾 Guardar Canal</button>
-            <button onclick="limpiarFormulario()" style="background: #333; margin-top: 5px;">Cancelar / Limpiar</button>
+        <!-- LOGIN SCREEN -->
+        <div id="loginScreen" class="row justify-content-center">
+          <div class="col-md-4">
+            <div class="card card-primary card-outline">
+              <div class="card-header text-center">
+                <h3 class="m-0">🔒 Acceso Admin</h3>
+              </div>
+              <div class="card-body">
+                <div class="input-group mb-3">
+                  <input type="password" id="adminPass" class="form-control" placeholder="Contraseña">
+                  <div class="input-group-append">
+                    <div class="input-group-text">
+                      <span class="fas fa-lock"></span>
+                    </div>
+                  </div>
+                </div>
+                <button onclick="checkLogin()" class="btn btn-primary btn-block">
+                  <i class="fas fa-sign-in-alt"></i> Ingresar
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <h3>Canales Existentes</h3>
-        <table>
-            <thead><tr><th>Logo</th><th>Nombre</th><th>Categoría</th><th>Acciones</th></tr></thead>
-            <tbody id="tablaCanales"></tbody>
-        </table>
-    </div>
+        <!-- ADMIN PANEL -->
+        <div id="adminPanel" class="hidden">
+          
+          <!-- Formulario -->
+          <div class="row">
+            <div class="col-md-4">
+              <div class="card card-danger">
+                <div class="card-header">
+                  <h3 class="card-title" id="formTitle">➕ Agregar Canal</h3>
+                </div>
+                <div class="card-body">
+                  <input type="hidden" id="channelId">
+                  
+                  <div class="form-group">
+                    <label><i class="fas fa-tv"></i> Nombre del Canal</label>
+                    <input type="text" id="nombre" class="form-control" placeholder="Ej: TUDN">
+                  </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script>
-        const firebaseConfig = {
-          apiKey: "AIzaSyAEw7jfxJxbF3r5YvftUD6yJwpyEMmg9tQ",
-          authDomain: "nubaraplay.firebaseapp.com",
-          projectId: "nubaraplay",
-          storageBucket: "nubaraplay.firebasestorage.app",
-          messagingSenderId: "873822057409",
-          appId: "1:873822057409:web:f854a974f457eedd0c7540"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const PASSWORD = "OsirisAdmin2026"; 
+                  <div class="form-group">
+                    <label><i class="fas fa-image"></i> URL del Logo</label>
+                    <input type="text" id="logo" class="form-control" placeholder="https://...">
+                  </div>
 
-        function checkLogin() {
-            if (document.getElementById('adminPass').value === PASSWORD) {
-                document.getElementById('loginScreen').classList.add('hidden');
-                document.getElementById('adminPanel').classList.remove('hidden');
-                cargarCanales();
-            } else { alert("Contraseña incorrecta"); }
-        }
-        function guardarCanal() {
-            const id = document.getElementById('channelId').value;
-            const data = {
-                nombre: document.getElementById('nombre').value,
-                logo: document.getElementById('logo').value,
-                url: document.getElementById('url').value,
-                categoria: document.getElementById('categoria').value,
-                fecha: new Date()
-            };
-            if (!data.nombre || !data.url) { alert("Nombre y URL son obligatorios"); return; }
-            if (id) {
-                db.collection("canales").doc(id).update(data).then(() => { alert("Canal actualizado ✅"); limpiarFormulario(); });
-            } else {
-                db.collection("canales").add(data).then(() => { alert("Canal creado ✅"); limpiarFormulario(); });
-            }
-        }
-        function cargarCanales() {
-            db.collection("canales").orderBy("fecha", "desc").onSnapshot((snapshot) => {
-                const tbody = document.getElementById('tablaCanales');
-                tbody.innerHTML = '';
-                snapshot.forEach((doc) => {
-                    const canal = doc.data();
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td><img src="${canal.logo}" width="40" onerror="this.src='https://via.placeholder.com/40'"></td>
-                        <td>${canal.nombre}</td>
-                        <td>${canal.categoria}</td>
-                        <td>
-                            <button class="btn-edit" onclick="editarCanal('${doc.id}', '${canal.nombre}', '${canal.logo}', '${canal.url}', '${canal.categoria}')">✏️</button>
-                            <button class="btn-delete" onclick="borrarCanal('${doc.id}')">🗑️</button>
-                        </td>`;
-                    tbody.appendChild(tr);
-                });
-            });
-        }
-        function editarCanal(id, nombre, logo, url, categoria) {
-            document.getElementById('channelId').value = id;
-            document.getElementById('nombre').value = nombre;
-            document.getElementById('logo').value = logo;
-            document.getElementById('url').value = url;
-            document.getElementById('categoria').value = categoria;
-            document.getElementById('formTitle').innerText = "Editar Canal";
-            document.getElementById('btnGuardar').innerText = "🔄 Actualizar Canal";
-            window.scrollTo(0, 0);
-        }
-        function borrarCanal(id) {
-            if (confirm("¿Seguro que deseas eliminar este canal?")) {
-                db.collection("canales").doc(id).delete().then(() => { alert("Canal eliminado 🗑️"); });
-            }
-        }
-        function limpiarFormulario() {
-            document.getElementById('channelId').value = '';
-            document.getElementById('nombre').value = '';
-            document.getElementById('logo').value = '';
-            document.getElementById('url').value = '';
-            document.getElementById('formTitle').innerText = "Agregar Nuevo Canal";
-            document.getElementById('btnGuardar').innerText = "💾 Guardar Canal";
-        }
-    </script>
+                  <div class="form-group">
+                    <label><i class="fas fa-link"></i> URL del Stream</label>
+                    <input type="text" id="url" class="form-control" placeholder="https://...">
+                  </div>
+
+                  <div class="form-group">
+                    <label><i class="fas fa-folder"></i> Categoría</label>
+                    <select id="categoria" class="form-control">
+                      <option value="Deportes">⚽ Deportes</option>
+                      <option value="Noticias">📰 Noticias</option>
+                      <option value="Entretenimiento">📺 Entretenimiento</option>
+                      <option value="Peliculas">🎬 Películas</option>
+                      <option value="Musica">🎵 Música</option>
+                    </select>
+                  </div>
+
+                  <button onclick="guardarCanal()" id="btnGuardar" class="btn btn-success btn-block">
+                    <i class="fas fa-save"></i> Guardar Canal
+                  </button>
+                  <button onclick="limpiarFormulario()" class="btn btn-secondary btn-block mt-2">
+                    <i class="fas fa-times"></i> Cancelar
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tabla de Canales -->
+            <div class="col-md-8">
+              <div class="card card-primary">
+                <div class="card-header">
+                  <h3 class="card-title">📋 Canales Existentes</h3>
+                  <div class="card-tools">
+                    <span class="badge badge-danger" id="totalCanales">0 canales</span>
+                  </div>
+                </div>
+                <div class="card-body p-0">
+                  <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                      <thead>
+                        <tr>
+                          <th style="width: 60px">Logo</th>
+                          <th>Nombre</th>
+                          <th>Categoría</th>
+                          <th style="width: 100px">Acciones</th>
+                        </tr>
+                      </thead>
+                      <tbody id="tablaCanales">
+                        <tr><td colspan="4" class="text-center text-muted">Cargando canales...</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <!-- /.ADMIN PANEL -->
+
+      </div>
+    </section>
+  </div>
+  <!-- /.content-wrapper -->
+
+  <footer class="main-footer">
+    <strong> NubaraPlay</strong> - Panel de Administración
+  </footer>
+
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- AdminLTE App -->
+<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+<script>
+  // Firebase Config
+  const firebaseConfig = {
+    apiKey: "AIzaSyAEw7jfxJxbF3r5YvftUD6yJwpyEMmg9tQ",
+    authDomain: "nubaraplay.firebaseapp.com",
+    projectId: "nubaraplay",
+    storageBucket: "nubaraplay.firebasestorage.app",
+    messagingSenderId: "873822057409",
+    appId: "1:873822057409:web:f854a974f457eedd0c7540"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const PASSWORD = "OsirisAdmin2026";
+
+  // Login
+  function checkLogin() {
+    if (document.getElementById('adminPass').value === PASSWORD) {
+      document.getElementById('loginScreen').classList.add('d-none');
+      document.getElementById('adminPanel').classList.remove('hidden');
+      document.getElementById('adminPanel').classList.add('d-block');
+      cargarCanales();
+      Swal.fire({
+        icon: 'success',
+        title: '¡Bienvenido!',
+        text: 'Panel de administración cargado',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Contraseña incorrecta'
+      });
+    }
+  }
+
+  // Guardar Canal
+  function guardarCanal() {
+    const id = document.getElementById('channelId').value;
+    const data = {
+      nombre: document.getElementById('nombre').value,
+      logo: document.getElementById('logo').value,
+      url: document.getElementById('url').value,
+      categoria: document.getElementById('categoria').value,
+      fecha: new Date()
+    };
+
+    if (!data.nombre || !data.url) {
+      Swal.fire('Error', 'Nombre y URL son obligatorios', 'error');
+      return;
+    }
+
+    if (id) {
+      db.collection("canales").doc(id).update(data).then(() => {
+        Swal.fire('¡Actualizado!', 'Canal actualizado correctamente', 'success');
+        limpiarFormulario();
+      });
+    } else {
+      db.collection("canales").add(data).then(() => {
+        Swal.fire('¡Creado!', 'Canal creado correctamente', 'success');
+        limpiarFormulario();
+      });
+    }
+  }
+
+  // Cargar Canales
+  function cargarCanales() {
+    db.collection("canales").orderBy("fecha", "desc").onSnapshot((snapshot) => {
+      const tbody = document.getElementById('tablaCanales');
+      tbody.innerHTML = '';
+      document.getElementById('totalCanales').textContent = snapshot.size + ' canales';
+      
+      if (snapshot.empty) {
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">No hay canales registrados</td></tr>';
+        return;
+      }
+
+      snapshot.forEach((doc) => {
+        const canal = doc.data();
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><img src="${canal.logo}" class="img-circle elevation-2" width="40" height="40" onerror="this.src='https://via.placeholder.com/40'"></td>
+          <td><strong>${canal.nombre}</strong></td>
+          <td><span class="badge badge-info">${canal.categoria}</span></td>
+          <td>
+            <button class="btn btn-sm btn-primary" onclick="editarCanal('${doc.id}', '${canal.nombre}', '${canal.logo}', '${canal.url}', '${canal.categoria}')">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-sm btn-danger" onclick="borrarCanal('${doc.id}')">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    });
+  }
+
+  // Editar Canal
+  function editarCanal(id, nombre, logo, url, categoria) {
+    document.getElementById('channelId').value = id;
+    document.getElementById('nombre').value = nombre;
+    document.getElementById('logo').value = logo;
+    document.getElementById('url').value = url;
+    document.getElementById('categoria').value = categoria;
+    document.getElementById('formTitle').innerHTML = '✏️ Editar Canal';
+    document.getElementById('btnGuardar').innerHTML = '<i class="fas fa-sync"></i> Actualizar';
+    document.getElementById('btnGuardar').classList.remove('btn-success');
+    document.getElementById('btnGuardar').classList.add('btn-warning');
+    window.scrollTo(0, 0);
+  }
+
+  // Borrar Canal
+  function borrarCanal(id) {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: "No podrás revertir esto",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        db.collection("canales").doc(id).delete().then(() => {
+          Swal.fire('Eliminado', 'El canal ha sido eliminado', 'success');
+        });
+      }
+    });
+  }
+
+  // Limpiar Formulario
+  function limpiarFormulario() {
+    document.getElementById('channelId').value = '';
+    document.getElementById('nombre').value = '';
+    document.getElementById('logo').value = '';
+    document.getElementById('url').value = '';
+    document.getElementById('formTitle').innerHTML = '➕ Agregar Canal';
+    document.getElementById('btnGuardar').innerHTML = '<i class="fas fa-save"></i> Guardar Canal';
+    document.getElementById('btnGuardar').classList.remove('btn-warning');
+    document.getElementById('btnGuardar').classList.add('btn-success');
+  }
+
+  // Cerrar Sesión
+  function cerrarSesion() {
+    location.reload();
+  }
+
+  // Inicializar
+  $(document).ready(function() {
+    // Activar tooltips y otras funciones de AdminLTE
+  });
+</script>
+
 </body>
-</html>  
+</html>
