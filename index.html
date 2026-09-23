@@ -6,7 +6,6 @@
     <title>📺 NubaraPlay - TV Online</title>
     <meta name="theme-color" content="#e50914">
     <meta name="description" content="NubaraPlay - TV Online en vivo">
-    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiTnViYXJhUGxheSIsInNob3J0X25hbWUiOiJOdWJhcmFQbGF5Iiwic3RhcnRfdXJsIjoiLiIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMwYTBhMGMiLCJ0aGVtZV9jb2xvciI6IiNlNTA5MTQiLCJpY29ucyI6W119">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📺</text></svg>">
     
     <style>
@@ -53,10 +52,7 @@
             text-transform: uppercase;
             font-weight: bold;
         }
-        .login-box input:focus { 
-            border-color: #e50914; 
-            outline: none; 
-        }
+        .login-box input:focus { border-color: #e50914; outline: none; }
         .login-box button { 
             width: 100%; 
             padding: 15px; 
@@ -69,26 +65,8 @@
             cursor: pointer; 
             transition: all 0.3s; 
         }
-        .login-box button:hover { 
-            background: #ff1f2c; 
-            transform: translateY(-2px); 
-        }
-        .error-msg { 
-            color: #e50914; 
-            margin-top: 15px; 
-            display: none; 
-            font-size: 0.9em;
-        }
-        .info-box {
-            background: rgba(229, 9, 20, 0.1);
-            border: 1px solid #e50914;
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 20px;
-            font-size: 0.85em;
-            color: #aaa;
-        }
-        .info-box strong { color: #fff; }
+        .login-box button:hover { background: #ff1f2c; transform: translateY(-2px); }
+        .error-msg { color: #e50914; margin-top: 15px; display: none; }
         
         /* MAIN APP */
         #mainApp { display: none; }
@@ -132,13 +110,8 @@
             font-size: 0.9em; 
             transition: all 0.3s; 
         }
-        .control-btn:hover { 
-            background: #e50914; 
-            border-color: #e50914; 
-        }
-        .control-btn.active { 
-            background: #e50914; 
-        }
+        .control-btn:hover { background: #e50914; border-color: #e50914; }
+        .control-btn.active { background: #e50914; }
         .user-info {
             background: rgba(229, 9, 20, 0.2);
             padding: 5px 12px;
@@ -146,10 +119,7 @@
             font-size: 0.85em;
             color: #e50914;
         }
-        .search-box { 
-            max-width: 500px; 
-            margin: 0 auto; 
-        }
+        .search-box { max-width: 500px; margin: 0 auto; }
         .search-box input { 
             width: 100%; 
             padding: 10px 20px; 
@@ -160,119 +130,115 @@
             font-size: 1em; 
             outline: none; 
         }
-        .search-box input:focus { 
-            border-color: #e50914; 
-        }
-        .container { 
-            max-width: 1200px; 
-            margin: 0 auto; 
-            padding: 0 20px 30px; 
-        }
-        .favoritos-section { 
-            background: linear-gradient(135deg, #1a1a2e, #16213e); 
-            padding: 20px; 
-            border-radius: 12px; 
-            margin-bottom: 30px; 
-        }
-        .favoritos-section h2 { 
-            color: #ffd700; 
-            margin-bottom: 15px; 
-            display: flex; 
-            align-items: center; 
-            gap: 10px; 
-        }
-        .seccion { 
-            margin-bottom: 40px; 
-        }
+        .search-box input:focus { border-color: #e50914; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px 30px; }
+        
+        /* SECCIONES */
+        .seccion { margin-bottom: 50px; }
         .seccion-titulo { 
-            font-size: 1.4em; 
+            font-size: 1.6em; 
             color: #fff; 
-            margin-bottom: 20px; 
+            margin-bottom: 25px; 
             padding-bottom: 10px; 
-            border-bottom: 2px solid #e50914; 
+            border-bottom: 3px solid #e50914; 
             display: flex; 
             align-items: center; 
-            gap: 10px; 
+            gap: 12px;
+            font-weight: bold;
         }
+        
+        /* GRID */
         .grid { 
             display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); 
-            gap: 20px; 
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
+            gap: 25px; 
         }
-        .list { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 10px; 
-        }
-        .card { 
+        
+        /* CARDS - CANALES */
+        .canal-card { 
             background: #16161a; 
-            border-radius: 8px; 
+            border-radius: 12px; 
             overflow: hidden; 
             transition: all 0.3s; 
             cursor: pointer; 
             border: 1px solid rgba(255,255,255,0.05); 
             position: relative; 
         }
-        .card:hover { 
+        .canal-card:hover { 
+            transform: translateY(-8px); 
             border-color: #e50914; 
+            box-shadow: 0 15px 30px rgba(229, 9, 20, 0.3); 
         }
-        .grid .card { 
-            padding: 10px; 
-        }
-        .grid .card img { 
+        .canal-card img { 
             width: 100%; 
-            height: 100px; 
+            height: 120px; 
             object-fit: contain; 
             background: #000; 
-            padding: 10px; 
-            border-radius: 6px; 
+            padding: 15px; 
         }
-        .grid .card-title { 
-            padding: 10px; 
+        .canal-card .card-title { 
+            padding: 15px; 
+            text-align: center; 
+            font-weight: 600; 
+            font-size: 0.95em; 
+            color: #ddd; 
+        }
+        .canal-card .card-stats { 
+            display: flex; 
+            justify-content: space-between; 
+            padding: 0 15px 15px; 
+            font-size: 0.8em; 
+            color: #888; 
+        }
+        .stars { color: #ffd700; }
+        
+        /* CARDS - PELICULAS */
+        .pelicula-card { 
+            background: #16161a; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            transition: all 0.3s; 
+            cursor: pointer; 
+            border: 1px solid rgba(255,255,255,0.05); 
+            position: relative; 
+        }
+        .pelicula-card:hover { 
+            transform: translateY(-8px) scale(1.02); 
+            border-color: #e50914; 
+            box-shadow: 0 15px 35px rgba(229, 9, 20, 0.4); 
+        }
+        .pelicula-card img { 
+            width: 100%; 
+            height: 270px; 
+            object-fit: cover; 
+            background: #000; 
+        }
+        .pelicula-card .card-title { 
+            padding: 12px; 
             text-align: center; 
             font-weight: 600; 
             font-size: 0.9em; 
-            color: #ddd; 
+            color: #fff; 
+            background: rgba(0,0,0,0.7);
         }
-        .grid .card-stats { 
+        .pelicula-card .card-info { 
+            padding: 10px 15px; 
             display: flex; 
             justify-content: space-between; 
-            padding: 0 10px 10px; 
-            font-size: 0.75em; 
-            color: #888; 
-        }
-        .list .card { 
-            display: flex; 
             align-items: center; 
-            padding: 10px 15px; 
+            font-size: 0.85em; 
         }
-        .list .card img { 
-            width: 60px; 
-            height: 60px; 
-            object-fit: contain; 
-            background: #000; 
-            padding: 5px; 
-            border-radius: 6px; 
-            flex-shrink: 0; 
+        .pelicula-card .anio { 
+            background: #333; 
+            padding: 3px 8px; 
+            border-radius: 4px; 
+            color: #aaa; 
         }
-        .list .card-info { 
-            flex: 1; 
-            margin-left: 15px; 
+        .pelicula-card .rating { 
+            color: #ffd700; 
         }
-        .list .card-title { 
-            text-align: left; 
-            padding: 0; 
-            font-weight: 600; 
-            color: #ddd; 
-        }
-        .list .card-stats { 
-            padding: 0; 
-            display: flex; 
-            gap: 15px; 
-            font-size: 0.8em; 
-            color: #888; 
-            margin-top: 5px; 
-        }
+        
+        /* FAV BUTTON */
         .fav-btn { 
             position: absolute; 
             top: 10px; 
@@ -280,27 +246,18 @@
             background: rgba(0,0,0,0.7); 
             border: none; 
             color: #fff; 
-            width: 30px; 
-            height: 30px; 
+            width: 32px; 
+            height: 32px; 
             border-radius: 50%; 
             cursor: pointer; 
             font-size: 1.2em; 
             transition: all 0.3s; 
             z-index: 10; 
         }
-        .fav-btn:hover { 
-            background: rgba(229, 9, 20, 0.8); 
-        }
-        .fav-btn.active { 
-            color: #ffd700; 
-        }
-        .list .fav-btn { 
-            position: static; 
-            transform: none; 
-        }
-        .stars { 
-            color: #ffd700; 
-        }
+        .fav-btn:hover { background: rgba(229, 9, 20, 0.8); }
+        .fav-btn.active { color: #ffd700; }
+        
+        /* MODAL */
         .modal { 
             display: none; 
             position: fixed; 
@@ -315,12 +272,10 @@
             align-items: center; 
             padding: 10px; 
         }
-        .modal.active { 
-            display: flex; 
-        }
+        .modal.active { display: flex; }
         .modal-content { 
             width: 95%; 
-            max-width: 800px; 
+            max-width: 900px; 
             background: #111; 
             border-radius: 10px; 
             overflow: hidden; 
@@ -338,103 +293,42 @@
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            padding: 10px 15px; 
+            padding: 12px 20px; 
             background: #1a1a1e; 
             flex-wrap: wrap; 
-            gap: 8px; 
+            gap: 10px; 
         }
         .modal-header h3 { 
             color: #e50914; 
-            font-size: 1em; 
+            font-size: 1.1em; 
             margin: 0; 
         }
         .btn { 
-            padding: 6px 12px; 
-            border-radius: 5px; 
+            padding: 8px 16px; 
+            border-radius: 6px; 
             cursor: pointer; 
             font-weight: 600; 
             border: none; 
             text-decoration: none; 
             display: inline-flex; 
             gap: 5px; 
-            font-size: 0.85em; 
+            font-size: 0.9em; 
         }
-        .btn-external { 
-            background: #2a2a2e; 
-            color: #fff; 
-        }
-        .btn-close { 
-            background: #e50914; 
-            color: white; 
-        }
-        .rating-section { 
-            padding: 10px 15px; 
-            background: #1a1a1e; 
-            border-top: 1px solid #333; 
-            text-align: center; 
-        }
-        .rating-section p { 
-            margin: 5px 0; 
-            font-size: 0.85em; 
-            color: #aaa; 
-        }
-        .rating-stars { 
-            font-size: 1.2em; 
-            cursor: pointer; 
-            color: #555; 
-        }
-        .rating-stars .star { 
-            transition: color 0.2s; 
-            margin: 0 2px; 
-        }
-        .rating-stars .star:hover, .rating-stars .star.active { 
-            color: #ffd700; 
-        }
-        #ratingText { 
-            font-size: 0.8em !important; 
-            color: #888 !important; 
-            margin-top: 5px !important; 
-        }
-        .no-results { 
-            text-align: center; 
-            color: #666; 
-            padding: 40px; 
-            display: none; 
-        }
-        .loading { 
-            text-align: center; 
-            padding: 50px; 
-            color: #e50914; 
-            font-size: 1.2em; 
-        }
-        .install-btn { 
-            background: #e50914; 
-            color: white; 
-            border: none; 
-            padding: 10px 20px; 
-            border-radius: 25px; 
-            cursor: pointer; 
-            font-weight: bold; 
-            display: none; 
-            animation: pulse 2s infinite; 
-        }
-        .install-btn:hover { 
-            background: #ff1f2c; 
-        }
-        @keyframes pulse { 
-            0%, 100% { transform: scale(1); } 
-            50% { transform: scale(1.05); } 
-        }
+        .btn-external { background: #2a2a2e; color: #fff; }
+        .btn-close { background: #e50914; color: white; }
+        
+        .no-results { text-align: center; color: #666; padding: 40px; display: none; }
+        .loading { text-align: center; padding: 50px; color: #e50914; font-size: 1.2em; }
+        
         @media (max-width: 600px) {
             header h1 { font-size: 1.5em; }
-            .grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
-            .grid .card img { height: 80px; }
+            .grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
+            .canal-card img { height: 100px; }
+            .pelicula-card img { height: 210px; }
             .modal-content { width: 100%; max-width: 100%; border-radius: 0; }
             .modal-header { flex-direction: column; text-align: center; }
-            .btn { font-size: 0.8em; padding: 5px 10px; }
             .login-box { padding: 30px 20px; }
             .login-box h1 { font-size: 1.5em; }
-            .login-box input { font-size: 1.2em; }
         }
     </style>
 </head>
@@ -444,23 +338,9 @@
         <div class="login-box">
             <h1>📺 NubaraPlay</h1>
             <p>Ingresa tu código de acceso de 5 dígitos</p>
-            <input 
-                type="text" 
-                id="accessCode" 
-                placeholder="EJ: NH45F" 
-                maxlength="5" 
-                onkeyup="this.value = this.value.toUpperCase()"
-                autocomplete="off"
-            >
+            <input type="text" id="accessCode" placeholder="EJ: NH45F" maxlength="5" onkeyup="this.value = this.value.toUpperCase()" autocomplete="off">
             <button onclick="verificarCodigo()">🔓 Acceder</button>
             <p class="error-msg" id="errorMsg">❌ Código inválido o expirado</p>
-            
-            <div class="info-box">
-                <strong>💡 Información:</strong><br>
-                • Código de 5 caracteres (ej: NH45F)<br>
-                • Demo: 1 hora de acceso<br>
-                • Usuario Final: 1-12 meses
-            </div>
         </div>
     </div>
 
@@ -473,51 +353,50 @@
                     <span class="user-info" id="userInfo">👤 Usuario</span>
                     <button class="control-btn" id="viewToggle" onclick="toggleView()">🔲 Grid</button>
                     <button class="control-btn" id="langToggle" onclick="toggleLanguage()">🌐 EN</button>
-                    <button class="install-btn" id="installBtn" onclick="installPWA()">📱 Instalar</button>
                     <button class="control-btn" onclick="cerrarSesion()">🚪 Salir</button>
                 </div>
             </div>
             <div class="search-box">
-                <input type="text" id="buscador" placeholder="🔍 Buscar canal..." onkeyup="filtrarCanales()">
+                <input type="text" id="buscador" placeholder="🔍 Buscar canal o película..." onkeyup="filtrarContenido()">
             </div>
         </header>
 
         <div class="container">
-            <div id="favoritosSection" class="favoritos-section" style="display: none;">
-                <h2>⭐ <span data-i18n="favoritos">Mis Favoritos</span></h2>
-                <div id="favoritosGrid" class="grid"></div>
+            <!-- SECCIÓN CANALES TV -->
+            <div class="seccion" id="seccionCanales">
+                <h2 class="seccion-titulo">📺 Canales de TV en Vivo</h2>
+                <div id="contenedorCanales"><div class="loading">⏳ Cargando canales...</div></div>
             </div>
-
-            <div id="contenedor"><div class="loading">⏳ Cargando canales...</div></div>
-            <div class="no-results" id="noResults">😕 No se encontraron canales.</div>
+            
+            <!-- SECCIÓN PELÍCULAS -->
+            <div class="seccion" id="seccionPeliculas">
+                <h2 class="seccion-titulo">🎬 Películas</h2>
+                <div id="contenedorPeliculas"><div class="loading"> Cargando películas...</div></div>
+            </div>
+            
+            <div class="no-results" id="noResults">😕 No se encontraron resultados.</div>
         </div>
+    </div>
 
-        <div class="modal" id="modal" onclick="cerrarModalFuera(event)">
-            <div class="modal-content" onclick="event.stopPropagation()">
-                <div class="modal-header">
-                    <h3 id="modalTitulo">Cargando...</h3>
-                    <div style="display: flex; gap: 8px;">
-                        <a href="#" id="externalLink" target="_blank" class="btn btn-external">🔗 <span data-i18n="abrirFuera">Abrir fuera</span></a>
-                        <button class="btn btn-close" onclick="cerrarModal()">✖ <span data-i18n="cerrar">Cerrar</span></button>
-                    </div>
-                </div>
-                <iframe id="playerFrame" src="" allowfullscreen></iframe>
-                <div class="rating-section">
-                    <p data-i18n="calificar">¿Cómo calificarías este canal?</p>
-                    <div class="rating-stars" id="ratingStars">
-                        <span class="star" data-rating="1">★</span><span class="star" data-rating="2">★</span>
-                        <span class="star" data-rating="3">★</span><span class="star" data-rating="4">★</span>
-                        <span class="star" data-rating="5">★</span>
-                    </div>
-                    <p id="ratingText"></p>
+    <!-- MODAL REPRODUCTOR -->
+    <div class="modal" id="modal" onclick="cerrarModalFuera(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3 id="modalTitulo">Cargando...</h3>
+                <div style="display: flex; gap: 10px;">
+                    <a href="#" id="externalLink" target="_blank" class="btn btn-external">🔗 Abrir fuera</a>
+                    <button class="btn btn-close" onclick="cerrarModal()">✖ Cerrar</button>
                 </div>
             </div>
+            <iframe id="playerFrame" src="" allowfullscreen></iframe>
         </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
     <script>
+        // Firebase Config
         const firebaseConfig = {
           apiKey: "AIzaSyAEw7jfxJxbF3r5YvftUD6yJwpyEMmg9tQ",
           authDomain: "nubaraplay.firebaseapp.com",
@@ -530,40 +409,10 @@
         const db = firebase.firestore();
 
         let todosLosCanales = [];
-        let canalActual = null;
+        let todasLasPeliculas = [];
         let vistaActual = 'grid';
         let idiomaActual = 'es';
         let usuarioActual = null;
-
-        const traducciones = {
-            es: { 
-                favoritos: 'Mis Favoritos', 
-                abrirFuera: 'Abrir fuera', 
-                cerrar: 'Cerrar', 
-                calificar: '¿Cómo calificarías este canal?', 
-                buscar: '🔍 Buscar canal...', 
-                cargando: '⏳ Cargando canales...', 
-                noResultados: '😕 No se encontraron canales.' 
-            },
-            en: { 
-                favoritos: 'My Favorites', 
-                abrirFuera: 'Open outside', 
-                cerrar: 'Close', 
-                calificar: 'How would you rate this channel?', 
-                buscar: '🔍 Search channel...', 
-                cargando: '⏳ Loading channels...', 
-                noResultados: '😕 No channels found.' 
-            }
-        };
-
-        const iconosCategorias = { 
-            'Deportes': '⚽', 
-            'Noticias': '📰', 
-            'Entretenimiento': '📺', 
-            'Peliculas': '🎬', 
-            'Musica': '🎵', 
-            'Default': '📡' 
-        };
 
         // VERIFICAR CÓDIGO
         async function verificarCodigo() {
@@ -577,9 +426,7 @@
             }
 
             try {
-                const snapshot = await db.collection("usuarios")
-                    .where("codigo", "==", codigo)
-                    .get();
+                const snapshot = await db.collection("usuarios").where("codigo", "==", codigo).get();
                 
                 if (snapshot.empty) {
                     errorMsg.textContent = '❌ Código inválido';
@@ -589,7 +436,7 @@
 
                 const userDoc = snapshot.docs[0];
                 const userData = userDoc.data();
-                const fechaExpiracion = new Date(userData.fechaExpiracion);
+                const fechaExpiracion = userData.fechaExpiracion?.toDate ? userData.fechaExpiracion.toDate() : new Date(userData.fechaExpiracion);
                 const ahora = new Date();
 
                 if (fechaExpiracion < ahora) {
@@ -598,7 +445,6 @@
                     return;
                 }
 
-                // Código válido
                 usuarioActual = { id: userDoc.id, ...userData };
                 localStorage.setItem('nubaraPlayUser', JSON.stringify(usuarioActual));
                 localStorage.setItem('nubaraPlayUserExpiry', fechaExpiracion.getTime());
@@ -606,11 +452,11 @@
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('mainApp').style.display = 'block';
                 
-                // Mostrar info del usuario
-                const tipoTexto = userData.tipo === 'demo' ? ' Demo' : '👤 Final';
+                const tipoTexto = userData.tipo === 'demo' ? '🎬 Demo' : '👤 Final';
                 document.getElementById('userInfo').textContent = `${tipoTexto} - ${userData.nombre}`;
                 
                 cargarCanales();
+                cargarPeliculas();
             } catch (error) {
                 console.error('Error:', error);
                 errorMsg.textContent = '❌ Error de conexión';
@@ -634,24 +480,12 @@
                     document.getElementById('userInfo').textContent = `${tipoTexto} - ${usuarioActual.nombre}`;
                     
                     cargarCanales();
+                    cargarPeliculas();
                 } else {
                     localStorage.removeItem('nubaraPlayUser');
                     localStorage.removeItem('nubaraPlayUserExpiry');
                 }
             }
-
-            const vistaGuardada = localStorage.getItem('nubaraPlayVista');
-            if (vistaGuardada) {
-                vistaActual = vistaGuardada;
-                document.getElementById('viewToggle').innerHTML = vistaActual === 'grid' ? '🔲 Grid' : '📋 Lista';
-            }
-            
-            const idiomaGuardado = localStorage.getItem('nubaraPlayIdioma');
-            if (idiomaGuardado) {
-                idiomaActual = idiomaGuardado;
-                document.getElementById('langToggle').innerHTML = idiomaActual === 'es' ? '🌐 EN' : '🌐 ES';
-            }
-            aplicarTraducciones();
         });
 
         function cerrarSesion() {
@@ -660,242 +494,138 @@
             location.reload();
         }
 
-        // PWA
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            document.getElementById('installBtn').style.display = 'block';
-        });
-
-        async function installPWA() {
-            if (!deferredPrompt) return;
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            if (outcome === 'accepted') document.getElementById('installBtn').style.display = 'none';
-            deferredPrompt = null;
-        }
-
         function toggleView() {
             vistaActual = vistaActual === 'grid' ? 'list' : 'grid';
             localStorage.setItem('nubaraPlayVista', vistaActual);
             document.getElementById('viewToggle').innerHTML = vistaActual === 'grid' ? '🔲 Grid' : '📋 Lista';
-            document.getElementById('viewToggle').classList.toggle('active', vistaActual === 'list');
             renderizarCanales(todosLosCanales);
-            renderizarFavoritos();
+            renderizarPeliculas(todasLasPeliculas);
         }
 
         function toggleLanguage() {
             idiomaActual = idiomaActual === 'es' ? 'en' : 'es';
             localStorage.setItem('nubaraPlayIdioma', idiomaActual);
             document.getElementById('langToggle').innerHTML = idiomaActual === 'es' ? '🌐 EN' : '🌐 ES';
-            aplicarTraducciones();
-        }
-
-        function aplicarTraducciones() {
-            const t = traducciones[idiomaActual];
-            document.querySelectorAll('[data-i18n]').forEach(el => { 
-                el.textContent = t[el.getAttribute('data-i18n')]; 
-            });
-        }
-
-        function getFavoritos() { 
-            return JSON.parse(localStorage.getItem('nubaraPlayFavoritos') || '[]'); 
-        }
-
-        function toggleFavorito(canalId, event) {
-            if(event) event.stopPropagation();
-            let favoritos = getFavoritos();
-            const index = favoritos.indexOf(canalId);
-            if (index > -1) favoritos.splice(index, 1);
-            else favoritos.push(canalId);
-            localStorage.setItem('nubaraPlayFavoritos', JSON.stringify(favoritos));
-            renderizarFavoritos();
-            renderizarCanales(todosLosCanales);
-        }
-
-        function renderizarFavoritos() {
-            const favoritos = getFavoritos();
-            const section = document.getElementById('favoritosSection');
-            const grid = document.getElementById('favoritosGrid');
-            if (favoritos.length === 0) { 
-                section.style.display = 'none'; 
-                return; 
-            }
-            section.style.display = 'block';
-            grid.innerHTML = '';
-            grid.className = vistaActual;
-            const canalesFav = todosLosCanales.filter(c => favoritos.includes(c.id));
-            canalesFav.forEach(canal => grid.appendChild(crearCard(canal)));
-        }
-
-        function crearCard(canal) {
-            const favoritos = getFavoritos();
-            const esFav = favoritos.includes(canal.id);
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.setAttribute('data-nombre', canal.nombre.toLowerCase());
-            
-            if (vistaActual === 'grid') {
-                card.innerHTML = `
-                    <button class="fav-btn ${esFav ? 'active' : ''}" onclick="toggleFavorito('${canal.id}', event)">${esFav ? '★' : '☆'}</button>
-                    <img src="${canal.logo}" alt="${canal.nombre}" loading="lazy" onerror="this.src='https://via.placeholder.com/200x120/1a1a1e/fff?text=TV'">
-                    <div class="card-title">${canal.nombre}</div>
-                    <div class="card-stats">
-                        <span class="stars">★ ${canal.ratingPromedio || '0.0'}</span>
-                        <span>👁 ${canal.visitas || 0}</span>
-                    </div>
-                `;
-            } else {
-                card.innerHTML = `
-                    <img src="${canal.logo}" alt="${canal.nombre}" loading="lazy" onerror="this.src='https://via.placeholder.com/60/1a1a1e/fff?text=TV'">
-                    <div class="card-info">
-                        <div class="card-title">${canal.nombre}</div>
-                        <div class="card-stats">
-                            <span class="stars">★ ${canal.ratingPromedio || '0.0'}</span>
-                            <span> ${canal.visitas || 0}</span>
-                        </div>
-                    </div>
-                    <button class="fav-btn ${esFav ? 'active' : ''}" onclick="toggleFavorito('${canal.id}', event)">${esFav ? '★' : '☆'}</button>
-                `;
-            }
-            card.onclick = () => abrirCanal(canal);
-            return card;
-        }
-
-        async function cargarRatings() {
-            const ratingsSnapshot = await db.collection("ratings").get();
-            const ratingsPorCanal = {};
-            ratingsSnapshot.forEach(doc => {
-                const data = doc.data();
-                if (!ratingsPorCanal[data.canalId]) ratingsPorCanal[data.canalId] = [];
-                ratingsPorCanal[data.canalId].push(data.rating);
-            });
-            return ratingsPorCanal;
-        }
-
-        function calcularPromedio(ratings) {
-            if (ratings.length === 0) return '0.0';
-            return (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1);
         }
 
         function cargarCanales() {
-            db.collection("canales").onSnapshot(async (snapshot) => {
+            db.collection("canales").where("categoria", "!=", "Peliculas").onSnapshot((snapshot) => {
                 todosLosCanales = [];
                 snapshot.forEach((doc) => todosLosCanales.push({ id: doc.id, ...doc.data() }));
-                const ratings = await cargarRatings();
-                todosLosCanales.forEach(canal => { 
-                    canal.ratingPromedio = calcularPromedio(ratings[canal.id] || []); 
-                });
                 renderizarCanales(todosLosCanales);
-                renderizarFavoritos();
+            });
+        }
+
+        function cargarPeliculas() {
+            db.collection("peliculas").orderBy("fecha", "desc").onSnapshot((snapshot) => {
+                todasLasPeliculas = [];
+                snapshot.forEach((doc) => todasLasPeliculas.push({ id: doc.id, ...doc.data() }));
+                renderizarPeliculas(todasLasPeliculas);
             });
         }
 
         function renderizarCanales(canales) {
-            const contenedor = document.getElementById('contenedor');
+            const contenedor = document.getElementById('contenedorCanales');
             contenedor.innerHTML = '';
+            
             if (canales.length === 0) { 
-                document.getElementById('noResults').style.display = 'block'; 
+                contenedor.innerHTML = '<p style="color:#666; text-align:center; padding:40px;">No hay canales disponibles</p>';
                 return; 
             }
-            document.getElementById('noResults').style.display = 'none';
-            const agrupados = {};
+            
+            const grid = document.createElement('div');
+            grid.className = 'grid';
+            
             canales.forEach(canal => {
-                const cat = canal.categoria || 'Default';
-                if (!agrupados[cat]) agrupados[cat] = [];
-                agrupados[cat].push(canal);
+                const card = document.createElement('div');
+                card.className = 'canal-card';
+                card.innerHTML = `
+                    <img src="${canal.logo}" alt="${canal.nombre}" loading="lazy" onerror="this.src='https://via.placeholder.com/200x120/1a1a1e/fff?text=TV'">
+                    <div class="card-title">${canal.nombre}</div>
+                    <div class="card-stats">
+                        <span class="stars">★ ${canal.rating || '0.0'}</span>
+                        <span>👁 ${canal.visitas || 0}</span>
+                    </div>
+                `;
+                card.onclick = () => abrirCanal(canal);
+                grid.appendChild(card);
             });
-            for (const [categoria, lista] of Object.entries(agrupados)) {
-                const secDiv = document.createElement('div');
-                secDiv.className = 'seccion';
-                secDiv.innerHTML = `<h2 class="seccion-titulo"><span>${iconosCategorias[categoria] || ''}</span> ${categoria}</h2>`;
-                const grid = document.createElement('div');
-                grid.className = vistaActual;
-                lista.forEach(canal => grid.appendChild(crearCard(canal)));
-                secDiv.appendChild(grid);
-                contenedor.appendChild(secDiv);
+            
+            contenedor.appendChild(grid);
+        }
+
+        function renderizarPeliculas(peliculas) {
+            const contenedor = document.getElementById('contenedorPeliculas');
+            contenedor.innerHTML = '';
+            
+            if (peliculas.length === 0) { 
+                contenedor.innerHTML = '<p style="color:#666; text-align:center; padding:40px;">No hay películas disponibles</p>';
+                return; 
             }
-        }
-
-        function filtrarCanales() {
-            const texto = document.getElementById('buscador').value.toLowerCase().trim();
-            renderizarCanales(todosLosCanales.filter(c => c.nombre.toLowerCase().includes(texto)));
-        }
-
-        async function abrirCanal(canal) {
-            canalActual = canal;
-            db.collection("canales").doc(canal.id).update({ 
-                visitas: (canal.visitas || 0) + 1 
+            
+            const grid = document.createElement('div');
+            grid.className = 'grid';
+            
+            peliculas.forEach(peli => {
+                const card = document.createElement('div');
+                card.className = 'pelicula-card';
+                card.innerHTML = `
+                    <img src="${peli.logo}" alt="${peli.nombre}" loading="lazy" onerror="this.src='https://via.placeholder.com/200x270/1a1a1e/fff?text=No+Image'">
+                    <div class="card-title">${peli.nombre}</div>
+                    <div class="card-info">
+                        <span class="anio">${peli.anio || 'N/A'}</span>
+                        <span class="rating">⭐ ${peli.rating || '0'}</span>
+                    </div>
+                `;
+                card.onclick = () => abrirPelicula(peli);
+                grid.appendChild(card);
             });
+            
+            contenedor.appendChild(grid);
+        }
+
+        function abrirCanal(canal) {
+            db.collection("canales").doc(canal.id).update({ visitas: (canal.visitas || 0) + 1 });
             document.getElementById('modalTitulo').textContent = `▶ ${canal.nombre}`;
             document.getElementById('playerFrame').src = canal.url;
             document.getElementById('externalLink').href = canal.url;
             document.getElementById('modal').classList.add('active');
             document.body.style.overflow = 'hidden';
-            
-            const userId = localStorage.getItem('nubaraPlayUserId') || 'user_' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem('nubaraPlayUserId', userId);
-            
-            const userRating = await db.collection("ratings")
-                .where("canalId", "==", canal.id)
-                .where("userId", "==", userId)
-                .get();
-            
-            let ratingActual = 0;
-            if (!userRating.empty) ratingActual = userRating.docs[0].data().rating;
-            actualizarEstrellasVisuales(ratingActual);
         }
 
-        function actualizarEstrellasVisuales(rating) {
-            document.querySelectorAll('#ratingStars .star').forEach((star, index) => {
-                star.classList.toggle('active', index < rating);
-            });
-            const textos = idiomaActual === 'es' 
-                ? ['', 'Muy malo', 'Malo', 'Regular', 'Bueno', 'Excelente'] 
-                : ['', 'Very bad', 'Bad', 'Average', 'Good', 'Excellent'];
-            document.getElementById('ratingText').textContent = rating > 0 
-                ? `${idiomaActual === 'es' ? 'Tu calificación' : 'Your rating'}: ${rating}/5 - ${textos[rating]}` 
-                : (idiomaActual === 'es' ? 'Haz clic en una estrella para calificar' : 'Click a star to rate');
+        function abrirPelicula(pelicula) {
+            db.collection("peliculas").doc(pelicula.id).update({ visitas: (pelicula.visitas || 0) + 1 });
+            document.getElementById('modalTitulo').textContent = `🎬 ${pelicula.nombre} (${pelicula.anio || 'N/A'})`;
+            document.getElementById('playerFrame').src = pelicula.url;
+            document.getElementById('externalLink').href = pelicula.url;
+            document.getElementById('modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
         }
-
-        document.querySelectorAll('#ratingStars .star').forEach(star => {
-            star.addEventListener('click', async () => {
-                if (!canalActual) return;
-                const rating = parseInt(star.getAttribute('data-rating'));
-                const userId = localStorage.getItem('nubaraPlayUserId');
-                actualizarEstrellasVisuales(rating);
-                
-                const existingRating = await db.collection("ratings")
-                    .where("canalId", "==", canalActual.id)
-                    .where("userId", "==", userId)
-                    .get();
-                
-                if (!existingRating.empty) {
-                    db.collection("ratings").doc(existingRating.docs[0].id).update({ 
-                        rating, 
-                        fecha: new Date() 
-                    });
-                } else {
-                    db.collection("ratings").add({ 
-                        canalId: canalActual.id, 
-                        userId, 
-                        rating, 
-                        fecha: new Date() 
-                    });
-                }
-            });
-        });
 
         function cerrarModal() {
             document.getElementById('modal').classList.remove('active');
             document.getElementById('playerFrame').src = '';
             document.body.style.overflow = 'auto';
-            canalActual = null;
         }
         
         function cerrarModalFuera(event) { 
             if (event.target.id === 'modal') cerrarModal(); 
+        }
+
+        function filtrarContenido() {
+            const texto = document.getElementById('buscador').value.toLowerCase().trim();
+            
+            const canalesFiltrados = todosLosCanales.filter(c => c.nombre.toLowerCase().includes(texto));
+            const peliculasFiltradas = todasLasPeliculas.filter(p => p.nombre.toLowerCase().includes(texto));
+            
+            renderizarCanales(canalesFiltrados);
+            renderizarPeliculas(peliculasFiltradas);
+            
+            if (canalesFiltrados.length === 0 && peliculasFiltradas.length === 0) {
+                document.getElementById('noResults').style.display = 'block';
+            } else {
+                document.getElementById('noResults').style.display = 'none';
+            }
         }
     </script>
 </body>
