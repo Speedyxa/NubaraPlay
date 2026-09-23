@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle - NubaraPlay</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📺</text></svg>">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #141414; color: #fff; min-height: 100vh; }
+
+        .navbar { position: fixed; top: 0; width: 100%; padding: 20px 4%; display: flex; justify-content: space-between; align-items: center; z-index: 1000; background: #141414; }
+        .navbar-left { display: flex; align-items: center; gap: 25px; }
+        .logo { color: #e50914; font-size: 28px; font-weight: bold; text-decoration: none; }
+        .nav-links { display: flex; gap: 20px; list-style: none; }
+        .nav-links a { color: #e5e5e5; text-decoration: none; font-size: 14px; cursor: pointer; }
+        .nav-links a:hover { color: #b3b3b3; }
+        .navbar-right { display: flex; align-items: center; gap: 20px; }
+        .user-info { background: #e50914; padding: 5px 12px; border-radius: 4px; font-size: 13px; font-weight: bold; }
+        .logout-btn { background: transparent; border: 1px solid #fff; color: #fff; padding: 7px 15px; border-radius: 4px; cursor: pointer; font-size: 14px; }
+
+        .hero { position: relative; height: 70vh; background-size: cover; background-position: center; display: flex; align-items: flex-end; padding: 0 4% 60px; }
+        .hero::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to top, #141414 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.3) 100%); }
+        .hero-content { position: relative; z-index: 10; max-width: 600px; }
+        .hero-title { font-size: 48px; font-weight: 700; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }
+        .hero-meta { display: flex; gap: 15px; margin-bottom: 20px; font-size: 14px; color: #46d369; }
+        .hero-buttons { display: flex; gap: 15px; }
+        .btn-play { background: #fff; color: #000; padding: 12px 30px; border: none; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+        .btn-play:hover { background: rgba(255,255,255,0.75); }
+        .btn-fav { background: rgba(109,109,110,0.7); color: #fff; padding: 12px 30px; border: none; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+        .btn-fav:hover { background: rgba(109,109,110,0.4); }
+
+        .content-section { padding: 40px 4%; }
+        .info-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 40px; }
+        .sinopsis h2 { font-size: 24px; font-weight: 700; margin-bottom: 20px; }
+        .sinopsis p { font-size: 16px; line-height: 1.6; color: #d2d2d2; }
+        .details { background: #181818; padding: 20px; border-radius: 8px; }
+        .details h3 { font-size: 18px; font-weight: 700; margin-bottom: 15px; }
+        .detail-item { margin-bottom: 15px; }
+        .detail-label { color: #808080; font-size: 14px; margin-bottom: 5px; }
+        .detail-value { font-size: 16px; }
+
+        .video-container { padding: 40px 4%; }
+        .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px; }
+        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+
+        .loading { text-align: center; padding: 100px 20px; color: #808080; font-size: 20px; }
+
+        @media (max-width: 768px) {
+            .hero-title { font-size: 32px; }
+            .info-grid { grid-template-columns: 1fr; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="index.html" class="logo">NUBARAPLAY</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="categoria.html?cat=Deportes">Deportes</a></li>
+                <li><a href="categoria.html?cat=Noticias">Noticias</a></li>
+                <li><a href="categoria.html?cat=Entretenimiento">Entretenimiento</a></li>
+                <li><a href="genero.html">Películas</a></li>
+            </ul>
+        </div>
+        <div class="navbar-right">
+            <span class="user-info" id="userInfo">Usuario</span>
+            <button class="logout-btn" onclick="cerrarSesion()">Salir</button>
+        </div>
+    </nav>
+
+    <div id="loading" class="loading">Cargando...</div>
+
+    <div id="detalleContent" style="display: none;">
+        <div class="hero" id="hero">
+            <div class="hero-content">
+                <h1 class="hero-title" id="peliculaTitulo">Título</h1>
+                <div class="hero-meta">
+                    <span id="peliculaAnio">2024</span>
+                    <span id="peliculaRating">⭐ 0.0</span>
+                    <span id="peliculaVisitas"> 0 vistas</span>
+                </div>
+                <div class="hero-buttons">
+                    <button class="btn-play" onclick="reproducir()"><span>▶</span> Reproducir</button>
+                    <button class="btn-fav" id="btnFav" onclick="toggleFavorito()"><span>+</span> Mi Lista</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="video-container" id="videoContainer" style="display: none;">
+            <div class="video-wrapper">
+                <iframe id="playerFrame" src="" allowfullscreen></iframe>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <div class="info-grid">
+                <div class="sinopsis">
+                    <h2>Sinopsis</h2>
+                    <p id="peliculaSinopsis">Sin sinopsis disponible.</p>
+                </div>
+                <div class="details">
+                    <h3>Información</h3>
+                    <div class="detail-item">
+                        <div class="detail-label">Año</div>
+                        <div class="detail-value" id="detailAnio">N/A</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Calificación</div>
+                        <div class="detail-value" id="detailRating">0.0</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Visitas</div>
+                        <div class="detail-value" id="detailVisitas">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAEw7jfxJxbF3r5YvftUD6yJwpyEMmg9tQ",
+            authDomain: "nubaraplay.firebaseapp.com",
+            projectId: "nubaraplay",
+            storageBucket: "nubaraplay.firebasestorage.app",
+            messagingSenderId: "873822057409",
+            appId: "1:873822057409:web:f854a974f457eedd0c7540"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        const params = new URLSearchParams(window.location.search);
+        const peliculaId = params.get('id');
+
+        document.getElementById('userInfo').textContent = localStorage.getItem('nubaraPlayUser') ? `${JSON.parse(localStorage.getItem('nubaraPlayUser')).nombre}` : 'Usuario';
+
+        function cerrarSesion() { localStorage.removeItem('nubaraPlayUser'); localStorage.removeItem('nubaraPlayUserExpiry'); window.location.href = 'index.html'; }
+
+        if (peliculaId) {
+            db.collection("peliculas").doc(peliculaId).get().then((doc) => {
+                if (doc.exists) {
+                    const peli = doc.data();
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('detalleContent').style.display = 'block';
+
+                    document.getElementById('peliculaTitulo').textContent = peli.nombre;
+                    document.getElementById('peliculaAnio').textContent = peli.anio || 'N/A';
+                    document.getElementById('peliculaRating').textContent = `⭐ ${peli.rating || '0.0'}`;
+                    document.getElementById('peliculaVisitas').textContent = `👁 ${peli.visitas || 0} vistas`;
+                    document.getElementById('peliculaSinopsis').textContent = peli.sinopsis || 'Sin sinopsis disponible.';
+                    document.getElementById('detailAnio').textContent = peli.anio || 'N/A';
+                    document.getElementById('detailRating').textContent = peli.rating || '0.0';
+                    document.getElementById('detailVisitas').textContent = peli.visitas || 0;
+
+                    if (peli.logo) {
+                        document.getElementById('hero').style.backgroundImage = `linear-gradient(to top, #141414 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.3) 100%), url('${peli.logo}')`;
+                    }
+
+                    const favoritos = JSON.parse(localStorage.getItem('nubaraPlayFavoritos') || '[]');
+                    const esFav = favoritos.includes(peliculaId);
+                    const btnFav = document.getElementById('btnFav');
+                    if (esFav) {
+                        btnFav.innerHTML = '<span>✓</span> En Mi Lista';
+                        btnFav.style.background = '#e50914';
+                    }
+
+                    db.collection("peliculas").doc(peliculaId).update({ visitas: (peli.visitas || 0) + 1 });
+                } else {
+                    document.getElementById('loading').textContent = 'Película no encontrada';
+                }
+            }).catch((error) => {
+                document.getElementById('loading').textContent = 'Error al cargar';
+            });
+        } else {
+            document.getElementById('loading').textContent = 'ID de película no proporcionado';
+        }
+
+        function reproducir() {
+            const videoContainer = document.getElementById('videoContainer');
+            videoContainer.style.display = 'block';
+            db.collection("peliculas").doc(peliculaId).get().then((doc) => {
+                if (doc.exists) {
+                    document.getElementById('playerFrame').src = doc.data().url;
+                    videoContainer.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        }
+
+        function toggleFavorito() {
+            let favoritos = JSON.parse(localStorage.getItem('nubaraPlayFavoritos') || '[]');
+            const index = favoritos.indexOf(peliculaId);
+            const btnFav = document.getElementById('btnFav');
+            if (index > -1) {
+                favoritos.splice(index, 1);
+                btnFav.innerHTML = '<span>+</span> Mi Lista';
+                btnFav.style.background = 'rgba(109,109,110,0.7)';
+            } else {
+                favoritos.push(peliculaId);
+                btnFav.innerHTML = '<span>✓</span> En Mi Lista';
+                btnFav.style.background = '#e50914';
+            }
+            localStorage.setItem('nubaraPlayFavoritos', JSON.stringify(favoritos));
+        }
+    </script>
+</body>
+</html>
