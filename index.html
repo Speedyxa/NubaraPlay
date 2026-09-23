@@ -3,332 +3,487 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📺 NubaraPlay - TV Online</title>
-    <meta name="theme-color" content="#e50914">
-    <meta name="description" content="NubaraPlay - TV Online en vivo">
+    <title>NubaraPlay - TV Online</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📺</text></svg>">
-    
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0a0a0c; color: #fff; min-height: 100vh; }
         
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: #141414;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
         /* LOGIN SCREEN */
-        #loginScreen { 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            min-height: 100vh; 
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+        #loginScreen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
+                        url('https://assets.nflxext.com/ffe/siteui/vlv3/9d3533b2-0e2b-40b2-95e0-ecd7979cc88b/a3873901-5b7c-46eb-b9fa-12f5173b3e48/US-en-20240311-popsignuptwoweeks-perspective_alpha_website_large.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .login-box {
+            background: rgba(0, 0, 0, 0.75);
+            padding: 60px 68px 40px;
+            border-radius: 4px;
+            max-width: 450px;
+            width: 90%;
+        }
+
+        .login-box h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 28px;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 16px 20px;
+            border-radius: 4px;
+            border: none;
+            background: #333;
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .login-box input:focus {
+            outline: none;
+            background: #454545;
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 16px;
+            background: #e50914;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 24px;
+        }
+
+        .login-box button:hover {
+            background: #f40612;
+        }
+
+        .error-msg {
+            color: #e50914;
+            margin-top: 16px;
+            display: none;
+            font-size: 14px;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 4%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.7) 10%, transparent);
+            transition: background 0.4s;
+        }
+
+        .navbar.scrolled {
+            background: #141414;
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .logo {
+            color: #e50914;
+            font-size: 28px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #e5e5e5;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.4s;
+        }
+
+        .nav-links a:hover {
+            color: #b3b3b3;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            background: rgba(0,0,0,0.75);
+            border: 1px solid #fff;
+            color: #fff;
+            padding: 7px 14px 7px 40px;
+            border-radius: 4px;
+            width: 250px;
+            font-size: 14px;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            background: #000;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #fff;
+        }
+
+        .user-info {
+            background: #e50914;
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background: transparent;
+            border: 1px solid #fff;
+            color: #fff;
+            padding: 7px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* HERO SECTION */
+        .hero {
+            position: relative;
+            height: 80vh;
+            background: linear-gradient(to top, #141414 0%, transparent 60%),
+                        linear-gradient(to right, rgba(0,0,0,0.8) 0%, transparent 50%),
+                        url('https://image.tmdb.org/t/p/original/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            padding: 0 4%;
+        }
+
+        .hero-content {
+            max-width: 600px;
+            margin-top: 100px;
+        }
+
+        .hero-title {
+            font-size: 60px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .hero-description {
+            font-size: 18px;
+            line-height: 1.5;
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn-play {
+            background: #fff;
+            color: #000;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 4px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-play:hover {
+            background: rgba(255,255,255,0.75);
+        }
+
+        .btn-info {
+            background: rgba(109, 109, 110, 0.7);
+            color: #fff;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 4px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-info:hover {
+            background: rgba(109, 109, 110, 0.4);
+        }
+
+        /* CONTENT ROWS */
+        .content-section {
+            padding: 20px 4%;
+            margin-top: -100px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .row {
+            margin-bottom: 50px;
+        }
+
+        .row-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #e5e5e5;
+        }
+
+        .row-slider {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 20px 0;
+            scroll-behavior: smooth;
+            scrollbar-width: none;
+        }
+
+        .row-slider::-webkit-scrollbar {
+            display: none;
+        }
+
+        .card {
+            flex: 0 0 auto;
+            width: 240px;
+            height: 135px;
+            border-radius: 4px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: scale(1.4);
+            z-index: 100;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+
+        .card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            padding: 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .card:hover .card-overlay {
+            opacity: 1;
+        }
+
+        .card-title {
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .card-info {
+            font-size: 10px;
+            color: #46d369;
+            display: flex;
+            gap: 10px;
+        }
+
+        .fav-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(0,0,0,0.7);
+            border: none;
+            color: #fff;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .card:hover .fav-btn {
+            opacity: 1;
+        }
+
+        .fav-btn.active {
+            color: #ffd700;
+            opacity: 1;
+        }
+
+        /* PELICULAS - Vertical Cards */
+        .movie-card {
+            width: 180px;
+            height: 270px;
+        }
+
+        .movie-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
             padding: 20px;
         }
-        .login-box { 
-            background: rgba(20, 20, 20, 0.95); 
-            padding: 40px; 
-            border-radius: 15px; 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5); 
-            max-width: 400px; 
-            width: 100%; 
-            text-align: center; 
+
+        .modal.active {
+            display: flex;
         }
-        .login-box h1 { 
-            font-size: 2em; 
-            background: linear-gradient(90deg, #e50914, #ff6b6b); 
-            -webkit-background-clip: text; 
-            -webkit-text-fill-color: transparent; 
-            margin-bottom: 10px; 
+
+        .modal-content {
+            width: 90%;
+            max-width: 1000px;
+            background: #181818;
+            border-radius: 8px;
+            overflow: hidden;
+            max-height: 90vh;
         }
-        .login-box p { color: #aaa; margin-bottom: 30px; }
-        .login-box input { 
-            width: 100%; 
-            padding: 15px; 
-            border-radius: 8px; 
-            border: 1px solid #333; 
-            background: #1a1a1e; 
-            color: #fff; 
-            font-size: 1.5em; 
-            text-align: center; 
-            letter-spacing: 5px; 
-            margin-bottom: 20px; 
-            text-transform: uppercase;
-            font-weight: bold;
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: #181818;
         }
-        .login-box input:focus { border-color: #e50914; outline: none; }
-        .login-box button { 
-            width: 100%; 
-            padding: 15px; 
-            background: #e50914; 
-            color: white; 
-            border: none; 
-            border-radius: 8px; 
-            font-size: 1.1em; 
-            font-weight: bold; 
-            cursor: pointer; 
-            transition: all 0.3s; 
+
+        .modal-header h3 {
+            font-size: 24px;
+            font-weight: 700;
         }
-        .login-box button:hover { background: #ff1f2c; transform: translateY(-2px); }
-        .error-msg { color: #e50914; margin-top: 15px; display: none; }
-        
-        /* MAIN APP */
-        #mainApp { display: none; }
-        header { 
-            background: rgba(20, 20, 20, 0.85); 
-            backdrop-filter: blur(10px); 
-            padding: 15px 20px; 
-            position: sticky; 
-            top: 0; 
-            z-index: 100; 
-            border-bottom: 1px solid rgba(255,255,255,0.05); 
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
         }
-        .header-top { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            flex-wrap: wrap; 
-            gap: 10px; 
-            margin-bottom: 10px; 
+
+        .modal-video {
+            width: 100%;
+            aspect-ratio: 16/9;
+            border: none;
         }
-        header h1 { 
-            font-size: 1.8em; 
-            background: linear-gradient(90deg, #e50914, #ff6b6b); 
-            -webkit-background-clip: text; 
-            -webkit-text-fill-color: transparent; 
-            font-weight: 800; 
+
+        .modal-info {
+            padding: 20px;
         }
-        .header-controls { 
-            display: flex; 
-            gap: 10px; 
-            align-items: center; 
-            flex-wrap: wrap; 
+
+        .modal-description {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #d2d2d2;
         }
-        .control-btn { 
-            background: #1a1a1e; 
-            border: 1px solid #333; 
-            color: #fff; 
-            padding: 8px 12px; 
-            border-radius: 6px; 
-            cursor: pointer; 
-            font-size: 0.9em; 
-            transition: all 0.3s; 
+
+        /* NO RESULTS */
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: #808080;
+            font-size: 20px;
+            display: none;
         }
-        .control-btn:hover { background: #e50914; border-color: #e50914; }
-        .control-btn.active { background: #e50914; }
-        .user-info {
-            background: rgba(229, 9, 20, 0.2);
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            color: #e50914;
-        }
-        .search-box { max-width: 500px; margin: 0 auto; }
-        .search-box input { 
-            width: 100%; 
-            padding: 10px 20px; 
-            border-radius: 25px; 
-            border: 1px solid #333; 
-            background: #1a1a1e; 
-            color: #fff; 
-            font-size: 1em; 
-            outline: none; 
-        }
-        .search-box input:focus { border-color: #e50914; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px 30px; }
-        
-        /* SECCIONES */
-        .seccion { margin-bottom: 50px; }
-        .seccion-titulo { 
-            font-size: 1.6em; 
-            color: #fff; 
-            margin-bottom: 25px; 
-            padding-bottom: 10px; 
-            border-bottom: 3px solid #e50914; 
-            display: flex; 
-            align-items: center; 
-            gap: 12px;
-            font-weight: bold;
-        }
-        
-        /* GRID */
-        .grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
-            gap: 25px; 
-        }
-        
-        /* CARDS - CANALES */
-        .canal-card { 
-            background: #16161a; 
-            border-radius: 12px; 
-            overflow: hidden; 
-            transition: all 0.3s; 
-            cursor: pointer; 
-            border: 1px solid rgba(255,255,255,0.05); 
-            position: relative; 
-        }
-        .canal-card:hover { 
-            transform: translateY(-8px); 
-            border-color: #e50914; 
-            box-shadow: 0 15px 30px rgba(229, 9, 20, 0.3); 
-        }
-        .canal-card img { 
-            width: 100%; 
-            height: 120px; 
-            object-fit: contain; 
-            background: #000; 
-            padding: 15px; 
-        }
-        .canal-card .card-title { 
-            padding: 15px; 
-            text-align: center; 
-            font-weight: 600; 
-            font-size: 0.95em; 
-            color: #ddd; 
-        }
-        .canal-card .card-stats { 
-            display: flex; 
-            justify-content: space-between; 
-            padding: 0 15px 15px; 
-            font-size: 0.8em; 
-            color: #888; 
-        }
-        .stars { color: #ffd700; }
-        
-        /* CARDS - PELICULAS */
-        .pelicula-card { 
-            background: #16161a; 
-            border-radius: 12px; 
-            overflow: hidden; 
-            transition: all 0.3s; 
-            cursor: pointer; 
-            border: 1px solid rgba(255,255,255,0.05); 
-            position: relative; 
-        }
-        .pelicula-card:hover { 
-            transform: translateY(-8px) scale(1.02); 
-            border-color: #e50914; 
-            box-shadow: 0 15px 35px rgba(229, 9, 20, 0.4); 
-        }
-        .pelicula-card img { 
-            width: 100%; 
-            height: 270px; 
-            object-fit: cover; 
-            background: #000; 
-        }
-        .pelicula-card .card-title { 
-            padding: 12px; 
-            text-align: center; 
-            font-weight: 600; 
-            font-size: 0.9em; 
-            color: #fff; 
-            background: rgba(0,0,0,0.7);
-        }
-        .pelicula-card .card-info { 
-            padding: 10px 15px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            font-size: 0.85em; 
-        }
-        .pelicula-card .anio { 
-            background: #333; 
-            padding: 3px 8px; 
-            border-radius: 4px; 
-            color: #aaa; 
-        }
-        .pelicula-card .rating { 
-            color: #ffd700; 
-        }
-        
-        /* FAV BUTTON */
-        .fav-btn { 
-            position: absolute; 
-            top: 10px; 
-            right: 10px; 
-            background: rgba(0,0,0,0.7); 
-            border: none; 
-            color: #fff; 
-            width: 32px; 
-            height: 32px; 
-            border-radius: 50%; 
-            cursor: pointer; 
-            font-size: 1.2em; 
-            transition: all 0.3s; 
-            z-index: 10; 
-        }
-        .fav-btn:hover { background: rgba(229, 9, 20, 0.8); }
-        .fav-btn.active { color: #ffd700; }
-        
-        /* MODAL */
-        .modal { 
-            display: none; 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background: rgba(0,0,0,0.95); 
-            backdrop-filter: blur(5px); 
-            z-index: 1000; 
-            justify-content: center; 
-            align-items: center; 
-            padding: 10px; 
-        }
-        .modal.active { display: flex; }
-        .modal-content { 
-            width: 95%; 
-            max-width: 900px; 
-            background: #111; 
-            border-radius: 10px; 
-            overflow: hidden; 
-            max-height: 95vh; 
-            display: flex; 
-            flex-direction: column; 
-        }
-        .modal-content iframe { 
-            width: 100%; 
-            aspect-ratio: 16/9; 
-            border: none; 
-            background: #000; 
-        }
-        .modal-header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: 12px 20px; 
-            background: #1a1a1e; 
-            flex-wrap: wrap; 
-            gap: 10px; 
-        }
-        .modal-header h3 { 
-            color: #e50914; 
-            font-size: 1.1em; 
-            margin: 0; 
-        }
-        .btn { 
-            padding: 8px 16px; 
-            border-radius: 6px; 
-            cursor: pointer; 
-            font-weight: 600; 
-            border: none; 
-            text-decoration: none; 
-            display: inline-flex; 
-            gap: 5px; 
-            font-size: 0.9em; 
-        }
-        .btn-external { background: #2a2a2e; color: #fff; }
-        .btn-close { background: #e50914; color: white; }
-        
-        .no-results { text-align: center; color: #666; padding: 40px; display: none; }
-        .loading { text-align: center; padding: 50px; color: #e50914; font-size: 1.2em; }
-        
-        @media (max-width: 600px) {
-            header h1 { font-size: 1.5em; }
-            .grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
-            .canal-card img { height: 100px; }
-            .pelicula-card img { height: 210px; }
-            .modal-content { width: 100%; max-width: 100%; border-radius: 0; }
-            .modal-header { flex-direction: column; text-align: center; }
-            .login-box { padding: 30px 20px; }
-            .login-box h1 { font-size: 1.5em; }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 36px;
+            }
+            
+            .hero-description {
+                font-size: 14px;
+            }
+            
+            .card {
+                width: 160px;
+                height: 90px;
+            }
+            
+            .movie-card {
+                width: 120px;
+                height: 180px;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .search-box input {
+                width: 150px;
+            }
         }
     </style>
 </head>
@@ -336,59 +491,91 @@
     <!-- LOGIN SCREEN -->
     <div id="loginScreen">
         <div class="login-box">
-            <h1>📺 NubaraPlay</h1>
-            <p>Ingresa tu código de acceso de 5 dígitos</p>
-            <input type="text" id="accessCode" placeholder="EJ: NH45F" maxlength="5" onkeyup="this.value = this.value.toUpperCase()" autocomplete="off">
-            <button onclick="verificarCodigo()">🔓 Acceder</button>
-            <p class="error-msg" id="errorMsg">❌ Código inválido o expirado</p>
+            <h1>Iniciar Sesión</h1>
+            <input type="text" id="accessCode" placeholder="CÓDIGO DE 5 DÍGITOS" maxlength="5" onkeyup="this.value = this.value.toUpperCase()">
+            <button onclick="verificarCodigo()">Entrar</button>
+            <p class="error-msg" id="errorMsg">Código inválido o expirado</p>
         </div>
     </div>
 
     <!-- MAIN APP -->
-    <div id="mainApp">
-        <header>
-            <div class="header-top">
-                <h1>📺 NubaraPlay</h1>
-                <div class="header-controls">
-                    <span class="user-info" id="userInfo">👤 Usuario</span>
-                    <button class="control-btn" id="viewToggle" onclick="toggleView()">🔲 Grid</button>
-                    <button class="control-btn" id="langToggle" onclick="toggleLanguage()">🌐 EN</button>
-                    <button class="control-btn" onclick="cerrarSesion()">🚪 Salir</button>
+    <div id="mainApp" style="display: none;">
+        <!-- NAVBAR -->
+        <nav class="navbar" id="navbar">
+            <div class="navbar-left">
+                <a href="#" class="logo">NUBARAPLAY</a>
+                <ul class="nav-links">
+                    <li><a href="#inicio">Inicio</a></li>
+                    <li><a href="#canales">Canales TV</a></li>
+                    <li><a href="#peliculas">Películas</a></li>
+                    <li><a href="#favoritos">Mi Lista</a></li>
+                </ul>
+            </div>
+            <div class="navbar-right">
+                <div class="search-box">
+                    <span class="search-icon"></span>
+                    <input type="text" id="buscador" placeholder="Títulos, géneros..." onkeyup="filtrarContenido()">
+                </div>
+                <span class="user-info" id="userInfo">Usuario</span>
+                <button class="logout-btn" onclick="cerrarSesion()">Salir</button>
+            </div>
+        </nav>
+
+        <!-- HERO SECTION -->
+        <div class="hero" id="hero">
+            <div class="hero-content">
+                <h1 class="hero-title">Bienvenido a NubaraPlay</h1>
+                <p class="hero-description">Disfruta de los mejores canales de TV en vivo y películas. Contenido seleccionado especialmente para ti.</p>
+                <div class="hero-buttons">
+                    <button class="btn-play" onclick="reproducirDestacado()">
+                        <span>▶</span> Reproducir
+                    </button>
+                    <button class="btn-info">
+                        <span>ℹ</span> Más información
+                    </button>
                 </div>
             </div>
-            <div class="search-box">
-                <input type="text" id="buscador" placeholder="🔍 Buscar canal o película..." onkeyup="filtrarContenido()">
-            </div>
-        </header>
+        </div>
 
-        <div class="container">
-            <!-- SECCIÓN CANALES TV -->
-            <div class="seccion" id="seccionCanales">
-                <h2 class="seccion-titulo">📺 Canales de TV en Vivo</h2>
-                <div id="contenedorCanales"><div class="loading">⏳ Cargando canales...</div></div>
+        <!-- CONTENT SECTIONS -->
+        <div class="content-section">
+            <!-- CANALES TV -->
+            <div class="row" id="canales">
+                <h2 class="row-title">📺 Canales de TV en Vivo</h2>
+                <div class="row-slider" id="contenedorCanales">
+                    <div style="color: #808080; padding: 40px;">Cargando canales...</div>
+                </div>
             </div>
-            
-            <!-- SECCIÓN PELÍCULAS -->
-            <div class="seccion" id="seccionPeliculas">
-                <h2 class="seccion-titulo">🎬 Películas</h2>
-                <div id="contenedorPeliculas"><div class="loading"> Cargando películas...</div></div>
+
+            <!-- PELICULAS -->
+            <div class="row" id="peliculas">
+                <h2 class="row-title">🎬 Películas</h2>
+                <div class="row-slider" id="contenedorPeliculas">
+                    <div style="color: #808080; padding: 40px;">Cargando películas...</div>
+                </div>
             </div>
-            
-            <div class="no-results" id="noResults">😕 No se encontraron resultados.</div>
+
+            <!-- FAVORITOS -->
+            <div class="row" id="favoritos" style="display: none;">
+                <h2 class="row-title">⭐ Mi Lista</h2>
+                <div class="row-slider" id="contenedorFavoritos"></div>
+            </div>
+
+            <div class="no-results" id="noResults">No se encontraron resultados</div>
         </div>
     </div>
 
     <!-- MODAL REPRODUCTOR -->
-    <div class="modal" id="modal" onclick="cerrarModalFuera(event)">
-        <div class="modal-content" onclick="event.stopPropagation()">
+    <div class="modal" id="modal">
+        <div class="modal-content">
             <div class="modal-header">
-                <h3 id="modalTitulo">Cargando...</h3>
-                <div style="display: flex; gap: 10px;">
-                    <a href="#" id="externalLink" target="_blank" class="btn btn-external">🔗 Abrir fuera</a>
-                    <button class="btn btn-close" onclick="cerrarModal()">✖ Cerrar</button>
-                </div>
+                <h3 id="modalTitulo">Reproduciendo...</h3>
+                <button class="modal-close" onclick="cerrarModal()">✕</button>
             </div>
-            <iframe id="playerFrame" src="" allowfullscreen></iframe>
+            <iframe class="modal-video" id="playerFrame" src="" allowfullscreen></iframe>
+            <div class="modal-info">
+                <p class="modal-description" id="modalDescripcion"></p>
+            </div>
         </div>
     </div>
 
@@ -398,21 +585,29 @@
     <script>
         // Firebase Config
         const firebaseConfig = {
-          apiKey: "AIzaSyAEw7jfxJxbF3r5YvftUD6yJwpyEMmg9tQ",
-          authDomain: "nubaraplay.firebaseapp.com",
-          projectId: "nubaraplay",
-          storageBucket: "nubaraplay.firebasestorage.app",
-          messagingSenderId: "873822057409",
-          appId: "1:873822057409:web:f854a974f457eedd0c7540"
+            apiKey: "AIzaSyAEw7jfxJxbF3r5YvftUD6yJwpyEMmg9tQ",
+            authDomain: "nubaraplay.firebaseapp.com",
+            projectId: "nubaraplay",
+            storageBucket: "nubaraplay.firebasestorage.app",
+            messagingSenderId: "873822057409",
+            appId: "1:873822057409:web:f854a974f457eedd0c7540"
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
         let todosLosCanales = [];
         let todasLasPeliculas = [];
-        let vistaActual = 'grid';
-        let idiomaActual = 'es';
         let usuarioActual = null;
+
+        // NAVBAR SCROLL EFFECT
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
 
         // VERIFICAR CÓDIGO
         async function verificarCodigo() {
@@ -420,7 +615,7 @@
             const errorMsg = document.getElementById('errorMsg');
             
             if (!codigo || codigo.length !== 5) {
-                errorMsg.textContent = '❌ Ingresa un código de 5 caracteres';
+                errorMsg.textContent = 'Ingresa un código de 5 caracteres';
                 errorMsg.style.display = 'block';
                 return;
             }
@@ -429,7 +624,7 @@
                 const snapshot = await db.collection("usuarios").where("codigo", "==", codigo).get();
                 
                 if (snapshot.empty) {
-                    errorMsg.textContent = '❌ Código inválido';
+                    errorMsg.textContent = 'Código inválido';
                     errorMsg.style.display = 'block';
                     return;
                 }
@@ -440,7 +635,7 @@
                 const ahora = new Date();
 
                 if (fechaExpiracion < ahora) {
-                    errorMsg.textContent = '❌ Código expirado';
+                    errorMsg.textContent = 'Código expirado';
                     errorMsg.style.display = 'block';
                     return;
                 }
@@ -452,14 +647,15 @@
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('mainApp').style.display = 'block';
                 
-                const tipoTexto = userData.tipo === 'demo' ? '🎬 Demo' : '👤 Final';
+                const tipoTexto = userData.tipo === 'demo' ? 'DEMO' : 'PREMIUM';
                 document.getElementById('userInfo').textContent = `${tipoTexto} - ${userData.nombre}`;
                 
                 cargarCanales();
                 cargarPeliculas();
+                cargarFavoritos();
             } catch (error) {
                 console.error('Error:', error);
-                errorMsg.textContent = '❌ Error de conexión';
+                errorMsg.textContent = 'Error de conexión';
                 errorMsg.style.display = 'block';
             }
         }
@@ -476,11 +672,12 @@
                     document.getElementById('loginScreen').style.display = 'none';
                     document.getElementById('mainApp').style.display = 'block';
                     
-                    const tipoTexto = usuarioActual.tipo === 'demo' ? '🎬 Demo' : '👤 Final';
+                    const tipoTexto = usuarioActual.tipo === 'demo' ? 'DEMO' : 'PREMIUM';
                     document.getElementById('userInfo').textContent = `${tipoTexto} - ${usuarioActual.nombre}`;
                     
                     cargarCanales();
                     cargarPeliculas();
+                    cargarFavoritos();
                 } else {
                     localStorage.removeItem('nubaraPlayUser');
                     localStorage.removeItem('nubaraPlayUserExpiry');
@@ -494,20 +691,7 @@
             location.reload();
         }
 
-        function toggleView() {
-            vistaActual = vistaActual === 'grid' ? 'list' : 'grid';
-            localStorage.setItem('nubaraPlayVista', vistaActual);
-            document.getElementById('viewToggle').innerHTML = vistaActual === 'grid' ? '🔲 Grid' : '📋 Lista';
-            renderizarCanales(todosLosCanales);
-            renderizarPeliculas(todasLasPeliculas);
-        }
-
-        function toggleLanguage() {
-            idiomaActual = idiomaActual === 'es' ? 'en' : 'es';
-            localStorage.setItem('nubaraPlayIdioma', idiomaActual);
-            document.getElementById('langToggle').innerHTML = idiomaActual === 'es' ? '🌐 EN' : '🌐 ES';
-        }
-
+        // CARGAR CANALES
         function cargarCanales() {
             db.collection("canales").where("categoria", "!=", "Peliculas").onSnapshot((snapshot) => {
                 todosLosCanales = [];
@@ -529,29 +713,38 @@
             contenedor.innerHTML = '';
             
             if (canales.length === 0) { 
-                contenedor.innerHTML = '<p style="color:#666; text-align:center; padding:40px;">No hay canales disponibles</p>';
+                contenedor.innerHTML = '<div style="color:#808080; padding:40px;">No hay canales disponibles</div>';
                 return; 
             }
             
-            const grid = document.createElement('div');
-            grid.className = 'grid';
-            
             canales.forEach(canal => {
-                const card = document.createElement('div');
-                card.className = 'canal-card';
-                card.innerHTML = `
-                    <img src="${canal.logo}" alt="${canal.nombre}" loading="lazy" onerror="this.src='https://via.placeholder.com/200x120/1a1a1e/fff?text=TV'">
-                    <div class="card-title">${canal.nombre}</div>
-                    <div class="card-stats">
-                        <span class="stars">★ ${canal.rating || '0.0'}</span>
-                        <span>👁 ${canal.visitas || 0}</span>
-                    </div>
-                `;
-                card.onclick = () => abrirCanal(canal);
-                grid.appendChild(card);
+                const card = crearCardCanal(canal);
+                contenedor.appendChild(card);
             });
+        }
+
+        function crearCardCanal(canal) {
+            const favoritos = JSON.parse(localStorage.getItem('nubaraPlayFavoritos') || '[]');
+            const esFav = favoritos.includes(canal.id);
             
-            contenedor.appendChild(grid);
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <img src="${canal.logo}" alt="${canal.nombre}" loading="lazy" onerror="this.src='https://via.placeholder.com/240x135/141414/fff?text=TV'">
+                <button class="fav-btn ${esFav ? 'active' : ''}" onclick="toggleFavorito('${canal.id}', event)">${esFav ? '★' : '☆'}</button>
+                <div class="card-overlay">
+                    <div class="card-title">${canal.nombre}</div>
+                    <div class="card-info">
+                        <span>👁 ${canal.visitas || 0} vistas</span>
+                    </div>
+                </div>
+            `;
+            card.onclick = (e) => {
+                if (!e.target.classList.contains('fav-btn')) {
+                    abrirCanal(canal);
+                }
+            };
+            return card;
         }
 
         function renderizarPeliculas(peliculas) {
@@ -559,57 +752,108 @@
             contenedor.innerHTML = '';
             
             if (peliculas.length === 0) { 
-                contenedor.innerHTML = '<p style="color:#666; text-align:center; padding:40px;">No hay películas disponibles</p>';
+                contenedor.innerHTML = '<div style="color:#808080; padding:40px;">No hay películas disponibles</div>';
                 return; 
             }
             
-            const grid = document.createElement('div');
-            grid.className = 'grid';
-            
             peliculas.forEach(peli => {
-                const card = document.createElement('div');
-                card.className = 'pelicula-card';
-                card.innerHTML = `
-                    <img src="${peli.logo}" alt="${peli.nombre}" loading="lazy" onerror="this.src='https://via.placeholder.com/200x270/1a1a1e/fff?text=No+Image'">
-                    <div class="card-title">${peli.nombre}</div>
-                    <div class="card-info">
-                        <span class="anio">${peli.anio || 'N/A'}</span>
-                        <span class="rating">⭐ ${peli.rating || '0'}</span>
-                    </div>
-                `;
-                card.onclick = () => abrirPelicula(peli);
-                grid.appendChild(card);
+                const card = crearCardPelicula(peli);
+                contenedor.appendChild(card);
             });
+        }
+
+        function crearCardPelicula(pelicula) {
+            const favoritos = JSON.parse(localStorage.getItem('nubaraPlayFavoritos') || '[]');
+            const esFav = favoritos.includes(pelicula.id);
             
-            contenedor.appendChild(grid);
+            const card = document.createElement('div');
+            card.className = 'card movie-card';
+            card.innerHTML = `
+                <img src="${pelicula.logo}" alt="${pelicula.nombre}" loading="lazy" onerror="this.src='https://via.placeholder.com/180x270/141414/fff?text=Movie'">
+                <button class="fav-btn ${esFav ? 'active' : ''}" onclick="toggleFavorito('${pelicula.id}', event)">${esFav ? '★' : '☆'}</button>
+                <div class="card-overlay">
+                    <div class="card-title">${pelicula.nombre}</div>
+                    <div class="card-info">
+                        <span>${pelicula.anio || 'N/A'}</span>
+                        <span>⭐ ${pelicula.rating || '0'}</span>
+                    </div>
+                </div>
+            `;
+            card.onclick = (e) => {
+                if (!e.target.classList.contains('fav-btn')) {
+                    abrirPelicula(pelicula);
+                }
+            };
+            return card;
+        }
+
+        function cargarFavoritos() {
+            const favoritos = JSON.parse(localStorage.getItem('nubaraPlayFavoritos') || '[]');
+            const seccion = document.getElementById('favoritos');
+            const contenedor = document.getElementById('contenedorFavoritos');
+            
+            if (favoritos.length === 0) {
+                seccion.style.display = 'none';
+                return;
+            }
+            
+            seccion.style.display = 'block';
+            contenedor.innerHTML = '';
+            
+            const canalesFav = todosLosCanales.filter(c => favoritos.includes(c.id));
+            const peliculasFav = todasLasPeliculas.filter(p => favoritos.includes(p.id));
+            
+            [...canalesFav, ...peliculasFav].forEach(item => {
+                const card = item.logo && item.logo.includes('placeholder') ? crearCardCanal(item) : crearCardPelicula(item);
+                contenedor.appendChild(card);
+            });
+        }
+
+        function toggleFavorito(id, event) {
+            event.stopPropagation();
+            let favoritos = JSON.parse(localStorage.getItem('nubaraPlayFavoritos') || '[]');
+            const index = favoritos.indexOf(id);
+            if (index > -1) {
+                favoritos.splice(index, 1);
+            } else {
+                favoritos.push(id);
+            }
+            localStorage.setItem('nubaraPlayFavoritos', JSON.stringify(favoritos));
+            cargarFavoritos();
+            renderizarCanales(todosLosCanales);
+            renderizarPeliculas(todasLasPeliculas);
         }
 
         function abrirCanal(canal) {
             db.collection("canales").doc(canal.id).update({ visitas: (canal.visitas || 0) + 1 });
-            document.getElementById('modalTitulo').textContent = `▶ ${canal.nombre}`;
+            document.getElementById('modalTitulo').textContent = canal.nombre;
             document.getElementById('playerFrame').src = canal.url;
-            document.getElementById('externalLink').href = canal.url;
+            document.getElementById('modalDescripcion').textContent = `Canal en vivo - ${canal.categoria}`;
             document.getElementById('modal').classList.add('active');
             document.body.style.overflow = 'hidden';
         }
 
         function abrirPelicula(pelicula) {
             db.collection("peliculas").doc(pelicula.id).update({ visitas: (pelicula.visitas || 0) + 1 });
-            document.getElementById('modalTitulo').textContent = `🎬 ${pelicula.nombre} (${pelicula.anio || 'N/A'})`;
+            document.getElementById('modalTitulo').textContent = `${pelicula.nombre} (${pelicula.anio || 'N/A'})`;
             document.getElementById('playerFrame').src = pelicula.url;
-            document.getElementById('externalLink').href = pelicula.url;
+            document.getElementById('modalDescripcion').textContent = pelicula.sinopsis || 'Película disponible en NubaraPlay';
             document.getElementById('modal').classList.add('active');
             document.body.style.overflow = 'hidden';
+        }
+
+        function reproducirDestacado() {
+            if (todasLasPeliculas.length > 0) {
+                abrirPelicula(todasLasPeliculas[0]);
+            } else if (todosLosCanales.length > 0) {
+                abrirCanal(todosLosCanales[0]);
+            }
         }
 
         function cerrarModal() {
             document.getElementById('modal').classList.remove('active');
             document.getElementById('playerFrame').src = '';
             document.body.style.overflow = 'auto';
-        }
-        
-        function cerrarModalFuera(event) { 
-            if (event.target.id === 'modal') cerrarModal(); 
         }
 
         function filtrarContenido() {
