@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NubaraPlay</title>
+    <title>NubaraPlay - TV y Películas</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #141414; color: #fff; overflow-x: hidden; }
         
         #loginScreen { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://assets.nflxext.com/ffe/siteui/vlv3/9d3533b2-0e2b-40b2-95e0-ecd7979cc88b/a3873901-5b7c-46eb-b9fa-12f5173b3e48/US-en-20240311-popsignuptwoweeks-perspective_alpha_website_large.jpg'); background-size: cover; background-position: center; }
-        .login-box { background: rgba(0,0,0,0.75); padding: 60px 68px 40px; border-radius: 4px; max-width: 450px; width: 90%; }
+        .login-box { background: rgba(0,0,0,0.75); padding: 60px 68px 40px; border-radius: 4px; max-width: 450px; width: 90%; text-align: center; }
         .login-box h1 { font-size: 32px; font-weight: 700; margin-bottom: 28px; }
         .login-box input { width: 100%; padding: 16px 20px; border-radius: 4px; border: none; background: #333; color: #fff; font-size: 16px; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 2px; text-align: center; font-weight: bold; }
         .login-box input:focus { outline: none; background: #454545; }
@@ -49,8 +49,8 @@
         .row-slider { display: flex; gap: 8px; overflow-x: auto; overflow-y: hidden; padding: 20px 0; scroll-behavior: smooth; scrollbar-width: none; }
         .row-slider::-webkit-scrollbar { display: none; }
         
-        .card { flex: 0 0 auto; width: 240px; height: 135px; border-radius: 4px; overflow: hidden; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; position: relative; }
-        .card:hover { transform: scale(1.4); z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+        .card { flex: 0 0 auto; width: 240px; height: 135px; border-radius: 4px; overflow: hidden; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; position: relative; background: #181818; }
+        .card:hover { transform: scale(1.1); z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
         .card img { width: 100%; height: 100%; object-fit: cover; }
         .card-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); padding: 10px; opacity: 0; transition: opacity 0.3s; }
         .card:hover .card-overlay { opacity: 1; }
@@ -60,13 +60,20 @@
         .movie-card { width: 180px; height: 270px; }
         .movie-card img { width: 100%; height: 100%; object-fit: cover; }
         
-        /* MODAL CANALES */
-        #canalModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px; }
+        /* MODAL MEJORADO */
+        #canalModal { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.95); z-index: 9999; 
+            display: none; justify-content: center; align-items: center; padding: 20px; 
+        }
         #canalModal.active { display: flex; }
-        .modal-box { background: #181818; border-radius: 8px; width: 100%; max-width: 1000px; overflow: hidden; }
-        .modal-top { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #000; }
+        .modal-box { background: #181818; border-radius: 8px; width: 100%; max-width: 1000px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.9); }
+        .modal-top { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #000; border-bottom: 2px solid #e50914; }
         .modal-top h3 { font-size: 20px; color: #fff; }
-        .modal-close { background: none; border: none; color: #fff; font-size: 28px; cursor: pointer; }
+        .modal-actions { display: flex; gap: 10px; align-items: center; }
+        .btn-volver { background: #e50914; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: bold; display: flex; align-items: center; gap: 5px; }
+        .btn-volver:hover { background: #f40612; }
+        .modal-close { background: none; border: none; color: #fff; font-size: 28px; cursor: pointer; line-height: 1; padding: 0 5px; }
         .modal-close:hover { color: #e50914; }
         .modal-video { position: relative; width: 100%; padding-bottom: 56.25%; background: #000; }
         .modal-video iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
@@ -126,7 +133,7 @@
             </div>
             <div class="row">
                 <div class="row-header">
-                    <h2 class="row-title">📰 Noticias</h2>
+                    <h2 class="row-title"> Noticias</h2>
                     <a class="ver-mas" href="ver-canales.html">Ver todo ›</a>
                 </div>
                 <div class="row-slider" id="rowNoticias"></div>
@@ -148,15 +155,18 @@
         </div>
     </div>
 
-    <!-- MODAL CANALES -->
-    <div id="canalModal">
-        <div class="modal-box">
+    <!-- MODAL MEJORADO CON BOTÓN VOLVER -->
+    <div id="canalModal" onclick="cerrarModalCanal(event)">
+        <div class="modal-box" onclick="event.stopPropagation()">
             <div class="modal-top">
                 <h3 id="modalCanalTitulo">Canal en Vivo</h3>
-                <button class="modal-close" onclick="cerrarModalCanal()"></button>
+                <div class="modal-actions">
+                    <button class="btn-volver" onclick="irACanales()">← Volver a Canales</button>
+                    <button class="modal-close" onclick="cerrarModalCanal()">✕</button>
+                </div>
             </div>
             <div class="modal-video">
-                <iframe id="modalCanalIframe" src="" allowfullscreen></iframe>
+                <iframe id="modalCanalIframe" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
             </div>
         </div>
     </div>
@@ -180,6 +190,13 @@
 
         window.addEventListener('scroll', () => {
             document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        // ✅ Cerrar modal con tecla ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                cerrarModalCanal();
+            }
         });
 
         async function verificarCodigo() {
@@ -215,38 +232,51 @@
         function cerrarSesion() { localStorage.removeItem('nubaraPlayUser'); localStorage.removeItem('nubaraPlayUserExpiry'); location.reload(); }
 
         function cargarTodo() {
-            db.collection("canales").onSnapshot(s => { todosLosCanales = []; s.forEach(d => todosLosCanales.push({ id: d.id, ...d.data() })); renderizar(); });
-            db.collection("peliculas").orderBy("fecha", "desc").onSnapshot(s => { todasLasPeliculas = []; s.forEach(d => todasLasPeliculas.push({ id: d.id, ...d.data() })); renderizar(); });
+            db.collection("canales").onSnapshot(s => { 
+                todosLosCanales = []; 
+                s.forEach(d => todosLosCanales.push({ id: d.id, ...d.data() })); 
+                renderizar(); 
+            });
+            db.collection("peliculas").orderBy("fecha", "desc").onSnapshot(s => { 
+                todasLasPeliculas = []; 
+                s.forEach(d => todasLasPeliculas.push({ id: d.id, ...d.data() })); 
+                renderizar(); 
+            });
         }
 
         function renderizar() {
             ['Deportes', 'Noticias', 'Entretenimiento'].forEach(cat => {
                 const c = document.getElementById(`row${cat}`);
-                if(c) { c.innerHTML = ''; todosLosCanales.filter(x => x.categoria === cat).forEach(x => c.appendChild(crearCardCanal(x))); }
+                if(c) { 
+                    c.innerHTML = ''; 
+                    todosLosCanales.filter(x => x.categoria === cat).forEach(x => c.appendChild(crearCardCanal(x))); 
+                }
             });
             const cp = document.getElementById('rowPeliculas');
-            if(cp) { cp.innerHTML = ''; todasLasPeliculas.slice(0, 10).forEach(x => cp.appendChild(crearCardPelicula(x))); }
+            if(cp) { 
+                cp.innerHTML = ''; 
+                todasLasPeliculas.slice(0, 10).forEach(x => cp.appendChild(crearCardPelicula(x))); 
+            }
         }
 
-        // ✅ CANALES: Abre MODAL (NO nueva pestaña)
         function crearCardCanal(canal) {
             const card = document.createElement('div');
             card.className = 'card';
-            card.innerHTML = `<img src="${canal.logo}" onerror="this.src='https://via.placeholder.com/240x135/141414/fff?text=TV'"><div class="card-overlay"><div class="card-title">${canal.nombre}</div><div class="card-info"><span>👁 ${canal.visitas || 0}</span></div></div>`;
+            card.innerHTML = `<img src="${canal.logo}" onerror="this.src='https://via.placeholder.com/240x135/141414/fff?text=TV'"><div class="card-overlay"><div class="card-title">${canal.nombre}</div><div class="card-info"><span> ${canal.visitas || 0}</span></div></div>`;
             card.onclick = () => abrirModalCanal(canal);
             return card;
         }
 
-        // ✅ PELÍCULAS: Va a detalle.html
         function crearCardPelicula(peli) {
             const card = document.createElement('div');
             card.className = 'card movie-card';
             card.innerHTML = `<img src="${peli.logo}" onerror="this.src='https://via.placeholder.com/180x270/141414/fff?text=Movie'"><div class="card-overlay"><div class="card-title">${peli.nombre}</div><div class="card-info"><span>${peli.anio||'N/A'}</span><span>⭐${peli.rating||'0'}</span></div></div>`;
-            card.onclick = () => window.location.href = `detalle.html?id=${peli.id}`;
+            card.onclick = () => {
+                window.location.href = `detalle.html?id=${peli.id}`;
+            };
             return card;
         }
 
-        // ✅ FUNCIONES DEL MODAL
         function abrirModalCanal(canal) {
             document.getElementById('modalCanalTitulo').textContent = canal.nombre;
             document.getElementById('modalCanalIframe').src = canal.url;
@@ -255,10 +285,17 @@
             db.collection("canales").doc(canal.id).update({ visitas: (canal.visitas || 0) + 1 }).catch(() => {});
         }
 
-        function cerrarModalCanal() {
+        function cerrarModalCanal(e) {
+            if (e && e.target !== e.currentTarget && e.type === 'click') return;
             document.getElementById('canalModal').classList.remove('active');
             document.getElementById('modalCanalIframe').src = '';
             document.body.style.overflow = 'auto';
+        }
+
+        // ✅ NUEVA FUNCIÓN: Ir a ver-canales.html
+        function irACanales() {
+            cerrarModalCanal();
+            window.location.href = 'ver-canales.html';
         }
 
         function reproducirDestacado() {
