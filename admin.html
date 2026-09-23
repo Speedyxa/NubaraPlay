@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚙️ Admin - NubaraPlay</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #0a0a0c; color: #fff; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 { color: #e50914; text-align: center; }
+        .form-box { background: #16161a; padding: 20px; border-radius: 10px; margin-bottom: 30px; border: 1px solid #333; }
+        input, select { width: 100%; padding: 10px; margin: 8px 0; background: #0a0a0c; border: 1px solid #333; color: #fff; border-radius: 5px; }
+        button { background: #e50914; color: white; border: none; padding: 12px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; }
+        button:hover { background: #ff1f2c; }
+        .btn-delete { background: #333; width: auto; padding: 5px 10px; font-size: 0.8em; }
+        .btn-edit { background: #007bff; width: auto; padding: 5px 10px; font-size: 0.8em; margin-right: 5px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #333; }
+        th { color: #e50914; }
+        .hidden { display: none; }
+        #loginScreen { text-align: center; margin-top: 100px; }
+    </style>
+</head>
+<body>
+    <div id="loginScreen" class="container">
+        <h1>🔒 Acceso Administrador</h1>
+        <input type="password" id="adminPass" placeholder="Contraseña de administrador">
+        <button onclick="checkLogin()">Entrar</button>
+    </div>
+
+    <div id="adminPanel" class="container hidden">
+        <h1>⚙️ Panel de Canales</h1>
+        <a href="index.html" style="color: #aaa; text-decoration: none; display:block; margin-bottom:20px;">← Volver a la web pública</a>
+        
+        <div class="form-box">
+            <h3 id="formTitle">Agregar Nuevo Canal</h3>
+            <input type="hidden" id="channelId">
+            <input type="text" id="nombre" placeholder="Nombre del Canal (ej: TUDN)">
+            <input type="text" id="logo" placeholder="URL del Logo (ej: https://...png)">
+            <input type="text" id="url" placeholder="URL del Stream (.php, .m3u8, .html)">
+            <select id="categoria">
+                <option value="Deportes">⚽ Deportes</option>
+                <option value="Noticias">📰 Noticias</option>
+                <option value="Entretenimiento">📺 Entretenimiento</option>
+                <option value="Peliculas">🎬 Películas</option>
+            </select>
+            <button onclick="guardarCanal()" id="btnGuardar">💾 Guardar Canal</button>
+            <button onclick="limpiarFormulario()" style="background: #333; margin-top: 5px;">Cancelar / Limpiar</button>
+        </div>
+
+        <h3>Canales Existentes</h3>
+        <table>
+            <thead><tr><th>Logo</th><th>Nombre</th><th>Categoría</th><th>Acciones</th></tr></thead>
+            <tbody id="tablaCanales"></tbody>
+        </table>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+          apiKey: "AIzaSyAEw7jfxJxbF3r5YvftUD6yJwpyEMmg9tQ",
+          authDomain: "nubaraplay.firebaseapp.com",
+          projectId: "nubaraplay",
+          storageBucket: "nubaraplay.firebasestorage.app",
+          messagingSenderId: "873822057409",
+          appId: "1:873822057409:web:f854a974f457eedd0c7540"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const PASSWORD = "OsirisAdmin2026"; 
+
+        function checkLogin() {
+            if (document.getElementById('adminPass').value === PASSWORD) {
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('adminPanel').classList.remove('hidden');
+                cargarCanales();
+            } else { alert("Contraseña incorrecta"); }
+        }
+        function guardarCanal() {
+            const id = document.getElementById('channelId').value;
+            const data = {
+                nombre: document.getElementById('nombre').value,
+                logo: document.getElementById('logo').value,
+                url: document.getElementById('url').value,
+                categoria: document.getElementById('categoria').value,
+                fecha: new Date()
+            };
+            if (!data.nombre || !data.url) { alert("Nombre y URL son obligatorios"); return; }
+            if (id) {
+                db.collection("canales").doc(id).update(data).then(() => { alert("Canal actualizado ✅"); limpiarFormulario(); });
+            } else {
+                db.collection("canales").add(data).then(() => { alert("Canal creado ✅"); limpiarFormulario(); });
+            }
+        }
+        function cargarCanales() {
+            db.collection("canales").orderBy("fecha", "desc").onSnapshot((snapshot) => {
+                const tbody = document.getElementById('tablaCanales');
+                tbody.innerHTML = '';
+                snapshot.forEach((doc) => {
+                    const canal = doc.data();
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><img src="${canal.logo}" width="40" onerror="this.src='https://via.placeholder.com/40'"></td>
+                        <td>${canal.nombre}</td>
+                        <td>${canal.categoria}</td>
+                        <td>
+                            <button class="btn-edit" onclick="editarCanal('${doc.id}', '${canal.nombre}', '${canal.logo}', '${canal.url}', '${canal.categoria}')">✏️</button>
+                            <button class="btn-delete" onclick="borrarCanal('${doc.id}')">🗑️</button>
+                        </td>`;
+                    tbody.appendChild(tr);
+                });
+            });
+        }
+        function editarCanal(id, nombre, logo, url, categoria) {
+            document.getElementById('channelId').value = id;
+            document.getElementById('nombre').value = nombre;
+            document.getElementById('logo').value = logo;
+            document.getElementById('url').value = url;
+            document.getElementById('categoria').value = categoria;
+            document.getElementById('formTitle').innerText = "Editar Canal";
+            document.getElementById('btnGuardar').innerText = "🔄 Actualizar Canal";
+            window.scrollTo(0, 0);
+        }
+        function borrarCanal(id) {
+            if (confirm("¿Seguro que deseas eliminar este canal?")) {
+                db.collection("canales").doc(id).delete().then(() => { alert("Canal eliminado 🗑️"); });
+            }
+        }
+        function limpiarFormulario() {
+            document.getElementById('channelId').value = '';
+            document.getElementById('nombre').value = '';
+            document.getElementById('logo').value = '';
+            document.getElementById('url').value = '';
+            document.getElementById('formTitle').innerText = "Agregar Nuevo Canal";
+            document.getElementById('btnGuardar').innerText = "💾 Guardar Canal";
+        }
+    </script>
+</body>
+</html>  
