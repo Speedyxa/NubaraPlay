@@ -3,492 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NubaraPlay - TV Online</title>
+    <title>NubaraPlay</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📺</text></svg>">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            background: #141414;
-            color: #fff;
-            overflow-x: hidden;
-        }
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #141414; color: #fff; overflow-x: hidden; }
 
-        /* LOGIN SCREEN */
-        #loginScreen {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
-                        url('https://assets.nflxext.com/ffe/siteui/vlv3/9d3533b2-0e2b-40b2-95e0-ecd7979cc88b/a3873901-5b7c-46eb-b9fa-12f5173b3e48/US-en-20240311-popsignuptwoweeks-perspective_alpha_website_large.jpg');
-            background-size: cover;
-            background-position: center;
-        }
-
-        .login-box {
-            background: rgba(0, 0, 0, 0.75);
-            padding: 60px 68px 40px;
-            border-radius: 4px;
-            max-width: 450px;
-            width: 90%;
-        }
-
-        .login-box h1 {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 28px;
-        }
-
-        .login-box input {
-            width: 100%;
-            padding: 16px 20px;
-            border-radius: 4px;
-            border: none;
-            background: #333;
-            color: #fff;
-            font-size: 16px;
-            margin-bottom: 16px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        .login-box input:focus {
-            outline: none;
-            background: #454545;
-        }
-
-        .login-box button {
-            width: 100%;
-            padding: 16px;
-            background: #e50914;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 24px;
-        }
-
-        .login-box button:hover {
-            background: #f40612;
-        }
-
-        .error-msg {
-            color: #e50914;
-            margin-top: 16px;
-            display: none;
-            font-size: 14px;
-        }
+        /* LOGIN */
+        #loginScreen { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://assets.nflxext.com/ffe/siteui/vlv3/9d3533b2-0e2b-40b2-95e0-ecd7979cc88b/a3873901-5b7c-46eb-b9fa-12f5173b3e48/US-en-20240311-popsignuptwoweeks-perspective_alpha_website_large.jpg'); background-size: cover; background-position: center; }
+        .login-box { background: rgba(0,0,0,0.75); padding: 60px 68px 40px; border-radius: 4px; max-width: 450px; width: 90%; }
+        .login-box h1 { font-size: 32px; font-weight: 700; margin-bottom: 28px; }
+        .login-box input { width: 100%; padding: 16px 20px; border-radius: 4px; border: none; background: #333; color: #fff; font-size: 16px; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 2px; text-align: center; font-weight: bold; }
+        .login-box input:focus { outline: none; background: #454545; }
+        .login-box button { width: 100%; padding: 16px; background: #e50914; color: #fff; border: none; border-radius: 4px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 24px; }
+        .login-box button:hover { background: #f40612; }
+        .error-msg { color: #e50914; margin-top: 16px; display: none; font-size: 14px; }
 
         /* NAVBAR */
-        .navbar {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            padding: 20px 4%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.7) 10%, transparent);
-            transition: background 0.4s;
-        }
+        .navbar { position: fixed; top: 0; width: 100%; padding: 20px 4%; display: flex; justify-content: space-between; align-items: center; z-index: 1000; background: linear-gradient(to bottom, rgba(0,0,0,0.7) 10%, transparent); transition: background 0.4s; }
+        .navbar.scrolled { background: #141414; }
+        .navbar-left { display: flex; align-items: center; gap: 25px; }
+        .logo { color: #e50914; font-size: 28px; font-weight: bold; text-decoration: none; }
+        .nav-links { display: flex; gap: 20px; list-style: none; }
+        .nav-links a { color: #e5e5e5; text-decoration: none; font-size: 14px; transition: color 0.4s; cursor: pointer; }
+        .nav-links a:hover { color: #b3b3b3; }
+        .navbar-right { display: flex; align-items: center; gap: 20px; }
+        .search-box { position: relative; }
+        .search-box input { background: rgba(0,0,0,0.75); border: 1px solid #fff; color: #fff; padding: 7px 14px 7px 40px; border-radius: 4px; width: 250px; font-size: 14px; }
+        .search-box input:focus { outline: none; background: #000; }
+        .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #fff; }
+        .user-info { background: #e50914; padding: 5px 12px; border-radius: 4px; font-size: 13px; font-weight: bold; }
+        .logout-btn { background: transparent; border: 1px solid #fff; color: #fff; padding: 7px 15px; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        .logout-btn:hover { background: rgba(255,255,255,0.1); }
 
-        .navbar.scrolled {
-            background: #141414;
-        }
+        /* HERO */
+        .hero { position: relative; height: 80vh; background: linear-gradient(to top, #141414 0%, transparent 60%), linear-gradient(to right, rgba(0,0,0,0.8) 0%, transparent 50%), url('https://image.tmdb.org/t/p/original/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg'); background-size: cover; background-position: center; display: flex; align-items: center; padding: 0 4%; }
+        .hero-content { max-width: 600px; margin-top: 100px; }
+        .hero-title { font-size: 60px; font-weight: 700; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+        .hero-description { font-size: 18px; line-height: 1.5; margin-bottom: 30px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); }
+        .hero-buttons { display: flex; gap: 15px; }
+        .btn-play { background: #fff; color: #000; padding: 12px 30px; border: none; border-radius: 4px; font-size: 18px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+        .btn-play:hover { background: rgba(255,255,255,0.75); }
+        .btn-info { background: rgba(109,109,110,0.7); color: #fff; padding: 12px 30px; border: none; border-radius: 4px; font-size: 18px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+        .btn-info:hover { background: rgba(109,109,110,0.4); }
 
-        .navbar-left {
-            display: flex;
-            align-items: center;
-            gap: 25px;
-        }
+        /* CONTENT */
+        .content-section { padding: 20px 4%; margin-top: -100px; position: relative; z-index: 10; }
+        .row { margin-bottom: 50px; }
+        .row-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .row-title { font-size: 24px; font-weight: 700; color: #e5e5e5; cursor: pointer; }
+        .row-title:hover { color: #fff; }
+        .ver-mas { color: #54b9c5; font-size: 14px; cursor: pointer; text-decoration: none; }
+        .ver-mas:hover { text-decoration: underline; }
+        .row-slider { display: flex; gap: 8px; overflow-x: auto; overflow-y: hidden; padding: 20px 0; scroll-behavior: smooth; scrollbar-width: none; }
+        .row-slider::-webkit-scrollbar { display: none; }
 
-        .logo {
-            color: #e50914;
-            font-size: 28px;
-            font-weight: bold;
-            text-decoration: none;
-        }
+        .card { flex: 0 0 auto; width: 240px; height: 135px; border-radius: 4px; overflow: hidden; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; position: relative; }
+        .card:hover { transform: scale(1.4); z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+        .card img { width: 100%; height: 100%; object-fit: cover; }
+        .card-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); padding: 10px; opacity: 0; transition: opacity 0.3s; }
+        .card:hover .card-overlay { opacity: 1; }
+        .card-title { font-size: 12px; font-weight: bold; margin-bottom: 5px; }
+        .card-info { font-size: 10px; color: #46d369; display: flex; gap: 10px; }
+        .fav-btn { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.7); border: none; color: #fff; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 14px; opacity: 0; transition: opacity 0.3s; }
+        .card:hover .fav-btn { opacity: 1; }
+        .fav-btn.active { color: #ffd700; opacity: 1; }
 
-        .nav-links {
-            display: flex;
-            gap: 20px;
-            list-style: none;
-        }
+        .movie-card { width: 180px; height: 270px; }
+        .movie-card img { width: 100%; height: 100%; object-fit: cover; }
 
-        .nav-links a {
-            color: #e5e5e5;
-            text-decoration: none;
-            font-size: 14px;
-            transition: color 0.4s;
-        }
+        .no-results { text-align: center; padding: 60px 20px; color: #808080; font-size: 20px; display: none; }
 
-        .nav-links a:hover {
-            color: #b3b3b3;
-        }
-
-        .navbar-right {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .search-box {
-            position: relative;
-        }
-
-        .search-box input {
-            background: rgba(0,0,0,0.75);
-            border: 1px solid #fff;
-            color: #fff;
-            padding: 7px 14px 7px 40px;
-            border-radius: 4px;
-            width: 250px;
-            font-size: 14px;
-        }
-
-        .search-box input:focus {
-            outline: none;
-            background: #000;
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #fff;
-        }
-
-        .user-info {
-            background: #e50914;
-            padding: 5px 12px;
-            border-radius: 4px;
-            font-size: 13px;
-            font-weight: bold;
-        }
-
-        .logout-btn {
-            background: transparent;
-            border: 1px solid #fff;
-            color: #fff;
-            padding: 7px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .logout-btn:hover {
-            background: rgba(255,255,255,0.1);
-        }
-
-        /* HERO SECTION */
-        .hero {
-            position: relative;
-            height: 80vh;
-            background: linear-gradient(to top, #141414 0%, transparent 60%),
-                        linear-gradient(to right, rgba(0,0,0,0.8) 0%, transparent 50%),
-                        url('https://image.tmdb.org/t/p/original/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg');
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            align-items: center;
-            padding: 0 4%;
-        }
-
-        .hero-content {
-            max-width: 600px;
-            margin-top: 100px;
-        }
-
-        .hero-title {
-            font-size: 60px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
-
-        .hero-description {
-            font-size: 18px;
-            line-height: 1.5;
-            margin-bottom: 30px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
-        }
-
-        .hero-buttons {
-            display: flex;
-            gap: 15px;
-        }
-
-        .btn-play {
-            background: #fff;
-            color: #000;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 4px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .btn-play:hover {
-            background: rgba(255,255,255,0.75);
-        }
-
-        .btn-info {
-            background: rgba(109, 109, 110, 0.7);
-            color: #fff;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 4px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .btn-info:hover {
-            background: rgba(109, 109, 110, 0.4);
-        }
-
-        /* CONTENT ROWS */
-        .content-section {
-            padding: 20px 4%;
-            margin-top: -100px;
-            position: relative;
-            z-index: 10;
-        }
-
-        .row {
-            margin-bottom: 50px;
-        }
-
-        .row-title {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 15px;
-            color: #e5e5e5;
-        }
-
-        .row-slider {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            overflow-y: hidden;
-            padding: 20px 0;
-            scroll-behavior: smooth;
-            scrollbar-width: none;
-        }
-
-        .row-slider::-webkit-scrollbar {
-            display: none;
-        }
-
-        .card {
-            flex: 0 0 auto;
-            width: 240px;
-            height: 135px;
-            border-radius: 4px;
-            overflow: hidden;
-            cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
-            position: relative;
-        }
-
-        .card:hover {
-            transform: scale(1.4);
-            z-index: 100;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-        }
-
-        .card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .card-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-            padding: 10px;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .card:hover .card-overlay {
-            opacity: 1;
-        }
-
-        .card-title {
-            font-size: 12px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .card-info {
-            font-size: 10px;
-            color: #46d369;
-            display: flex;
-            gap: 10px;
-        }
-
-        .fav-btn {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: rgba(0,0,0,0.7);
-            border: none;
-            color: #fff;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 14px;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .card:hover .fav-btn {
-            opacity: 1;
-        }
-
-        .fav-btn.active {
-            color: #ffd700;
-            opacity: 1;
-        }
-
-        /* PELICULAS - Vertical Cards */
-        .movie-card {
-            width: 180px;
-            height: 270px;
-        }
-
-        .movie-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* MODAL */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.95);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            width: 90%;
-            max-width: 1000px;
-            background: #181818;
-            border-radius: 8px;
-            overflow: hidden;
-            max-height: 90vh;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            background: #181818;
-        }
-
-        .modal-header h3 {
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        .modal-close {
-            background: transparent;
-            border: none;
-            color: #fff;
-            font-size: 24px;
-            cursor: pointer;
-        }
-
-        .modal-video {
-            width: 100%;
-            aspect-ratio: 16/9;
-            border: none;
-        }
-
-        .modal-info {
-            padding: 20px;
-        }
-
-        .modal-description {
-            font-size: 16px;
-            line-height: 1.6;
-            color: #d2d2d2;
-        }
-
-        /* NO RESULTS */
-        .no-results {
-            text-align: center;
-            padding: 60px 20px;
-            color: #808080;
-            font-size: 20px;
-            display: none;
-        }
-
-        /* RESPONSIVE */
         @media (max-width: 768px) {
-            .hero-title {
-                font-size: 36px;
-            }
-            
-            .hero-description {
-                font-size: 14px;
-            }
-            
-            .card {
-                width: 160px;
-                height: 90px;
-            }
-            
-            .movie-card {
-                width: 120px;
-                height: 180px;
-            }
-            
-            .nav-links {
-                display: none;
-            }
-            
-            .search-box input {
-                width: 150px;
-            }
+            .hero-title { font-size: 36px; }
+            .hero-description { font-size: 14px; }
+            .card { width: 160px; height: 90px; }
+            .movie-card { width: 120px; height: 180px; }
+            .nav-links { display: none; }
+            .search-box input { width: 150px; }
         }
     </style>
 </head>
 <body>
-    <!-- LOGIN SCREEN -->
     <div id="loginScreen">
         <div class="login-box">
             <h1>Iniciar Sesión</h1>
@@ -498,66 +94,76 @@
         </div>
     </div>
 
-    <!-- MAIN APP -->
     <div id="mainApp" style="display: none;">
-        <!-- NAVBAR -->
         <nav class="navbar" id="navbar">
             <div class="navbar-left">
-                <a href="#" class="logo">NUBARAPLAY</a>
+                <a href="index.html" class="logo">NUBARAPLAY</a>
                 <ul class="nav-links">
-                    <li><a href="#inicio">Inicio</a></li>
-                    <li><a href="#canales">Canales TV</a></li>
-                    <li><a href="#peliculas">Películas</a></li>
-                    <li><a href="#favoritos">Mi Lista</a></li>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="categoria.html?cat=Deportes">Deportes</a></li>
+                    <li><a href="categoria.html?cat=Noticias">Noticias</a></li>
+                    <li><a href="categoria.html?cat=Entretenimiento">Entretenimiento</a></li>
+                    <li><a href="genero.html">Películas</a></li>
                 </ul>
             </div>
             <div class="navbar-right">
                 <div class="search-box">
-                    <span class="search-icon"></span>
-                    <input type="text" id="buscador" placeholder="Títulos, géneros..." onkeyup="filtrarContenido()">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="buscador" placeholder="Títulos..." onkeyup="filtrarContenido()">
                 </div>
                 <span class="user-info" id="userInfo">Usuario</span>
                 <button class="logout-btn" onclick="cerrarSesion()">Salir</button>
             </div>
         </nav>
 
-        <!-- HERO SECTION -->
         <div class="hero" id="hero">
             <div class="hero-content">
                 <h1 class="hero-title">Bienvenido a NubaraPlay</h1>
                 <p class="hero-description">Disfruta de los mejores canales de TV en vivo y películas. Contenido seleccionado especialmente para ti.</p>
                 <div class="hero-buttons">
-                    <button class="btn-play" onclick="reproducirDestacado()">
-                        <span>▶</span> Reproducir
-                    </button>
-                    <button class="btn-info">
-                        <span>ℹ</span> Más información
-                    </button>
+                    <button class="btn-play" onclick="reproducirDestacado()"><span>▶</span> Reproducir</button>
+                    <button class="btn-info"><span>ℹ</span> Más información</button>
                 </div>
             </div>
         </div>
 
-        <!-- CONTENT SECTIONS -->
         <div class="content-section">
-            <!-- CANALES TV -->
-            <div class="row" id="canales">
-                <h2 class="row-title">📺 Canales de TV en Vivo</h2>
-                <div class="row-slider" id="contenedorCanales">
-                    <div style="color: #808080; padding: 40px;">Cargando canales...</div>
+            <div class="row">
+                <div class="row-header">
+                    <h2 class="row-title" onclick="window.location.href='categoria.html?cat=Deportes'">⚽ Deportes</h2>
+                    <a class="ver-mas" href="categoria.html?cat=Deportes">Ver todo ›</a>
                 </div>
+                <div class="row-slider" id="rowDeportes"></div>
             </div>
 
-            <!-- PELICULAS -->
-            <div class="row" id="peliculas">
-                <h2 class="row-title">🎬 Películas</h2>
-                <div class="row-slider" id="contenedorPeliculas">
-                    <div style="color: #808080; padding: 40px;">Cargando películas...</div>
+            <div class="row">
+                <div class="row-header">
+                    <h2 class="row-title" onclick="window.location.href='categoria.html?cat=Noticias'">📰 Noticias</h2>
+                    <a class="ver-mas" href="categoria.html?cat=Noticias">Ver todo ›</a>
                 </div>
+                <div class="row-slider" id="rowNoticias"></div>
             </div>
 
-            <!-- FAVORITOS -->
-            <div class="row" id="favoritos" style="display: none;">
-                <h2 class="row-title">⭐ Mi Lista</h2>
+            <div class="row">
+                <div class="row-header">
+                    <h2 class="row-title" onclick="window.location.href='categoria.html?cat=Entretenimiento'">📺 Entretenimiento</h2>
+                    <a class="ver-mas" href="categoria.html?cat=Entretenimiento">Ver todo ›</a>
+                </div>
+                <div class="row-slider" id="rowEntretenimiento"></div>
+            </div>
+
+            <div class="row">
+                <div class="row-header">
+                    <h2 class="row-title" onclick="window.location.href='genero.html'">🎬 Películas Populares</h2>
+                    <a class="ver-mas" href="genero.html">Ver todo ›</a>
+                </div>
+                <div class="row-slider" id="rowPeliculas"></div>
+            </div>
+
+            <div class="row" id="rowFavoritos" style="display: none;">
+                <div class="row-header">
+                    <h2 class="row-title">⭐ Mi Lista</h2>
+                </div>
                 <div class="row-slider" id="contenedorFavoritos"></div>
             </div>
 
@@ -565,25 +171,9 @@
         </div>
     </div>
 
-    <!-- MODAL REPRODUCTOR -->
-    <div class="modal" id="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modalTitulo">Reproduciendo...</h3>
-                <button class="modal-close" onclick="cerrarModal()">✕</button>
-            </div>
-            <iframe class="modal-video" id="playerFrame" src="" allowfullscreen></iframe>
-            <div class="modal-info">
-                <p class="modal-description" id="modalDescripcion"></p>
-            </div>
-        </div>
-    </div>
-
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    
     <script>
-        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyAEw7jfxJxbF3r5YvftUD6yJwpyEMmg9tQ",
             authDomain: "nubaraplay.firebaseapp.com",
@@ -599,134 +189,81 @@
         let todasLasPeliculas = [];
         let usuarioActual = null;
 
-        // NAVBAR SCROLL EFFECT
         window.addEventListener('scroll', () => {
             const navbar = document.getElementById('navbar');
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
+            navbar.classList.toggle('scrolled', window.scrollY > 50);
         });
 
-        // VERIFICAR CÓDIGO
         async function verificarCodigo() {
             const codigo = document.getElementById('accessCode').value.trim().toUpperCase();
             const errorMsg = document.getElementById('errorMsg');
-            
-            if (!codigo || codigo.length !== 5) {
-                errorMsg.textContent = 'Ingresa un código de 5 caracteres';
-                errorMsg.style.display = 'block';
-                return;
-            }
-
+            if (!codigo || codigo.length !== 5) { errorMsg.textContent = 'Ingresa un código de 5 caracteres'; errorMsg.style.display = 'block'; return; }
             try {
                 const snapshot = await db.collection("usuarios").where("codigo", "==", codigo).get();
-                
-                if (snapshot.empty) {
-                    errorMsg.textContent = 'Código inválido';
-                    errorMsg.style.display = 'block';
-                    return;
-                }
-
+                if (snapshot.empty) { errorMsg.textContent = 'Código inválido'; errorMsg.style.display = 'block'; return; }
                 const userDoc = snapshot.docs[0];
                 const userData = userDoc.data();
                 const fechaExpiracion = userData.fechaExpiracion?.toDate ? userData.fechaExpiracion.toDate() : new Date(userData.fechaExpiracion);
-                const ahora = new Date();
-
-                if (fechaExpiracion < ahora) {
-                    errorMsg.textContent = 'Código expirado';
-                    errorMsg.style.display = 'block';
-                    return;
-                }
-
+                if (fechaExpiracion < new Date()) { errorMsg.textContent = 'Código expirado'; errorMsg.style.display = 'block'; return; }
                 usuarioActual = { id: userDoc.id, ...userData };
                 localStorage.setItem('nubaraPlayUser', JSON.stringify(usuarioActual));
                 localStorage.setItem('nubaraPlayUserExpiry', fechaExpiracion.getTime());
-                
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('mainApp').style.display = 'block';
-                
-                const tipoTexto = userData.tipo === 'demo' ? 'DEMO' : 'PREMIUM';
-                document.getElementById('userInfo').textContent = `${tipoTexto} - ${userData.nombre}`;
-                
-                cargarCanales();
-                cargarPeliculas();
-                cargarFavoritos();
-            } catch (error) {
-                console.error('Error:', error);
-                errorMsg.textContent = 'Error de conexión';
-                errorMsg.style.display = 'block';
-            }
+                document.getElementById('userInfo').textContent = `${userData.tipo === 'demo' ? 'DEMO' : 'PREMIUM'} - ${userData.nombre}`;
+                cargarTodo();
+            } catch (error) { errorMsg.textContent = 'Error de conexión'; errorMsg.style.display = 'block'; }
         }
 
-        // VERIFICAR SESIÓN AL CARGAR
         window.addEventListener('DOMContentLoaded', () => {
             const savedUser = localStorage.getItem('nubaraPlayUser');
             const savedExpiry = localStorage.getItem('nubaraPlayUserExpiry');
-            
-            if (savedUser && savedExpiry) {
-                const expiry = parseInt(savedExpiry);
-                if (Date.now() < expiry) {
-                    usuarioActual = JSON.parse(savedUser);
-                    document.getElementById('loginScreen').style.display = 'none';
-                    document.getElementById('mainApp').style.display = 'block';
-                    
-                    const tipoTexto = usuarioActual.tipo === 'demo' ? 'DEMO' : 'PREMIUM';
-                    document.getElementById('userInfo').textContent = `${tipoTexto} - ${usuarioActual.nombre}`;
-                    
-                    cargarCanales();
-                    cargarPeliculas();
-                    cargarFavoritos();
-                } else {
-                    localStorage.removeItem('nubaraPlayUser');
-                    localStorage.removeItem('nubaraPlayUserExpiry');
-                }
+            if (savedUser && savedExpiry && Date.now() < parseInt(savedExpiry)) {
+                usuarioActual = JSON.parse(savedUser);
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('mainApp').style.display = 'block';
+                document.getElementById('userInfo').textContent = `${usuarioActual.tipo === 'demo' ? 'DEMO' : 'PREMIUM'} - ${usuarioActual.nombre}`;
+                cargarTodo();
             }
         });
 
-        function cerrarSesion() {
-            localStorage.removeItem('nubaraPlayUser');
-            localStorage.removeItem('nubaraPlayUserExpiry');
-            location.reload();
-        }
+        function cerrarSesion() { localStorage.removeItem('nubaraPlayUser'); localStorage.removeItem('nubaraPlayUserExpiry'); location.reload(); }
 
-        // CARGAR CANALES
-        function cargarCanales() {
-            db.collection("canales").where("categoria", "!=", "Peliculas").onSnapshot((snapshot) => {
+        function cargarTodo() {
+            db.collection("canales").onSnapshot((snapshot) => {
                 todosLosCanales = [];
                 snapshot.forEach((doc) => todosLosCanales.push({ id: doc.id, ...doc.data() }));
-                renderizarCanales(todosLosCanales);
+                renderizarFilas();
             });
-        }
-
-        function cargarPeliculas() {
             db.collection("peliculas").orderBy("fecha", "desc").onSnapshot((snapshot) => {
                 todasLasPeliculas = [];
                 snapshot.forEach((doc) => todasLasPeliculas.push({ id: doc.id, ...doc.data() }));
-                renderizarPeliculas(todasLasPeliculas);
+                renderizarFilas();
             });
         }
 
-        function renderizarCanales(canales) {
-            const contenedor = document.getElementById('contenedorCanales');
-            contenedor.innerHTML = '';
-            
-            if (canales.length === 0) { 
-                contenedor.innerHTML = '<div style="color:#808080; padding:40px;">No hay canales disponibles</div>';
-                return; 
-            }
-            
-            canales.forEach(canal => {
-                const card = crearCardCanal(canal);
-                contenedor.appendChild(card);
+        function renderizarFilas() {
+            const categorias = ['Deportes', 'Noticias', 'Entretenimiento'];
+            categorias.forEach(cat => {
+                const contenedor = document.getElementById(`row${cat}`);
+                if (!contenedor) return;
+                contenedor.innerHTML = '';
+                const canales = todosLosCanales.filter(c => c.categoria === cat);
+                canales.forEach(canal => contenedor.appendChild(crearCardCanal(canal)));
             });
+
+            const contenedorPeliculas = document.getElementById('rowPeliculas');
+            if (contenedorPeliculas) {
+                contenedorPeliculas.innerHTML = '';
+                todasLasPeliculas.forEach(peli => contenedorPeliculas.appendChild(crearCardPelicula(peli)));
+            }
+
+            cargarFavoritos();
         }
 
         function crearCardCanal(canal) {
             const favoritos = JSON.parse(localStorage.getItem('nubaraPlayFavoritos') || '[]');
             const esFav = favoritos.includes(canal.id);
-            
             const card = document.createElement('div');
             card.className = 'card';
             card.innerHTML = `
@@ -734,38 +271,16 @@
                 <button class="fav-btn ${esFav ? 'active' : ''}" onclick="toggleFavorito('${canal.id}', event)">${esFav ? '★' : '☆'}</button>
                 <div class="card-overlay">
                     <div class="card-title">${canal.nombre}</div>
-                    <div class="card-info">
-                        <span>👁 ${canal.visitas || 0} vistas</span>
-                    </div>
+                    <div class="card-info"><span>👁 ${canal.visitas || 0} vistas</span></div>
                 </div>
             `;
-            card.onclick = (e) => {
-                if (!e.target.classList.contains('fav-btn')) {
-                    abrirCanal(canal);
-                }
-            };
+            card.onclick = (e) => { if (!e.target.classList.contains('fav-btn')) window.location.href = `categoria.html?cat=${canal.categoria}`; };
             return card;
-        }
-
-        function renderizarPeliculas(peliculas) {
-            const contenedor = document.getElementById('contenedorPeliculas');
-            contenedor.innerHTML = '';
-            
-            if (peliculas.length === 0) { 
-                contenedor.innerHTML = '<div style="color:#808080; padding:40px;">No hay películas disponibles</div>';
-                return; 
-            }
-            
-            peliculas.forEach(peli => {
-                const card = crearCardPelicula(peli);
-                contenedor.appendChild(card);
-            });
         }
 
         function crearCardPelicula(pelicula) {
             const favoritos = JSON.parse(localStorage.getItem('nubaraPlayFavoritos') || '[]');
             const esFav = favoritos.includes(pelicula.id);
-            
             const card = document.createElement('div');
             card.className = 'card movie-card';
             card.innerHTML = `
@@ -773,38 +288,24 @@
                 <button class="fav-btn ${esFav ? 'active' : ''}" onclick="toggleFavorito('${pelicula.id}', event)">${esFav ? '★' : '☆'}</button>
                 <div class="card-overlay">
                     <div class="card-title">${pelicula.nombre}</div>
-                    <div class="card-info">
-                        <span>${pelicula.anio || 'N/A'}</span>
-                        <span>⭐ ${pelicula.rating || '0'}</span>
-                    </div>
+                    <div class="card-info"><span>${pelicula.anio || 'N/A'}</span><span>⭐ ${pelicula.rating || '0'}</span></div>
                 </div>
             `;
-            card.onclick = (e) => {
-                if (!e.target.classList.contains('fav-btn')) {
-                    abrirPelicula(pelicula);
-                }
-            };
+            card.onclick = (e) => { if (!e.target.classList.contains('fav-btn')) window.location.href = `detalle.html?id=${pelicula.id}`; };
             return card;
         }
 
         function cargarFavoritos() {
             const favoritos = JSON.parse(localStorage.getItem('nubaraPlayFavoritos') || '[]');
-            const seccion = document.getElementById('favoritos');
+            const seccion = document.getElementById('rowFavoritos');
             const contenedor = document.getElementById('contenedorFavoritos');
-            
-            if (favoritos.length === 0) {
-                seccion.style.display = 'none';
-                return;
-            }
-            
+            if (favoritos.length === 0) { seccion.style.display = 'none'; return; }
             seccion.style.display = 'block';
             contenedor.innerHTML = '';
-            
             const canalesFav = todosLosCanales.filter(c => favoritos.includes(c.id));
             const peliculasFav = todasLasPeliculas.filter(p => favoritos.includes(p.id));
-            
             [...canalesFav, ...peliculasFav].forEach(item => {
-                const card = item.logo && item.logo.includes('placeholder') ? crearCardCanal(item) : crearCardPelicula(item);
+                const card = item.categoria ? crearCardCanal(item) : crearCardPelicula(item);
                 contenedor.appendChild(card);
             });
         }
@@ -813,63 +314,21 @@
             event.stopPropagation();
             let favoritos = JSON.parse(localStorage.getItem('nubaraPlayFavoritos') || '[]');
             const index = favoritos.indexOf(id);
-            if (index > -1) {
-                favoritos.splice(index, 1);
-            } else {
-                favoritos.push(id);
-            }
+            if (index > -1) favoritos.splice(index, 1); else favoritos.push(id);
             localStorage.setItem('nubaraPlayFavoritos', JSON.stringify(favoritos));
-            cargarFavoritos();
-            renderizarCanales(todosLosCanales);
-            renderizarPeliculas(todasLasPeliculas);
-        }
-
-        function abrirCanal(canal) {
-            db.collection("canales").doc(canal.id).update({ visitas: (canal.visitas || 0) + 1 });
-            document.getElementById('modalTitulo').textContent = canal.nombre;
-            document.getElementById('playerFrame').src = canal.url;
-            document.getElementById('modalDescripcion').textContent = `Canal en vivo - ${canal.categoria}`;
-            document.getElementById('modal').classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function abrirPelicula(pelicula) {
-            db.collection("peliculas").doc(pelicula.id).update({ visitas: (pelicula.visitas || 0) + 1 });
-            document.getElementById('modalTitulo').textContent = `${pelicula.nombre} (${pelicula.anio || 'N/A'})`;
-            document.getElementById('playerFrame').src = pelicula.url;
-            document.getElementById('modalDescripcion').textContent = pelicula.sinopsis || 'Película disponible en NubaraPlay';
-            document.getElementById('modal').classList.add('active');
-            document.body.style.overflow = 'hidden';
+            renderizarFilas();
         }
 
         function reproducirDestacado() {
-            if (todasLasPeliculas.length > 0) {
-                abrirPelicula(todasLasPeliculas[0]);
-            } else if (todosLosCanales.length > 0) {
-                abrirCanal(todosLosCanales[0]);
-            }
-        }
-
-        function cerrarModal() {
-            document.getElementById('modal').classList.remove('active');
-            document.getElementById('playerFrame').src = '';
-            document.body.style.overflow = 'auto';
+            if (todasLasPeliculas.length > 0) window.location.href = `detalle.html?id=${todasLasPeliculas[0].id}`;
+            else if (todosLosCanales.length > 0) window.location.href = `categoria.html?cat=${todosLosCanales[0].categoria}`;
         }
 
         function filtrarContenido() {
             const texto = document.getElementById('buscador').value.toLowerCase().trim();
-            
             const canalesFiltrados = todosLosCanales.filter(c => c.nombre.toLowerCase().includes(texto));
             const peliculasFiltradas = todasLasPeliculas.filter(p => p.nombre.toLowerCase().includes(texto));
-            
-            renderizarCanales(canalesFiltrados);
-            renderizarPeliculas(peliculasFiltradas);
-            
-            if (canalesFiltrados.length === 0 && peliculasFiltradas.length === 0) {
-                document.getElementById('noResults').style.display = 'block';
-            } else {
-                document.getElementById('noResults').style.display = 'none';
-            }
+            document.getElementById('noResults').style.display = (canalesFiltrados.length === 0 && peliculasFiltradas.length === 0) ? 'block' : 'none';
         }
     </script>
 </body>
