@@ -4,249 +4,158 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>⚙️ Admin - NubaraPlay</title>
-  
-  <!-- Google Font -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Theme style -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
-  <!-- OverlayScrollbars -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/overlayscrollbars/2.3.0/styles/overlayScrollbars.min.css">
-  
   <style>
-    /* Custom styles para dark/light mode */
-    .light-mode {
-      background-color: #f4f6f9;
-    }
-    .light-mode .content-wrapper {
-      background-color: #f4f6f9;
-    }
-    .light-mode .card {
-      background-color: #fff;
-    }
+    .light-mode { background-color: #f4f6f9; }
+    .light-mode .content-wrapper { background-color: #f4f6f9; }
+    .light-mode .card { background-color: #fff; }
+    .stat-card { transition: transform 0.3s; cursor: pointer; }
+    .stat-card:hover { transform: translateY(-5px); }
+    .stat-icon { font-size: 2.5em; opacity: 0.8; }
   </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
-
-  <!-- Navbar -->
   <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-    <a href="#" class="navbar-brand">
-      <span class="brand-text font-weight-bold">📺 NubaraPlay Admin</span>
-    </a>
-    
+    <a href="#" class="navbar-brand"><span class="brand-text font-weight-bold">📺 NubaraPlay Admin</span></a>
     <ul class="navbar-nav">
-      <li class="nav-item">
-        <a class="nav-link" data-widget="fullscreen" href="#" role="button">
-          <i class="fas fa-expand-arrows-alt"></i>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#" onclick="toggleDarkMode()" id="darkModeToggle" role="button" title="Cambiar tema">
-          <i class="fas fa-moon" id="darkModeIcon"></i>
-        </a>
-      </li>
+      <li class="nav-item"><a class="nav-link" data-widget="fullscreen" href="#" role="button"><i class="fas fa-expand-arrows-alt"></i></a></li>
+      <li class="nav-item"><a class="nav-link" href="#" onclick="toggleDarkMode()" role="button"><i class="fas fa-moon" id="darkModeIcon"></i></a></li>
     </ul>
-    
     <ul class="navbar-nav ml-auto">
-      <li class="nav-item">
-        <a class="nav-link" href="index.html" target="_blank">
-          <i class="fas fa-external-link-alt"></i> Ver Web
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#" onclick="cerrarSesion()">
-          <i class="fas fa-sign-out-alt"></i> Salir
-        </a>
-      </li>
+      <li class="nav-item"><a class="nav-link" href="index.html" target="_blank"><i class="fas fa-external-link-alt"></i> Ver Web</a></li>
+      <li class="nav-item"><a class="nav-link" href="#" onclick="cerrarSesion()"><i class="fas fa-sign-out-alt"></i> Salir</a></li>
     </ul>
   </nav>
-  <!-- /.navbar -->
 
-  <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
-    <a href="#" class="brand-link">
-      <span class="brand-text font-weight-light">NubaraPlay</span>
-    </a>
-
-    <!-- Sidebar -->
+    <a href="#" class="brand-link"><span class="brand-text font-weight-light">NubaraPlay</span></a>
     <div class="sidebar">
-      <!-- Sidebar Menu -->
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-          <li class="nav-item">
-            <a href="#" class="nav-link active">
-              <i class="nav-icon fas fa-tv"></i>
-              <p>Gestionar Canales</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="index.html" class="nav-link" target="_blank">
-              <i class="nav-icon fas fa-play"></i>
-              <p>Ver Reproductor</p>
-            </a>
-          </li>
+          <li class="nav-item"><a href="#" class="nav-link active" onclick="mostrarSeccion('canales', this)"><i class="nav-icon fas fa-tv"></i><p>Gestionar Canales</p></a></li>
+          <li class="nav-item"><a href="#" class="nav-link" onclick="mostrarSeccion('dashboard', this)"><i class="nav-icon fas fa-chart-line"></i><p>Dashboard</p></a></li>
         </ul>
       </nav>
     </div>
   </aside>
 
-  <!-- Content Wrapper -->
   <div class="content-wrapper">
-    <!-- Content Header -->
     <div class="content-header">
       <div class="container-fluid">
         <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1 class="m-0">📋 Gestión de Canales</h1>
-          </div>
-          <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Inicio</a></li>
-              <li class="breadcrumb-item active">Canales</li>
-            </ol>
-          </div>
+          <div class="col-sm-6"><h1 class="m-0" id="tituloSeccion">📋 Gestión de Canales</h1></div>
+          <div class="col-sm-6"><ol class="breadcrumb float-sm-right"><li class="breadcrumb-item"><a href="#">Inicio</a></li><li class="breadcrumb-item active" id="breadcrumbActivo">Canales</li></ol></div>
         </div>
       </div>
     </div>
 
-    <!-- Main content -->
     <section class="content">
       <div class="container-fluid">
         
-        <!-- LOGIN SCREEN -->
         <div id="loginScreen" class="row justify-content-center">
           <div class="col-md-4">
             <div class="card card-primary card-outline">
-              <div class="card-header text-center">
-                <h3 class="m-0">🔒 Acceso Admin</h3>
-              </div>
+              <div class="card-header text-center"><h3 class="m-0">🔒 Acceso Admin</h3></div>
               <div class="card-body">
                 <div class="input-group mb-3">
                   <input type="password" id="adminPass" class="form-control" placeholder="Contraseña">
-                  <div class="input-group-append">
-                    <div class="input-group-text">
-                      <span class="fas fa-lock"></span>
+                  <div class="input-group-append"><div class="input-group-text"><span class="fas fa-lock"></span></div></div>
+                </div>
+                <button onclick="checkLogin()" class="btn btn-primary btn-block"><i class="fas fa-sign-in-alt"></i> Ingresar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="adminPanel" class="hidden">
+          
+          <!-- SECCIÓN CANALES -->
+          <div id="seccionCanales">
+            <div class="row">
+              <div class="col-md-4">
+                <div class="card card-danger">
+                  <div class="card-header"><h3 class="card-title" id="formTitle">➕ Agregar Canal</h3></div>
+                  <div class="card-body">
+                    <input type="hidden" id="channelId">
+                    <div class="form-group"><label><i class="fas fa-tv"></i> Nombre del Canal</label><input type="text" id="nombre" class="form-control" placeholder="Ej: TUDN"></div>
+                    <div class="form-group"><label><i class="fas fa-image"></i> URL del Logo</label><input type="text" id="logo" class="form-control" placeholder="https://..."></div>
+                    <div class="form-group"><label><i class="fas fa-link"></i> URL del Stream</label><input type="text" id="url" class="form-control" placeholder="https://..."></div>
+                    <div class="form-group"><label><i class="fas fa-folder"></i> Categoría</label>
+                      <select id="categoria" class="form-control">
+                        <option value="Deportes">⚽ Deportes</option><option value="Noticias">📰 Noticias</option>
+                        <option value="Entretenimiento">📺 Entretenimiento</option><option value="Peliculas">🎬 Películas</option>
+                        <option value="Musica">🎵 Música</option>
+                      </select>
+                    </div>
+                    <button onclick="guardarCanal()" id="btnGuardar" class="btn btn-success btn-block"><i class="fas fa-save"></i> Guardar Canal</button>
+                    <button onclick="limpiarFormulario()" class="btn btn-secondary btn-block mt-2"><i class="fas fa-times"></i> Cancelar</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-8">
+                <div class="card card-primary">
+                  <div class="card-header">
+                    <h3 class="card-title"> Canales Existentes</h3>
+                    <div class="card-tools"><span class="badge badge-danger" id="totalCanales">0 canales</span></div>
+                  </div>
+                  <div class="card-body">
+                    <input type="text" id="buscarCanal" class="form-control mb-3" placeholder="🔍 Buscar canal..." onkeyup="filtrarTabla()">
+                    <div class="table-responsive">
+                      <table class="table table-striped table-hover">
+                        <thead><tr><th style="width: 60px">Logo</th><th>Nombre</th><th>Categoría</th><th style="width: 80px">Visitas</th><th style="width: 80px">Rating</th><th style="width: 100px">Acciones</th></tr></thead>
+                        <tbody id="tablaCanales"><tr><td colspan="6" class="text-center text-muted">Cargando canales...</td></tr></tbody>
+                      </table>
                     </div>
                   </div>
                 </div>
-                <button onclick="checkLogin()" class="btn btn-primary btn-block">
-                  <i class="fas fa-sign-in-alt"></i> Ingresar
-                </button>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- ADMIN PANEL -->
-        <div id="adminPanel" class="hidden">
-          
-          <!-- Formulario -->
-          <div class="row">
-            <div class="col-md-4">
-              <div class="card card-danger">
-                <div class="card-header">
-                  <h3 class="card-title">➕ Agregar Canal</h3>
-                </div>
-                <div class="card-body">
-                  <input type="hidden" id="channelId">
-                  
-                  <div class="form-group">
-                    <label><i class="fas fa-tv"></i> Nombre del Canal</label>
-                    <input type="text" id="nombre" class="form-control" placeholder="Ej: TUDN">
-                  </div>
-
-                  <div class="form-group">
-                    <label><i class="fas fa-image"></i> URL del Logo</label>
-                    <input type="text" id="logo" class="form-control" placeholder="https://...">
-                  </div>
-
-                  <div class="form-group">
-                    <label><i class="fas fa-link"></i> URL del Stream</label>
-                    <input type="text" id="url" class="form-control" placeholder="https://...">
-                  </div>
-
-                  <div class="form-group">
-                    <label><i class="fas fa-folder"></i> Categoría</label>
-                    <select id="categoria" class="form-control">
-                      <option value="Deportes"> Deportes</option>
-                      <option value="Noticias">📰 Noticias</option>
-                      <option value="Entretenimiento">📺 Entretenimiento</option>
-                      <option value="Peliculas">🎬 Películas</option>
-                      <option value="Musica">🎵 Música</option>
-                    </select>
-                  </div>
-
-                  <button onclick="guardarCanal()" id="btnGuardar" class="btn btn-success btn-block">
-                    <i class="fas fa-save"></i> Guardar Canal
-                  </button>
-                  <button onclick="limpiarFormulario()" class="btn btn-secondary btn-block mt-2">
-                    <i class="fas fa-times"></i> Cancelar
-                  </button>
-                </div>
-              </div>
+          <!-- SECCIÓN DASHBOARD -->
+          <div id="seccionDashboard" style="display: none;">
+            <div class="row">
+              <div class="col-lg-3 col-6"><div class="small-box bg-info stat-card"><div class="inner"><h3 id="statTotalCanales">0</h3><p>Total Canales</p></div><div class="icon"><i class="fas fa-tv stat-icon"></i></div></div></div>
+              <div class="col-lg-3 col-6"><div class="small-box bg-success stat-card"><div class="inner"><h3 id="statTotalVisitas">0</h3><p>Total Visitas</p></div><div class="icon"><i class="fas fa-eye stat-icon"></i></div></div></div>
+              <div class="col-lg-3 col-6"><div class="small-box bg-warning stat-card"><div class="inner"><h3 id="statTotalRatings">0</h3><p>Total Ratings</p></div><div class="icon"><i class="fas fa-star stat-icon"></i></div></div></div>
+              <div class="col-lg-3 col-6"><div class="small-box bg-danger stat-card"><div class="inner"><h3 id="statCategorias">0</h3><p>Categorías</p></div><div class="icon"><i class="fas fa-folder stat-icon"></i></div></div></div>
             </div>
 
-            <!-- Tabla de Canales -->
-            <div class="col-md-8">
-              <div class="card card-primary">
-                <div class="card-header">
-                  <h3 class="card-title">📋 Canales Existentes</h3>
-                  <div class="card-tools">
-                    <span class="badge badge-danger" id="totalCanales">0 canales</span>
-                  </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="card card-primary">
+                  <div class="card-header"><h3 class="card-title">🔥 Canales Más Vistos</h3></div>
+                  <div class="card-body p-0"><table class="table"><thead><tr><th>#</th><th>Canal</th><th>Visitas</th></tr></thead><tbody id="tablaTopVisitas"></tbody></table></div>
                 </div>
-                <div class="card-body p-0">
-                  <div class="table-responsive">
-                    <table class="table table-striped table-hover">
-                      <thead>
-                        <tr>
-                          <th style="width: 60px">Logo</th>
-                          <th>Nombre</th>
-                          <th>Categoría</th>
-                          <th style="width: 100px">Acciones</th>
-                        </tr>
-                      </thead>
-                      <tbody id="tablaCanales">
-                        <tr><td colspan="4" class="text-center text-muted">Cargando canales...</td></tr>
-                      </tbody>
-                    </table>
-                  </div>
+              </div>
+              <div class="col-md-6">
+                <div class="card card-success">
+                  <div class="card-header"><h3 class="card-title">⭐ Canales Mejor Calificados</h3></div>
+                  <div class="card-body p-0"><table class="table"><thead><tr><th>#</th><th>Canal</th><th>Rating</th></tr></thead><tbody id="tablaTopRatings"></tbody></table></div>
                 </div>
               </div>
             </div>
           </div>
 
         </div>
-        <!-- /.ADMIN PANEL -->
-
       </div>
     </section>
   </div>
-  <!-- /.content-wrapper -->
-
-  <footer class="main-footer">
-    <strong>📺 NubaraPlay</strong> - Panel de Administración
-  </footer>
-
+  <footer class="main-footer"><strong>📺 NubaraPlay</strong> - Panel de Administración</footer>
 </div>
-<!-- ./wrapper -->
 
-<!-- jQuery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-<!-- Bootstrap 4 -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-<!-- AdminLTE App -->
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
-<!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
 <script>
-  // Firebase Config
   const firebaseConfig = {
     apiKey: "AIzaSyAEw7jfxJxbF3r5YvftUD6yJwpyEMmg9tQ",
     authDomain: "nubaraplay.firebaseapp.com",
@@ -258,87 +167,70 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
   const PASSWORD = "OsirisAdmin2026";
+  let todosLosCanales = [];
 
-  // Toggle Dark/Light Mode
   function toggleDarkMode() {
     const body = document.body;
     const icon = document.getElementById('darkModeIcon');
     const navbar = document.querySelector('.main-header');
     const sidebar = document.querySelector('.main-sidebar');
-    
     if (body.classList.contains('dark-mode')) {
-      // Cambiar a modo claro
-      body.classList.remove('dark-mode');
-      body.classList.add('light-mode');
-      navbar.classList.remove('navbar-dark', 'navbar-dark-primary');
-      navbar.classList.add('navbar-white', 'navbar-light');
-      sidebar.classList.remove('sidebar-dark-primary');
-      sidebar.classList.add('sidebar-light-primary');
-      localStorage.setItem('nubaraPlayTheme', 'light');
-      icon.classList.remove('fa-sun');
-      icon.classList.add('fa-moon');
+      body.classList.remove('dark-mode'); body.classList.add('light-mode');
+      navbar.classList.remove('navbar-dark', 'navbar-dark-primary'); navbar.classList.add('navbar-white', 'navbar-light');
+      sidebar.classList.remove('sidebar-dark-primary'); sidebar.classList.add('sidebar-light-primary');
+      localStorage.setItem('nubaraPlayTheme', 'light'); icon.classList.remove('fa-sun'); icon.classList.add('fa-moon');
     } else {
-      // Cambiar a modo oscuro
-      body.classList.add('dark-mode');
-      body.classList.remove('light-mode');
-      navbar.classList.remove('navbar-white', 'navbar-light');
-      navbar.classList.add('navbar-dark', 'navbar-dark-primary');
-      sidebar.classList.remove('sidebar-light-primary');
-      sidebar.classList.add('sidebar-dark-primary');
-      localStorage.setItem('nubaraPlayTheme', 'dark');
-      icon.classList.remove('fa-moon');
-      icon.classList.add('fa-sun');
+      body.classList.add('dark-mode'); body.classList.remove('light-mode');
+      navbar.classList.remove('navbar-white', 'navbar-light'); navbar.classList.add('navbar-dark', 'navbar-dark-primary');
+      sidebar.classList.remove('sidebar-light-primary'); sidebar.classList.add('sidebar-dark-primary');
+      localStorage.setItem('nubaraPlayTheme', 'dark'); icon.classList.remove('fa-moon'); icon.classList.add('fa-sun');
     }
   }
 
-  // Cargar tema guardado al iniciar
   function loadSavedTheme() {
     const savedTheme = localStorage.getItem('nubaraPlayTheme');
     const icon = document.getElementById('darkModeIcon');
     const navbar = document.querySelector('.main-header');
     const sidebar = document.querySelector('.main-sidebar');
-    
     if (savedTheme === 'dark') {
       document.body.classList.add('dark-mode');
-      navbar.classList.remove('navbar-white', 'navbar-light');
-      navbar.classList.add('navbar-dark', 'navbar-dark-primary');
-      sidebar.classList.remove('sidebar-light-primary');
-      sidebar.classList.add('sidebar-dark-primary');
-      icon.classList.remove('fa-moon');
-      icon.classList.add('fa-sun');
+      navbar.classList.remove('navbar-white', 'navbar-light'); navbar.classList.add('navbar-dark', 'navbar-dark-primary');
+      sidebar.classList.remove('sidebar-light-primary'); sidebar.classList.add('sidebar-dark-primary');
+      icon.classList.remove('fa-moon'); icon.classList.add('fa-sun');
     } else if (savedTheme === 'light') {
       document.body.classList.add('light-mode');
-      sidebar.classList.remove('sidebar-dark-primary');
-      sidebar.classList.add('sidebar-light-primary');
-      icon.classList.remove('fa-sun');
-      icon.classList.add('fa-moon');
+      sidebar.classList.remove('sidebar-dark-primary'); sidebar.classList.add('sidebar-light-primary');
+      icon.classList.remove('fa-sun'); icon.classList.add('fa-moon');
     }
   }
 
-  // Login
   function checkLogin() {
     if (document.getElementById('adminPass').value === PASSWORD) {
       document.getElementById('loginScreen').classList.add('d-none');
       document.getElementById('adminPanel').classList.remove('hidden');
       document.getElementById('adminPanel').classList.add('d-block');
-      cargarCanales();
-      Swal.fire({
-        icon: 'success',
-        title: '¡Bienvenido!',
-        text: 'Panel de administración cargado',
-        timer: 2000,
-        showConfirmButton: false
-      });
+      cargarDatos();
+      Swal.fire({ icon: 'success', title: '¡Bienvenido!', text: 'Panel cargado', timer: 2000, showConfirmButton: false });
+    } else { Swal.fire({ icon: 'error', title: 'Error', text: 'Contraseña incorrecta' }); }
+  }
+
+  function mostrarSeccion(seccion, el) {
+    document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+    if(el) el.classList.add('active');
+    if (seccion === 'canales') {
+      document.getElementById('seccionCanales').style.display = 'block';
+      document.getElementById('seccionDashboard').style.display = 'none';
+      document.getElementById('tituloSeccion').innerText = '📋 Gestión de Canales';
+      document.getElementById('breadcrumbActivo').innerText = 'Canales';
     } else {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Contraseña incorrecta'
-      });
+      document.getElementById('seccionCanales').style.display = 'none';
+      document.getElementById('seccionDashboard').style.display = 'block';
+      document.getElementById('tituloSeccion').innerText = '📊 Dashboard de Estadísticas';
+      document.getElementById('breadcrumbActivo').innerText = 'Dashboard';
+      actualizarDashboard();
     }
   }
 
-  // Guardar Canal
   function guardarCanal() {
     const id = document.getElementById('channelId').value;
     const data = {
@@ -346,116 +238,121 @@
       logo: document.getElementById('logo').value,
       url: document.getElementById('url').value,
       categoria: document.getElementById('categoria').value,
-      fecha: new Date()
+      fecha: new Date(),
+      visitas: 0 
     };
-
-    if (!data.nombre || !data.url) {
-      Swal.fire('Error', 'Nombre y URL son obligatorios', 'error');
-      return;
-    }
-
+    if (!data.nombre || !data.url) { Swal.fire('Error', 'Nombre y URL son obligatorios', 'error'); return; }
     if (id) {
-      db.collection("canales").doc(id).update(data).then(() => {
-        Swal.fire('¡Actualizado!', 'Canal actualizado correctamente', 'success');
-        limpiarFormulario();
-      });
+      db.collection("canales").doc(id).update(data).then(() => { Swal.fire('¡Actualizado!', 'Canal actualizado', 'success'); limpiarFormulario(); });
     } else {
-      db.collection("canales").add(data).then(() => {
-        Swal.fire('¡Creado!', 'Canal creado correctamente', 'success');
-        limpiarFormulario();
-      });
+      db.collection("canales").add(data).then(() => { Swal.fire('¡Creado!', 'Canal creado', 'success'); limpiarFormulario(); });
     }
   }
 
-  // Cargar Canales
-  function cargarCanales() {
-    db.collection("canales").orderBy("fecha", "desc").onSnapshot((snapshot) => {
+  function cargarDatos() {
+    db.collection("canales").onSnapshot((snapshot) => {
+      todosLosCanales = [];
       const tbody = document.getElementById('tablaCanales');
       tbody.innerHTML = '';
       document.getElementById('totalCanales').textContent = snapshot.size + ' canales';
-      
-      if (snapshot.empty) {
-        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">No hay canales registrados</td></tr>';
-        return;
-      }
-
+      if (snapshot.empty) { tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No hay canales</td></tr>'; return; }
       snapshot.forEach((doc) => {
         const canal = doc.data();
+        todosLosCanales.push({ id: doc.id, ...canal });
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td><img src="${canal.logo}" class="img-circle elevation-2" width="40" height="40" onerror="this.src='https://via.placeholder.com/40'"></td>
           <td><strong>${canal.nombre}</strong></td>
           <td><span class="badge badge-info">${canal.categoria}</span></td>
+          <td><span class="badge badge-secondary">${canal.visitas || 0}</span></td>
+          <td><span class="badge badge-warning">★ ${canal.ratingPromedio || '0.0'}</span></td>
           <td>
-            <button class="btn btn-sm btn-primary" onclick="editarCanal('${doc.id}', '${canal.nombre}', '${canal.logo}', '${canal.url}', '${canal.categoria}')">
-              <i class="fas fa-edit"></i>
-            </button>
-            <button class="btn btn-sm btn-danger" onclick="borrarCanal('${doc.id}')">
-              <i class="fas fa-trash"></i>
-            </button>
-          </td>
-        `;
+            <button class="btn btn-sm btn-primary" onclick="editarCanal('${doc.id}', '${canal.nombre}', '${canal.logo}', '${canal.url}', '${canal.categoria}')"><i class="fas fa-edit"></i></button>
+            <button class="btn btn-sm btn-danger" onclick="borrarCanal('${doc.id}')"><i class="fas fa-trash"></i></button>
+          </td>`;
         tbody.appendChild(tr);
       });
     });
+
+    // Cargar ratings para dashboard
+    db.collection("ratings").onSnapshot(() => {
+      if(document.getElementById('seccionDashboard').style.display !== 'none') actualizarDashboard();
+    });
   }
 
-  // Editar Canal
+  async function actualizarDashboard() {
+    const ratingsSnap = await db.collection("ratings").get();
+    const ratingsMap = {};
+    let totalRatings = 0;
+    ratingsSnap.forEach(doc => {
+      const d = doc.data();
+      if(!ratingsMap[d.canalId]) ratingsMap[d.canalId] = [];
+      ratingsMap[d.canalId].push(d.rating);
+      totalRatings++;
+    });
+
+    todosLosCanales.forEach(c => {
+      const r = ratingsMap[c.id] || [];
+      c.ratingPromedio = r.length ? (r.reduce((a,b)=>a+b,0)/r.length).toFixed(1) : '0.0';
+    });
+
+    document.getElementById('statTotalCanales').innerText = todosLosCanales.length;
+    const totalVisitas = todosLosCanales.reduce((acc, c) => acc + (c.visitas || 0), 0);
+    document.getElementById('statTotalVisitas').innerText = totalVisitas;
+    document.getElementById('statTotalRatings').innerText = totalRatings;
+    const cats = new Set(todosLosCanales.map(c => c.categoria));
+    document.getElementById('statCategorias').innerText = cats.size;
+
+    // Top Visitas
+    const topVisitas = [...todosLosCanales].sort((a,b) => (b.visitas||0) - (a.visitas||0)).slice(0, 5);
+    document.getElementById('tablaTopVisitas').innerHTML = topVisitas.map((c, i) => `<tr><td>${i+1}</td><td>${c.nombre}</td><td><span class="badge badge-primary">${c.visitas||0}</span></td></tr>`).join('');
+
+    // Top Ratings
+    const topRatings = [...todosLosCanales].sort((a,b) => parseFloat(b.ratingPromedio) - parseFloat(a.ratingPromedio)).slice(0, 5);
+    document.getElementById('tablaTopRatings').innerHTML = topRatings.map((c, i) => `<tr><td>${i+1}</td><td>${c.nombre}</td><td><span class="badge badge-warning">★ ${c.ratingPromedio}</span></td></tr>`).join('');
+  }
+
   function editarCanal(id, nombre, logo, url, categoria) {
     document.getElementById('channelId').value = id;
     document.getElementById('nombre').value = nombre;
     document.getElementById('logo').value = logo;
     document.getElementById('url').value = url;
     document.getElementById('categoria').value = categoria;
-    document.getElementById('formTitle').innerHTML = '✏️ Editar Canal';
+    document.getElementById('formTitle').innerText = '✏️ Editar Canal';
     document.getElementById('btnGuardar').innerHTML = '<i class="fas fa-sync"></i> Actualizar';
     document.getElementById('btnGuardar').classList.remove('btn-success');
     document.getElementById('btnGuardar').classList.add('btn-warning');
     window.scrollTo(0, 0);
   }
 
-  // Borrar Canal
   function borrarCanal(id) {
-    Swal.fire({
-      title: '¿Estás seguro?',
-      text: "No podrás revertir esto",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        db.collection("canales").doc(id).delete().then(() => {
-          Swal.fire('Eliminado', 'El canal ha sido eliminado', 'success');
-        });
-      }
+    Swal.fire({ title: '¿Estás seguro?', text: "No podrás revertir esto", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Sí, eliminar', cancelButtonText: 'Cancelar' }).then((result) => {
+      if (result.isConfirmed) db.collection("canales").doc(id).delete().then(() => Swal.fire('Eliminado', 'El canal ha sido eliminado', 'success'));
     });
   }
 
-  // Limpiar Formulario
   function limpiarFormulario() {
     document.getElementById('channelId').value = '';
     document.getElementById('nombre').value = '';
     document.getElementById('logo').value = '';
     document.getElementById('url').value = '';
-    document.getElementById('formTitle').innerHTML = '➕ Agregar Canal';
+    document.getElementById('formTitle').innerText = '➕ Agregar Canal';
     document.getElementById('btnGuardar').innerHTML = '<i class="fas fa-save"></i> Guardar Canal';
     document.getElementById('btnGuardar').classList.remove('btn-warning');
     document.getElementById('btnGuardar').classList.add('btn-success');
   }
 
-  // Cerrar Sesión
-  function cerrarSesion() {
-    location.reload();
+  function filtrarTabla() {
+    const texto = document.getElementById('buscarCanal').value.toLowerCase();
+    document.querySelectorAll('#tablaCanales tr').forEach(tr => {
+      const nombre = tr.cells[1] ? tr.cells[1].innerText.toLowerCase() : '';
+      tr.style.display = nombre.includes(texto) ? '' : 'none';
+    });
   }
 
-  // Inicializar al cargar
-  $(document).ready(function() {
-    loadSavedTheme();
-  });
-</script>
+  function cerrarSesion() { location.reload(); }
 
+  $(document).ready(function() { loadSavedTheme(); });
+</script>
 </body>
 </html>
