@@ -7,12 +7,18 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+  <style>
+    .light-mode { background-color: #f4f6f9; }
+    .light-mode .content-wrapper { background-color: #f4f6f9; }
+    .light-mode .card { background-color: #fff; }
+  </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
   <nav class="main-header navbar navbar-expand navbar-white navbar-light">
     <a href="#" class="navbar-brand"><span class="brand-text font-weight-bold">📺 NubaraPlay</span></a>
-    <ul class="navbar-nav ml-auto">
+    <ul class="navbar-nav">
+      <li class="nav-item"><a class="nav-link" href="#" onclick="toggleDarkMode()" role="button"><i class="fas fa-moon" id="darkModeIcon"></i></a></li>
       <li class="nav-item"><a class="nav-link" href="index.html" target="_blank"><i class="fas fa-external-link-alt"></i> Ver Web</a></li>
       <li class="nav-item"><a class="nav-link" href="#" onclick="cerrarSesionAdmin()"><i class="fas fa-sign-out-alt"></i> Salir</a></li>
     </ul>
@@ -39,7 +45,7 @@
         <div class="row">
           <div class="col-md-4">
             <div class="card card-danger">
-              <div class="card-header"><h3 class="card-title">➕ Agregar Canal</h3></div>
+              <div class="card-header"><h3 class="card-title" id="formTitle">➕ Agregar Canal</h3></div>
               <div class="card-body">
                 <input type="hidden" id="channelId">
                 <div class="form-group"><label>Nombre del Canal</label><input type="text" id="nombre" class="form-control" placeholder="Ej: TUDN"></div>
@@ -53,7 +59,7 @@
                     <option value="Musica">🎵 Música</option>
                   </select>
                 </div>
-                <button onclick="guardarCanal()" class="btn btn-success btn-block"><i class="fas fa-save"></i> Guardar</button>
+                <button onclick="guardarCanal()" class="btn btn-success btn-block"><i class="fas fa-save" id="btnIcon"></i> <span id="btnText">Guardar</span></button>
                 <button onclick="limpiarForm()" class="btn btn-secondary btn-block mt-2"><i class="fas fa-times"></i> Limpiar</button>
               </div>
             </div>
@@ -64,7 +70,7 @@
               <div class="card-body">
                 <div class="table-responsive">
                   <table class="table table-striped table-hover">
-                    <thead><tr><th>Logo</th><th>Nombre</th><th>Categoría</th><th>Acciones</th></tr></thead>
+                    <thead><tr><th>Logo</th><th>Nombre</th><th>Categoría</th><th style="width:150px">Acciones</th></tr></thead>
                     <tbody id="tablaCanales"><tr><td colspan="4" class="text-center">Cargando...</td></tr></tbody>
                   </table>
                 </div>
@@ -87,6 +93,38 @@
 
 <script>
   verificarAdmin();
+  let modoEdicion = false;
+
+  function toggleDarkMode() {
+    const body = document.body;
+    const icon = document.getElementById('darkModeIcon');
+    const navbar = document.querySelector('.main-header');
+    const sidebar = document.querySelector('.main-sidebar');
+    if (body.classList.contains('dark-mode')) {
+      body.classList.remove('dark-mode'); body.classList.add('light-mode');
+      navbar.classList.remove('navbar-dark', 'navbar-dark-primary'); navbar.classList.add('navbar-white', 'navbar-light');
+      sidebar.classList.remove('sidebar-dark-primary'); sidebar.classList.add('sidebar-light-primary');
+      localStorage.setItem('nubaraPlayTheme', 'light'); icon.classList.remove('fa-sun'); icon.classList.add('fa-moon');
+    } else {
+      body.classList.add('dark-mode'); body.classList.remove('light-mode');
+      navbar.classList.remove('navbar-white', 'navbar-light'); navbar.classList.add('navbar-dark', 'navbar-dark-primary');
+      sidebar.classList.remove('sidebar-light-primary'); sidebar.classList.add('sidebar-dark-primary');
+      localStorage.setItem('nubaraPlayTheme', 'dark'); icon.classList.remove('fa-moon'); icon.classList.add('fa-sun');
+    }
+  }
+
+  function loadSavedTheme() {
+    const savedTheme = localStorage.getItem('nubaraPlayTheme');
+    const icon = document.getElementById('darkModeIcon');
+    const navbar = document.querySelector('.main-header');
+    const sidebar = document.querySelector('.main-sidebar');
+    if (savedTheme === 'dark') {
+      document.body.classList.add('dark-mode');
+      navbar.classList.remove('navbar-white', 'navbar-light'); navbar.classList.add('navbar-dark', 'navbar-dark-primary');
+      sidebar.classList.remove('sidebar-light-primary'); sidebar.classList.add('sidebar-dark-primary');
+      icon.classList.remove('fa-moon'); icon.classList.add('fa-sun');
+    }
+  }
 
   function cargarCanales() {
     db.collection("canales").onSnapshot((snapshot) => {
@@ -95,13 +133,14 @@
       if (snapshot.empty) { tbody.innerHTML = '<tr><td colspan="4" class="text-center">No hay canales</td></tr>'; return; }
       snapshot.forEach((doc) => {
         const canal = doc.data();
-        if (canal.categoria === 'Peliculas') return; // Ignorar películas aquí
+        if (canal.categoria === 'Peliculas') return;
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td><img src="${canal.logo}" width="40" height="40" style="object-fit:contain; background:#000; border-radius:4px;" onerror="this.src='https://via.placeholder.com/40'"></td>
           <td><strong>${canal.nombre}</strong></td>
           <td><span class="badge badge-info">${canal.categoria}</span></td>
           <td>
+            <button class="btn btn-sm btn-primary" onclick="editarCanal('${doc.id}', '${canal.nombre}', '${canal.logo}', '${canal.url}', '${canal.categoria}')"><i class="fas fa-edit"></i></button>
             <button class="btn btn-sm btn-danger" onclick="borrarCanal('${doc.id}')"><i class="fas fa-trash"></i></button>
           </td>`;
         tbody.appendChild(tr);
@@ -110,19 +149,37 @@
   }
 
   async function guardarCanal() {
+    const id = document.getElementById('channelId').value;
     const data = {
       nombre: document.getElementById('nombre').value,
       logo: document.getElementById('logo').value,
       url: document.getElementById('url').value,
       categoria: document.getElementById('categoria').value,
       fecha: new Date(),
-      visitas: 0
+      visitas: id ? undefined : 0
     };
     if (!data.nombre || !data.url) return Swal.fire('Error', 'Nombre y URL son obligatorios', 'error');
     
-    await db.collection("canales").add(data);
-    Swal.fire('¡Éxito!', 'Canal guardado', 'success');
+    if (id) {
+      await db.collection("canales").doc(id).update(data);
+      Swal.fire('¡Actualizado!', 'Canal actualizado', 'success');
+    } else {
+      await db.collection("canales").add(data);
+      Swal.fire('¡Éxito!', 'Canal guardado', 'success');
+    }
     limpiarForm();
+  }
+
+  function editarCanal(id, nombre, logo, url, categoria) {
+    document.getElementById('channelId').value = id;
+    document.getElementById('nombre').value = nombre;
+    document.getElementById('logo').value = logo;
+    document.getElementById('url').value = url;
+    document.getElementById('categoria').value = categoria;
+    document.getElementById('formTitle').innerHTML = '✏️ Editar Canal';
+    document.getElementById('btnText').textContent = 'Actualizar';
+    document.getElementById('btnIcon').className = 'fas fa-sync';
+    modoEdicion = true;
   }
 
   function borrarCanal(id) {
@@ -132,11 +189,17 @@
   }
 
   function limpiarForm() {
+    document.getElementById('channelId').value = '';
     document.getElementById('nombre').value = '';
     document.getElementById('logo').value = '';
     document.getElementById('url').value = '';
+    document.getElementById('formTitle').innerHTML = '➕ Agregar Canal';
+    document.getElementById('btnText').textContent = 'Guardar';
+    document.getElementById('btnIcon').className = 'fas fa-save';
+    modoEdicion = false;
   }
 
+  loadSavedTheme();
   cargarCanales();
 </script>
 </body>
