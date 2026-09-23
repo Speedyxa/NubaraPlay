@@ -18,7 +18,6 @@
     .movie-preview { background: #1a1a1e; padding: 20px; border-radius: 8px; margin-top: 15px; display: none; }
     .movie-preview img { max-width: 200px; border-radius: 8px; display: block; margin: 0 auto; }
     .movie-preview h4 { color:#e50914; margin: 15px 0 10px; text-align: center; }
-    .movie-preview p { color: #ccc; font-size: 0.9em; line-height: 1.6; }
   </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -47,13 +46,13 @@
   </aside>
 
   <div class="content-wrapper">
-    <div class="content-header"><div class="container-fluid"><h1 class="m-0">🎬 Gestión de Películas (TMDB)</h1></div></div>
+    <div class="content-header"><div class="container-fluid"><h1 class="m-0"> Gestión de Películas (TMDB)</h1></div></div>
     <section class="content">
       <div class="container-fluid">
         <div class="row">
           <div class="col-md-5">
             <div class="card card-warning">
-              <div class="card-header"><h3 class="card-title" id="formTitle"> Agregar Película</h3></div>
+              <div class="card-header"><h3 class="card-title" id="formTitle">➕ Agregar Película</h3></div>
               <div class="card-body">
                 <input type="hidden" id="peliculaId">
                 <div class="form-group">
@@ -108,6 +107,7 @@
   verificarAdmin();
   const TMDB_API_KEY = "a85b85e615389ded96ae9e357c2f7ac1";
   const TMDB_IMAGE_URL = "https://image.tmdb.org/t/p/w500";
+  let peliculasLocales = [];
 
   function toggleDarkMode() {
     const body = document.body;
@@ -174,6 +174,63 @@
     document.getElementById('tmdbSearch').value = '';
   }
 
+  function cargarPeliculas() {
+    db.collection("peliculas").onSnapshot((snapshot) => {
+      peliculasLocales = [];
+      const tbody = document.getElementById('tablaPeliculas');
+      tbody.innerHTML = '';
+      
+      if (snapshot.empty) { 
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center">No hay películas</td></tr>'; 
+        return; 
+      }
+      
+      snapshot.forEach((doc) => {
+        const peli = doc.data();
+        peliculasLocales.push({ id: doc.id, ...peli });
+        
+        const tr = document.createElement('tr');
+        // ✅ Usar solo el ID en el onclick
+        tr.innerHTML = `
+          <td><img src="${peli.logo}" width="40" style="border-radius:3px;" onerror="this.src='https://via.placeholder.com/40'"></td>
+          <td><strong>${peli.nombre}</strong></td>
+          <td><span class="badge badge-secondary">${peli.anio || 'N/A'}</span></td>
+          <td>
+            <button class="btn btn-sm btn-primary" onclick="editarPelicula('${doc.id}')"><i class="fas fa-edit"></i></button>
+            <button class="btn btn-sm btn-danger" onclick="borrarPelicula('${doc.id}')"><i class="fas fa-trash"></i></button>
+          </td>`;
+        tbody.appendChild(tr);
+      });
+    });
+  }
+
+  // ✅ Buscar la película en el array local por ID
+  function editarPelicula(id) {
+    const peli = peliculasLocales.find(p => p.id === id);
+    if (!peli) {
+      Swal.fire('Error', 'No se encontró la película', 'error');
+      return;
+    }
+    
+    // Cargar datos en el formulario
+    document.getElementById('peliculaId').value = peli.id;
+    document.getElementById('peliculaNombre').value = peli.nombre;
+    document.getElementById('peliculaPoster').value = peli.logo;
+    document.getElementById('peliculaUrl').value = peli.url;
+    document.getElementById('peliculaAnio').value = peli.anio || '';
+    document.getElementById('previewPoster').src = peli.logo;
+    document.getElementById('previewTitle').textContent = peli.nombre;
+    document.getElementById('moviePreview').style.display = 'block';
+    
+    // Cambiar UI a modo edición
+    document.getElementById('formTitle').innerHTML = '✏️ Editar Película';
+    document.getElementById('btnText').textContent = 'Actualizar';
+    document.getElementById('btnIcon').className = 'fas fa-sync';
+    
+    // Scroll al formulario
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   async function guardarPelicula() {
     const id = document.getElementById('peliculaId').value;
     const data = {
@@ -184,52 +241,41 @@
       categoria: 'Peliculas',
       fecha: new Date()
     };
-    if (!data.nombre || !data.url) return Swal.fire('Error', 'Título y URL obligatorios', 'error');
     
-    if (id) {
-      await db.collection("peliculas").doc(id).update(data);
-      Swal.fire('¡Actualizado!', 'Película actualizada', 'success');
-    } else {
-      data.visitas = 0;
-      await db.collection("peliculas").add(data);
-      Swal.fire('¡Éxito!', 'Película guardada', 'success');
+    if (!data.nombre || !data.url) {
+      return Swal.fire('Error', 'Título y URL son obligatorios', 'error');
     }
-    limpiarPelicula();
+    
+    try {
+      if (id) {
+        // Actualizar existente
+        await db.collection("peliculas").doc(id).update(data);
+        Swal.fire('¡Actualizado!', 'Película actualizada correctamente', 'success');
+      } else {
+        // Crear nueva
+        data.visitas = 0;
+        await db.collection("peliculas").add(data);
+        Swal.fire('¡Éxito!', 'Película guardada correctamente', 'success');
+      }
+      limpiarPelicula();
+    } catch (error) {
+      Swal.fire('Error', 'No se pudo guardar: ' + error.message, 'error');
+    }
   }
 
-  function cargarPeliculas() {
-    db.collection("peliculas").onSnapshot((snapshot) => {
-      const tbody = document.getElementById('tablaPeliculas');
-      tbody.innerHTML = '';
-      if (snapshot.empty) { tbody.innerHTML = '<tr><td colspan="4" class="text-center">No hay películas</td></tr>'; return; }
-      snapshot.forEach((doc) => {
-        const peli = doc.data();
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td><img src="${peli.logo}" width="40" style="border-radius:3px;" onerror="this.src='https://via.placeholder.com/40'"></td>
-          <td><strong>${peli.nombre}</strong></td>
-          <td><span class="badge badge-secondary">${peli.anio || 'N/A'}</span></td>
-          <td>
-            <button class="btn btn-sm btn-primary" onclick="editarPelicula('${doc.id}', '${peli.nombre}', '${peli.logo}', '${peli.url}', '${peli.anio || ''}')"><i class="fas fa-edit"></i></button>
-            <button class="btn btn-sm btn-danger" onclick="db.collection('peliculas').doc('${doc.id}').delete()"><i class="fas fa-trash"></i></button>
-          </td>`;
-        tbody.appendChild(tr);
-      });
+  function borrarPelicula(id) {
+    Swal.fire({ 
+      title: '¿Eliminar película?', 
+      icon: 'warning', 
+      showCancelButton: true, 
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((r) => {
+      if (r.isConfirmed) {
+        db.collection("peliculas").doc(id).delete();
+        Swal.fire('Eliminada', 'La película ha sido eliminada', 'success');
+      }
     });
-  }
-
-  function editarPelicula(id, nombre, poster, url, anio) {
-    document.getElementById('peliculaId').value = id;
-    document.getElementById('peliculaNombre').value = nombre;
-    document.getElementById('peliculaPoster').value = poster;
-    document.getElementById('peliculaUrl').value = url;
-    document.getElementById('peliculaAnio').value = anio;
-    document.getElementById('previewPoster').src = poster;
-    document.getElementById('previewTitle').textContent = nombre;
-    document.getElementById('moviePreview').style.display = 'block';
-    document.getElementById('formTitle').innerHTML = '✏️ Editar Película';
-    document.getElementById('btnText').textContent = 'Actualizar';
-    document.getElementById('btnIcon').className = 'fas fa-sync';
   }
 
   function limpiarPelicula() {
@@ -239,7 +285,7 @@
     document.getElementById('peliculaAnio').value = '';
     document.getElementById('peliculaUrl').value = '';
     document.getElementById('moviePreview').style.display = 'none';
-    document.getElementById('formTitle').innerHTML = '➕ Agregar Película';
+    document.getElementById('formTitle').innerHTML = ' Agregar Película';
     document.getElementById('btnText').textContent = 'Guardar';
     document.getElementById('btnIcon').className = 'fas fa-save';
   }
