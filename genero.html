@@ -3,59 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Películas - NubaraPlay</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>">
+    <title>Películas por Género - NubaraPlay</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #141414; color: #fff; min-height: 100vh; }
-
-        .navbar { position: fixed; top: 0; width: 100%; padding: 20px 4%; display: flex; justify-content: space-between; align-items: center; z-index: 1000; background: #141414; }
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #141414; color: #fff; min-height: 100vh; overflow-x: hidden; }
+        
+        /* NAVBAR */
+        .navbar { position: fixed; top: 0; width: 100%; padding: 20px 4%; display: flex; justify-content: space-between; align-items: center; z-index: 1000; background: linear-gradient(to bottom, rgba(0,0,0,0.7) 10%, transparent); transition: background 0.4s; }
+        .navbar.scrolled { background: #141414; }
         .navbar-left { display: flex; align-items: center; gap: 25px; }
         .logo { color: #e50914; font-size: 28px; font-weight: bold; text-decoration: none; }
         .nav-links { display: flex; gap: 20px; list-style: none; }
-        .nav-links a { color: #e5e5e5; text-decoration: none; font-size: 14px; cursor: pointer; }
-        .nav-links a:hover { color: #b3b3b3; }
+        .nav-links a { color: #e5e5e5; text-decoration: none; font-size: 14px; transition: color 0.4s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; font-weight: bold; }
         .navbar-right { display: flex; align-items: center; gap: 20px; }
         .user-info { background: #e50914; padding: 5px 12px; border-radius: 4px; font-size: 13px; font-weight: bold; }
         .logout-btn { background: transparent; border: 1px solid #fff; color: #fff; padding: 7px 15px; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        .logout-btn:hover { background: rgba(255,255,255,0.1); }
 
-        .category-hero { padding: 120px 4% 40px; background: linear-gradient(to bottom, rgba(229,9,20,0.3), #141414); }
-        .category-title { font-size: 48px; font-weight: 700; margin-bottom: 10px; }
-        .category-count { color: #808080; font-size: 16px; }
+        /* HEADER */
+        .page-header { padding: 120px 4% 40px; background: linear-gradient(to bottom, rgba(229,9,20,0.15), #141414); }
+        .page-title { font-size: 42px; font-weight: 700; margin-bottom: 10px; }
+        .page-subtitle { color: #808080; font-size: 16px; }
 
+        /* CONTENT */
         .content-section { padding: 20px 4%; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+        .genero-section { margin-bottom: 50px; }
+        .genero-header { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
+        .genero-icon { font-size: 24px; }
+        .genero-title { font-size: 22px; font-weight: 700; color: #e5e5e5; }
+        .genero-count { color: #808080; font-size: 14px; margin-left: auto; }
 
-        .card { border-radius: 4px; overflow: hidden; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; position: relative; background: #181818; }
-        .card:hover { transform: scale(1.05); z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+        /* SLIDER */
+        .row-slider { display: flex; gap: 10px; overflow-x: auto; overflow-y: hidden; padding: 20px 0 30px; scroll-behavior: smooth; scrollbar-width: none; }
+        .row-slider::-webkit-scrollbar { display: none; }
+
+        /* CARDS */
+        .card { flex: 0 0 auto; width: 180px; border-radius: 6px; overflow: hidden; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; position: relative; background: #181818; }
+        .card:hover { transform: scale(1.1); z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
         .card img { width: 100%; height: 270px; object-fit: cover; }
-        .card-body { padding: 15px; }
-        .card-title { font-size: 14px; font-weight: bold; margin-bottom: 8px; }
-        .card-info { font-size: 12px; color: #808080; display: flex; justify-content: space-between; }
+        .card-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.95), transparent); padding: 15px 10px 10px; opacity: 0; transition: opacity 0.3s; }
+        .card:hover .card-overlay { opacity: 1; }
+        .card-title { font-size: 13px; font-weight: bold; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-info { font-size: 11px; color: #808080; display: flex; justify-content: space-between; align-items: center; }
         .card-rating { color: #ffd700; }
-        .fav-btn { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); border: none; color: #fff; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 16px; }
-        .fav-btn.active { color: #ffd700; }
+        
+        .fav-btn { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.7); border: none; color: #fff; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 15px; opacity: 0; transition: opacity 0.3s, background 0.3s; z-index: 10; display: flex; align-items: center; justify-content: center; }
+        .card:hover .fav-btn { opacity: 1; }
+        .fav-btn.active { color: #ffd700; opacity: 1; }
+        .fav-btn:hover { background: rgba(255,255,255,0.2); }
 
-        .no-results { text-align: center; padding: 60px 20px; color: #808080; font-size: 20px; }
+        .no-results { text-align: center; padding: 80px 20px; color: #808080; font-size: 20px; }
+        .loading { text-align: center; padding: 100px 20px; color: #e50914; font-size: 18px; }
 
         @media (max-width: 768px) {
-            .category-title { font-size: 32px; }
-            .grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; }
-            .card img { height: 180px; }
+            .page-title { font-size: 28px; }
+            .card { width: 130px; }
+            .card img { height: 195px; }
             .nav-links { display: none; }
+            .card-overlay { opacity: 1; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); }
+            .fav-btn { opacity: 1; }
         }
     </style>
 </head>
 <body>
-    <nav class="navbar">
+    <!-- NAVBAR -->
+    <nav class="navbar" id="navbar">
         <div class="navbar-left">
             <a href="index.html" class="logo">NUBARAPLAY</a>
             <ul class="nav-links">
                 <li><a href="index.html">Inicio</a></li>
-                <li><a href="categoria.html?cat=Deportes">Deportes</a></li>
-                <li><a href="categoria.html?cat=Noticias">Noticias</a></li>
-                <li><a href="categoria.html?cat=Entretenimiento">Entretenimiento</a></li>
-                <li><a href="genero.html">Películas</a></li>
+                <li><a href="ver-canales.html">Canales TV</a></li>
+                <li><a href="genero.html" class="active">Películas</a></li>
             </ul>
         </div>
         <div class="navbar-right">
@@ -64,19 +84,38 @@
         </div>
     </nav>
 
-    <div class="category-hero">
-        <h1 class="category-title">🎬 Películas</h1>
-        <p class="category-count" id="categoryCount">0 películas disponibles</p>
+    <!-- HEADER -->
+    <div class="page-header">
+        <h1 class="page-title">🎬 Películas</h1>
+        <p class="page-subtitle">Explora nuestro catálogo organizado por género</p>
     </div>
 
-    <div class="content-section">
-        <div class="grid" id="gridPeliculas"></div>
-        <div class="no-results" id="noResults" style="display: none;">No hay películas disponibles</div>
+    <!-- CONTENT -->
+    <div class="content-section" id="contenido">
+        <div class="loading"><i class="fas fa-spinner fa-spin"></i> Cargando catálogo...</div>
     </div>
 
+    <!-- FIREBASE & LOGIC -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script>
+        // 1. Verificar sesión (si no hay usuario, mandar al login)
+        const savedUser = localStorage.getItem('nubaraPlayUser');
+        if (!savedUser) {
+            window.location.href = 'index.html';
+        } else {
+            const userData = JSON.parse(savedUser);
+            document.getElementById('userInfo').textContent = `${userData.tipo === 'demo' ? 'DEMO' : 'PREMIUM'} - ${userData.nombre}`;
+        }
+
+        function cerrarSesion() { 
+            localStorage.removeItem('nubaraPlayUser'); 
+            localStorage.removeItem('nubaraPlayUserExpiry'); 
+            window.location.href = 'index.html'; 
+        }
+
+        // 2. Firebase Config (Pública)
         const firebaseConfig = {
             apiKey: "AIzaSyAEw7jfxJxbF3r5YvftUD6yJwpyEMmg9tQ",
             authDomain: "nubaraplay.firebaseapp.com",
@@ -88,54 +127,128 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        document.getElementById('userInfo').textContent = localStorage.getItem('nubaraPlayUser') ? `${JSON.parse(localStorage.getItem('nubaraPlayUser')).nombre}` : 'Usuario';
+        // Efecto navbar al hacer scroll
+        window.addEventListener('scroll', () => {
+            document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+        });
 
-        function cerrarSesion() { localStorage.removeItem('nubaraPlayUser'); localStorage.removeItem('nubaraPlayUserExpiry'); window.location.href = 'index.html'; }
+        // Iconos para géneros comunes
+        const iconosGenero = {
+            'Acción': '💥', 'Aventura': '🗺️', 'Animación': '🎨', 'Comedia': '😂',
+            'Crimen': '🔫', 'Documental': '🎥', 'Drama': '🎭', 'Familia': '👨‍👩‍👧‍👦',
+            'Fantasía': '🧙', 'Historia': '📜', 'Terror': '👻', 'Música': '🎵',
+            'Misterio': '🔍', 'Romance': '❤️', 'Ciencia Ficción': '🚀', 'TV Movie': '📺',
+            'Thriller': '😱', 'Bélica': '⚔️', 'Western': '🤠', 'Sin Género': '🎬'
+        };
 
+        // 3. Cargar y agrupar películas
         db.collection("peliculas").orderBy("fecha", "desc").onSnapshot((snapshot) => {
-            const grid = document.getElementById('gridPeliculas');
-            grid.innerHTML = '';
-            document.getElementById('categoryCount').textContent = `${snapshot.size} películas disponibles`;
-
+            const contenido = document.getElementById('contenido');
+            
             if (snapshot.empty) {
-                document.getElementById('noResults').style.display = 'block';
+                contenido.innerHTML = '<div class="no-results">Aún no hay películas en el catálogo</div>';
                 return;
             }
 
+            // Agrupar por género
+            const generosMap = {};
             snapshot.forEach((doc) => {
                 const peli = doc.data();
-                const favoritos = JSON.parse(localStorage.getItem('nubaraPlayFavoritos') || '[]');
-                const esFav = favoritos.includes(doc.id);
+                // Separar géneros por coma, limpiar espacios, o usar 'Sin Género'
+                const listaGeneros = (peli.generos && peli.generos.trim() !== '') 
+                    ? peli.generos.split(',').map(g => g.trim()) 
+                    : ['Sin Género'];
+                
+                listaGeneros.forEach(genero => {
+                    if (!generosMap[genero]) generosMap[genero] = [];
+                    generosMap[genero].push({ id: doc.id, ...peli });
+                });
+            });
 
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                    <img src="${peli.logo}" alt="${peli.nombre}" loading="lazy" onerror="this.src='https://via.placeholder.com/180x270/141414/fff?text=Movie'">
-                    <button class="fav-btn ${esFav ? 'active' : ''}" onclick="toggleFavorito('${doc.id}', event)">${esFav ? '★' : '☆'}</button>
-                    <div class="card-body">
-                        <div class="card-title">${peli.nombre}</div>
-                        <div class="card-info">
-                            <span>${peli.anio || 'N/A'}</span>
-                            <span class="card-rating">⭐ ${peli.rating || '0'}</span>
-                        </div>
+            // Limpiar loading
+            contenido.innerHTML = '';
+
+            // Ordenar géneros alfabéticamente (opcional: poner 'Sin Género' al final)
+            const generosOrdenados = Object.keys(generosMap).sort((a, b) => {
+                if (a === 'Sin Género') return 1;
+                if (b === 'Sin Género') return -1;
+                return a.localeCompare(b);
+            });
+
+            // Renderizar cada género
+            generosOrdenados.forEach(genero => {
+                const peliculas = generosMap[genero];
+                const icono = iconosGenero[genero] || '🎬';
+                
+                const section = document.createElement('div');
+                section.className = 'genero-section';
+                section.innerHTML = `
+                    <div class="genero-header">
+                        <span class="genero-icon">${icono}</span>
+                        <h2 class="genero-title">${genero}</h2>
+                        <span class="genero-count">${peliculas.length} títulos</span>
                     </div>
+                    <div class="row-slider" id="slider-${genero.replace(/\s+/g, '')}"></div>
                 `;
-                card.onclick = (e) => {
-                    if (!e.target.classList.contains('fav-btn')) {
-                        window.location.href = `detalle.html?id=${doc.id}`;
-                    }
-                };
-                grid.appendChild(card);
+                contenido.appendChild(section);
+
+                const slider = section.querySelector('.row-slider');
+                
+                peliculas.forEach(peli => {
+                    const favoritos = JSON.parse(localStorage.getItem('nubaraPlayFavoritos') || '[]');
+                    const esFav = favoritos.includes(peli.id);
+                    
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <img src="${peli.logo}" alt="${peli.nombre}" loading="lazy" onerror="this.src='https://via.placeholder.com/180x270/181818/808080?text=Sin+Imagen'">
+                        <button class="fav-btn ${esFav ? 'active' : ''}" onclick="toggleFavorito('${peli.id}', event)" title="Agregar a Mi Lista">
+                            ${esFav ? '★' : '☆'}
+                        </button>
+                        <div class="card-overlay">
+                            <div class="card-title">${peli.nombre}</div>
+                            <div class="card-info">
+                                <span>${peli.anio || 'N/A'}</span>
+                                <span class="card-rating">⭐ ${peli.rating || '0'}</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Al hacer clic, ir al detalle (NO al video directo, para que lea la sinopsis)
+                    card.onclick = (e) => {
+                        if (!e.target.classList.contains('fav-btn')) {
+                            window.location.href = `detalle.html?id=${peli.id}`;
+                        }
+                    };
+                    
+                    slider.appendChild(card);
+                });
             });
         });
 
+        // 4. Función de Favoritos
         function toggleFavorito(id, event) {
-            event.stopPropagation();
+            event.stopPropagation(); // Evitar que se dispare el click de la card
             let favoritos = JSON.parse(localStorage.getItem('nubaraPlayFavoritos') || '[]');
             const index = favoritos.indexOf(id);
-            if (index > -1) favoritos.splice(index, 1); else favoritos.push(id);
+            
+            if (index > -1) {
+                favoritos.splice(index, 1);
+            } else {
+                favoritos.push(id);
+            }
+            
             localStorage.setItem('nubaraPlayFavoritos', JSON.stringify(favoritos));
-            location.reload();
+            
+            // Actualizar visualmente el botón sin recargar toda la página
+            const btn = event.target.closest('.fav-btn');
+            if (index > -1) {
+                btn.classList.remove('active');
+                btn.innerHTML = '☆';
+            } else {
+                btn.classList.add('active');
+                btn.innerHTML = '★';
+            }
         }
     </script>
 </body>
