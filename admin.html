@@ -3,46 +3,30 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>⚙️ Admin - NubaraPlay</title>
+  <title>Dashboard - NubaraPlay</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
-  <style>
-    .light-mode { background-color: #f4f6f9; }
-    .light-mode .content-wrapper { background-color: #f4f6f9; }
-    .light-mode .card { background-color: #fff; }
-    .stat-card { transition: transform 0.3s; cursor: pointer; }
-    .stat-card:hover { transform: translateY(-5px); }
-    .stat-icon { font-size: 2.5em; opacity: 0.8; }
-    .codigo-box { background: #1a1a1e; padding: 15px; border-radius: 5px; font-family: monospace; font-size: 1.5em; color: #e50914; text-align: center; margin: 10px 0; letter-spacing: 3px; font-weight: bold; }
-    .tipo-final { color: #28a745; font-weight: bold; }
-    .tipo-demo { color: #ffc107; font-weight: bold; }
-    .expirado { color: #dc3545; font-weight: bold; }
-    .activo { color: #28a745; font-weight: bold; }
-  </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
   <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-    <a href="#" class="navbar-brand"><span class="brand-text font-weight-bold">📺 NubaraPlay Admin</span></a>
-    <ul class="navbar-nav">
-      <li class="nav-item"><a class="nav-link" data-widget="fullscreen" href="#" role="button"><i class="fas fa-expand-arrows-alt"></i></a></li>
-      <li class="nav-item"><a class="nav-link" href="#" onclick="toggleDarkMode()" role="button"><i class="fas fa-moon" id="darkModeIcon"></i></a></li>
-    </ul>
+    <a href="#" class="navbar-brand"><span class="brand-text font-weight-bold">📺 NubaraPlay</span></a>
     <ul class="navbar-nav ml-auto">
       <li class="nav-item"><a class="nav-link" href="index.html" target="_blank"><i class="fas fa-external-link-alt"></i> Ver Web</a></li>
-      <li class="nav-item"><a class="nav-link" href="#" onclick="cerrarSesion()"><i class="fas fa-sign-out-alt"></i> Salir</a></li>
+      <li class="nav-item"><a class="nav-link" href="#" onclick="cerrarSesionAdmin()"><i class="fas fa-sign-out-alt"></i> Salir</a></li>
     </ul>
   </nav>
 
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
-    <a href="#" class="brand-link"><span class="brand-text font-weight-light">NubaraPlay</span></a>
+    <a href="admin.html" class="brand-link"><span class="brand-text font-weight-light">Panel Admin</span></a>
     <div class="sidebar">
       <nav class="mt-2">
-        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-          <li class="nav-item"><a href="#" class="nav-link active" onclick="mostrarSeccion('canales', this)"><i class="nav-icon fas fa-tv"></i><p>Gestionar Canales</p></a></li>
-          <li class="nav-item"><a href="#" class="nav-link" onclick="mostrarSeccion('usuarios', this)"><i class="nav-icon fas fa-users"></i><p>Gestionar Usuarios</p></a></li>
-          <li class="nav-item"><a href="#" class="nav-link" onclick="mostrarSeccion('dashboard', this)"><i class="nav-icon fas fa-chart-line"></i><p>Dashboard</p></a></li>
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
+          <li class="nav-item"><a href="admin.html" class="nav-link active"><i class="nav-icon fas fa-chart-line"></i><p>Dashboard</p></a></li>
+          <li class="nav-item"><a href="canales.html" class="nav-link"><i class="nav-icon fas fa-tv"></i><p>Canales TV</p></a></li>
+          <li class="nav-item"><a href="peliculas.html" class="nav-link"><i class="nav-icon fas fa-film"></i><p>Películas TMDB</p></a></li>
+          <li class="nav-item"><a href="usuarios.html" class="nav-link"><i class="nav-icon fas fa-users"></i><p>Usuarios</p></a></li>
         </ul>
       </nav>
     </div>
@@ -51,634 +35,75 @@
   <div class="content-wrapper">
     <div class="content-header">
       <div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-sm-6"><h1 class="m-0" id="tituloSeccion">📋 Gestión de Canales</h1></div>
-          <div class="col-sm-6"><ol class="breadcrumb float-sm-right"><li class="breadcrumb-item"><a href="#">Inicio</a></li><li class="breadcrumb-item active" id="breadcrumbActivo">Canales</li></ol></div>
-        </div>
+        <h1 class="m-0">📊 Dashboard de Estadísticas</h1>
       </div>
     </div>
 
     <section class="content">
       <div class="container-fluid">
-        
-        <div id="loginScreen" class="row justify-content-center">
-          <div class="col-md-4">
-            <div class="card card-primary card-outline">
-              <div class="card-header text-center"><h3 class="m-0">🔒 Acceso Admin</h3></div>
-              <div class="card-body">
-                <div class="input-group mb-3">
-                  <input type="password" id="adminPass" class="form-control" placeholder="Contraseña">
-                  <div class="input-group-append"><div class="input-group-text"><span class="fas fa-lock"></span></div></div>
-                </div>
-                <button onclick="checkLogin()" class="btn btn-primary btn-block"><i class="fas fa-sign-in-alt"></i> Ingresar</button>
-              </div>
+        <div class="row">
+          <div class="col-lg-3 col-6">
+            <div class="small-box bg-info">
+              <div class="inner"><h3 id="statCanales">0</h3><p>Canales TV</p></div>
+              <div class="icon"><i class="fas fa-tv"></i></div>
             </div>
           </div>
-        </div>
-
-        <div id="adminPanel" class="hidden">
-          
-          <!-- SECCIÓN CANALES -->
-          <div id="seccionCanales">
-            <div class="row">
-              <div class="col-md-4">
-                <div class="card card-danger">
-                  <div class="card-header"><h3 class="card-title" id="formTitle">➕ Agregar Canal</h3></div>
-                  <div class="card-body">
-                    <input type="hidden" id="channelId">
-                    <div class="form-group"><label><i class="fas fa-tv"></i> Nombre del Canal</label><input type="text" id="nombre" class="form-control" placeholder="Ej: TUDN"></div>
-                    <div class="form-group"><label><i class="fas fa-image"></i> URL del Logo</label><input type="text" id="logo" class="form-control" placeholder="https://..."></div>
-                    <div class="form-group"><label><i class="fas fa-link"></i> URL del Stream</label><input type="text" id="url" class="form-control" placeholder="https://..."></div>
-                    <div class="form-group"><label><i class="fas fa-folder"></i> Categoría</label>
-                      <select id="categoria" class="form-control">
-                        <option value="Deportes">⚽ Deportes</option><option value="Noticias">📰 Noticias</option>
-                        <option value="Entretenimiento"> Entretenimiento</option><option value="Peliculas">🎬 Películas</option>
-                        <option value="Musica">🎵 Música</option>
-                      </select>
-                    </div>
-                    <button onclick="guardarCanal()" id="btnGuardar" class="btn btn-success btn-block"><i class="fas fa-save"></i> Guardar Canal</button>
-                    <button onclick="limpiarFormulario()" class="btn btn-secondary btn-block mt-2"><i class="fas fa-times"></i> Cancelar</button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-8">
-                <div class="card card-primary">
-                  <div class="card-header">
-                    <h3 class="card-title"> Canales Existentes</h3>
-                    <div class="card-tools"><span class="badge badge-danger" id="totalCanales">0 canales</span></div>
-                  </div>
-                  <div class="card-body">
-                    <input type="text" id="buscarCanal" class="form-control mb-3" placeholder="🔍 Buscar canal..." onkeyup="filtrarTabla()">
-                    <div class="table-responsive">
-                      <table class="table table-striped table-hover">
-                        <thead><tr><th style="width: 60px">Logo</th><th>Nombre</th><th>Categoría</th><th style="width: 80px">Visitas</th><th style="width: 80px">Rating</th><th style="width: 100px">Acciones</th></tr></thead>
-                        <tbody id="tablaCanales"><tr><td colspan="6" class="text-center text-muted">Cargando canales...</td></tr></tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              </div>
+          <div class="col-lg-3 col-6">
+            <div class="small-box bg-success">
+              <div class="inner"><h3 id="statPeliculas">0</h3><p>Películas</p></div>
+              <div class="icon"><i class="fas fa-film"></i></div>
             </div>
           </div>
-
-          <!-- SECCIÓN USUARIOS -->
-          <div id="seccionUsuarios" style="display: none;">
-            <div class="row">
-              <div class="col-md-4">
-                <div class="card card-success">
-                  <div class="card-header"><h3 class="card-title" id="userFormTitle">➕ Crear Usuario</h3></div>
-                  <div class="card-body">
-                    <input type="hidden" id="userId">
-                    <div class="form-group">
-                      <label><i class="fas fa-user"></i> Nombre del Usuario</label>
-                      <input type="text" id="userName" class="form-control" placeholder="Ej: Juan Pérez">
-                    </div>
-                    <div class="form-group">
-                      <label><i class="fas fa-envelope"></i> Email (opcional)</label>
-                      <input type="email" id="userEmail" class="form-control" placeholder="correo@ejemplo.com">
-                    </div>
-                    <div class="form-group">
-                      <label><i class="fas fa-user-tag"></i> Tipo de Usuario</label>
-                      <select id="userTipo" class="form-control" onchange="cambiarTipoUsuario()">
-                        <option value="final">👤 Usuario Final (Pago)</option>
-                        <option value="demo">🎬 Demo (1 hora)</option>
-                      </select>
-                    </div>
-                    <div class="form-group" id="duracionGroup">
-                      <label><i class="fas fa-calendar"></i> Duración (meses)</label>
-                      <select id="userDuration" class="form-control">
-                        <option value="1">1 Mes</option>
-                        <option value="3">3 Meses</option>
-                        <option value="6">6 Meses</option>
-                        <option value="12">12 Meses</option>
-                      </select>
-                    </div>
-                    <button onclick="crearUsuario()" class="btn btn-success btn-block">
-                      <i class="fas fa-user-plus"></i> Generar Código de 5 Dígitos
-                    </button>
-                    <button onclick="limpiarFormUsuario()" class="btn btn-secondary btn-block mt-2">
-                      <i class="fas fa-times"></i> Cancelar
-                    </button>
-                  </div>
-                </div>
-
-                <div id="codigoGenerado" class="card card-warning" style="display: none;">
-                  <div class="card-header"><h3 class="card-title">🔑 Código de Acceso</h3></div>
-                  <div class="card-body text-center">
-                    <p>Comparte este código con el usuario:</p>
-                    <div class="codigo-box" id="codigoTexto"></div>
-                    <div id="tipoUsuarioDisplay" style="margin-bottom: 10px;"></div>
-                    <button onclick="copiarCodigo()" class="btn btn-primary btn-sm">
-                      <i class="fas fa-copy"></i> Copiar Código
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-8">
-                <div class="card card-info">
-                  <div class="card-header">
-                    <h3 class="card-title">👥 Usuarios Registrados</h3>
-                    <div class="card-tools"><span class="badge badge-info" id="totalUsuarios">0 usuarios</span></div>
-                  </div>
-                  <div class="card-body">
-                    <input type="text" id="buscarUsuario" class="form-control mb-3" placeholder="🔍 Buscar usuario..." onkeyup="filtrarUsuarios()">
-                    <div class="table-responsive">
-                      <table class="table table-striped table-hover">
-                        <thead>
-                          <tr>
-                            <th>Nombre</th>
-                            <th>Código</th>
-                            <th>Tipo</th>
-                            <th>Expira</th>
-                            <th>Estado</th>
-                            <th style="width: 100px">Acciones</th>
-                          </tr>
-                        </thead>
-                        <tbody id="tablaUsuarios">
-                          <tr><td colspan="6" class="text-center text-muted">Cargando usuarios...</td></tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              </div>
+          <div class="col-lg-3 col-6">
+            <div class="small-box bg-warning">
+              <div class="inner"><h3 id="statUsuarios">0</h3><p>Usuarios Activos</p></div>
+              <div class="icon"><i class="fas fa-users"></i></div>
             </div>
           </div>
-
-          <!-- SECCIÓN DASHBOARD -->
-          <div id="seccionDashboard" style="display: none;">
-            <div class="row">
-              <div class="col-lg-3 col-6"><div class="small-box bg-info stat-card"><div class="inner"><h3 id="statTotalCanales">0</h3><p>Total Canales</p></div><div class="icon"><i class="fas fa-tv stat-icon"></i></div></div></div>
-              <div class="col-lg-3 col-6"><div class="small-box bg-success stat-card"><div class="inner"><h3 id="statTotalVisitas">0</h3><p>Total Visitas</p></div><div class="icon"><i class="fas fa-eye stat-icon"></i></div></div></div>
-              <div class="col-lg-3 col-6"><div class="small-box bg-warning stat-card"><div class="inner"><h3 id="statTotalRatings">0</h3><p>Total Ratings</p></div><div class="icon"><i class="fas fa-star stat-icon"></i></div></div></div>
-              <div class="col-lg-3 col-6"><div class="small-box bg-danger stat-card"><div class="inner"><h3 id="statTotalUsuarios">0</h3><p>Usuarios Activos</p></div><div class="icon"><i class="fas fa-users stat-icon"></i></div></div></div>
-            </div>
-
-            <div class="row">
-              <div class="col-md-6">
-                <div class="card card-primary">
-                  <div class="card-header"><h3 class="card-title">🔥 Canales Más Vistos</h3></div>
-                  <div class="card-body p-0"><table class="table"><thead><tr><th>#</th><th>Canal</th><th>Visitas</th></tr></thead><tbody id="tablaTopVisitas"></tbody></table></div>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="card card-success">
-                  <div class="card-header"><h3 class="card-title">⭐ Canales Mejor Calificados</h3></div>
-                  <div class="card-body p-0"><table class="table"><thead><tr><th>#</th><th>Canal</th><th>Rating</th></tr></thead><tbody id="tablaTopRatings"></tbody></table></div>
-                </div>
-              </div>
+          <div class="col-lg-3 col-6">
+            <div class="small-box bg-danger">
+              <div class="inner"><h3 id="statVisitas">0</h3><p>Visitas Totales</p></div>
+              <div class="icon"><i class="fas fa-eye"></i></div>
             </div>
           </div>
-
         </div>
       </div>
     </section>
   </div>
-  <footer class="main-footer"><strong>📺 NubaraPlay</strong> - Panel de Administración</footer>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="config.js"></script>
 
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyAEw7jfxJxbF3r5YvftUD6yJwpyEMmg9tQ",
-    authDomain: "nubaraplay.firebaseapp.com",
-    projectId: "nubaraplay",
-    storageBucket: "nubaraplay.firebasestorage.app",
-    messagingSenderId: "873822057409",
-    appId: "1:873822057409:web:f854a974f457eedd0c7540"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-  const PASSWORD = "1971";
-  let todosLosCanales = [];
-  let todosLosUsuarios = [];
-
-  function toggleDarkMode() {
-    const body = document.body;
-    const icon = document.getElementById('darkModeIcon');
-    const navbar = document.querySelector('.main-header');
-    const sidebar = document.querySelector('.main-sidebar');
-    if (body.classList.contains('dark-mode')) {
-      body.classList.remove('dark-mode'); body.classList.add('light-mode');
-      navbar.classList.remove('navbar-dark', 'navbar-dark-primary'); navbar.classList.add('navbar-white', 'navbar-light');
-      sidebar.classList.remove('sidebar-dark-primary'); sidebar.classList.add('sidebar-light-primary');
-      localStorage.setItem('nubaraPlayTheme', 'light'); icon.classList.remove('fa-sun'); icon.classList.add('fa-moon');
-    } else {
-      body.classList.add('dark-mode'); body.classList.remove('light-mode');
-      navbar.classList.remove('navbar-white', 'navbar-light'); navbar.classList.add('navbar-dark', 'navbar-dark-primary');
-      sidebar.classList.remove('sidebar-light-primary'); sidebar.classList.add('sidebar-dark-primary');
-      localStorage.setItem('nubaraPlayTheme', 'dark'); icon.classList.remove('fa-moon'); icon.classList.add('fa-sun');
-    }
-  }
-
-  function loadSavedTheme() {
-    const savedTheme = localStorage.getItem('nubaraPlayTheme');
-    const icon = document.getElementById('darkModeIcon');
-    const navbar = document.querySelector('.main-header');
-    const sidebar = document.querySelector('.main-sidebar');
-    if (savedTheme === 'dark') {
-      document.body.classList.add('dark-mode');
-      navbar.classList.remove('navbar-white', 'navbar-light'); navbar.classList.add('navbar-dark', 'navbar-dark-primary');
-      sidebar.classList.remove('sidebar-light-primary'); sidebar.classList.add('sidebar-dark-primary');
-      icon.classList.remove('fa-moon'); icon.classList.add('fa-sun');
-    } else if (savedTheme === 'light') {
-      document.body.classList.add('light-mode');
-      sidebar.classList.remove('sidebar-dark-primary'); sidebar.classList.add('sidebar-light-primary');
-      icon.classList.remove('fa-sun'); icon.classList.add('fa-moon');
-    }
-  }
-
-  function checkLogin() {
-    if (document.getElementById('adminPass').value === PASSWORD) {
-      document.getElementById('loginScreen').classList.add('d-none');
-      document.getElementById('adminPanel').classList.remove('hidden');
-      document.getElementById('adminPanel').classList.add('d-block');
-      cargarDatos();
-      Swal.fire({ icon: 'success', title: '¡Bienvenido!', text: 'Panel cargado', timer: 2000, showConfirmButton: false });
-    } else { Swal.fire({ icon: 'error', title: 'Error', text: 'Contraseña incorrecta' }); }
-  }
-
-  function mostrarSeccion(seccion, el) {
-    document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-    if(el) el.classList.add('active');
-    if (seccion === 'canales') {
-      document.getElementById('seccionCanales').style.display = 'block';
-      document.getElementById('seccionUsuarios').style.display = 'none';
-      document.getElementById('seccionDashboard').style.display = 'none';
-      document.getElementById('tituloSeccion').innerText = ' Gestión de Canales';
-      document.getElementById('breadcrumbActivo').innerText = 'Canales';
-    } else if (seccion === 'usuarios') {
-      document.getElementById('seccionCanales').style.display = 'none';
-      document.getElementById('seccionUsuarios').style.display = 'block';
-      document.getElementById('seccionDashboard').style.display = 'none';
-      document.getElementById('tituloSeccion').innerText = ' Gestión de Usuarios';
-      document.getElementById('breadcrumbActivo').innerText = 'Usuarios';
-    } else {
-      document.getElementById('seccionCanales').style.display = 'none';
-      document.getElementById('seccionUsuarios').style.display = 'none';
-      document.getElementById('seccionDashboard').style.display = 'block';
-      document.getElementById('tituloSeccion').innerText = ' Dashboard de Estadísticas';
-      document.getElementById('breadcrumbActivo').innerText = 'Dashboard';
-      actualizarDashboard();
-    }
-  }
-
-  function cambiarTipoUsuario() {
-    const tipo = document.getElementById('userTipo').value;
-    const duracionGroup = document.getElementById('duracionGroup');
-    if (tipo === 'demo') {
-      duracionGroup.style.display = 'none';
-    } else {
-      duracionGroup.style.display = 'block';
-    }
-  }
-
-  function generarCodigo() {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    let codigo = '';
-    for (let i = 0; i < 5; i++) {
-      codigo += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return codigo;
-  }
-
-  async function crearUsuario() {
-    const nombre = document.getElementById('userName').value;
-    const email = document.getElementById('userEmail').value;
-    const tipo = document.getElementById('userTipo').value;
-    const duracion = parseInt(document.getElementById('userDuration').value);
+  verificarAdmin();
+  
+  async function cargarStats() {
+    const canalesSnap = await db.collection("canales").where("categoria", "!=", "Peliculas").get();
+    const peliculasSnap = await db.collection("peliculas").get();
+    const usuariosSnap = await db.collection("usuarios").get();
     
-    if (!nombre) {
-      Swal.fire('Error', 'El nombre es obligatorio', 'error');
-      return;
-    }
+    let visitasTotales = 0;
+    canalesSnap.forEach(doc => { visitasTotales += (doc.data().visitas || 0); });
+    peliculasSnap.forEach(doc => { visitasTotales += (doc.data().visitas || 0); });
 
-    const codigo = generarCodigo();
-    const fechaCreacion = new Date();
-    const fechaExpiracion = new Date();
-    
-    if (tipo === 'demo') {
-      fechaExpiracion.setHours(fechaExpiracion.getHours() + 1);
-    } else {
-      fechaExpiracion.setMonth(fechaExpiracion.getMonth() + duracion);
-    }
-
-    const userData = {
-      nombre: nombre,
-      email: email,
-      codigo: codigo,
-      tipo: tipo,
-      fechaCreacion: fechaCreacion,
-      fechaExpiracion: fechaExpiracion,
-      duracionMeses: tipo === 'demo' ? 0 : duracion,
-      activo: true
-    };
-
-    try {
-      await db.collection("usuarios").add(userData);
-      
-      document.getElementById('codigoTexto').textContent = codigo;
-      const tipoTexto = tipo === 'demo' ? '<span class="tipo-demo">🎬 Demo (1 hora)</span>' : '<span class="tipo-final">👤 Usuario Final</span>';
-      document.getElementById('tipoUsuarioDisplay').innerHTML = tipoTexto;
-      document.getElementById('codigoGenerado').style.display = 'block';
-      
-      const duracionTexto = tipo === 'demo' ? 'Expira en 1 hora' : `Expira: ${fechaExpiracion.toLocaleDateString('es-ES')}`;
-      
-      Swal.fire({
-        icon: 'success',
-        title: '¡Usuario Creado!',
-        html: `Código de acceso: <br><strong style="font-size: 2em; color: #e50914; letter-spacing: 5px;">${codigo}</strong><br><br>${tipoTexto}<br>${duracionTexto}`,
-        confirmButtonText: 'Entendido',
-        width: 400
-      });
-      
-      limpiarFormUsuario();
-    } catch (error) {
-      Swal.fire('Error', 'No se pudo crear el usuario: ' + error.message, 'error');
-    }
-  }
-
-  function copiarCodigo() {
-    const codigo = document.getElementById('codigoTexto').textContent;
-    navigator.clipboard.writeText(codigo).then(() => {
-      Swal.fire({
-        icon: 'success',
-        title: '¡Copiado!',
-        text: 'Código copiado al portapapeles',
-        timer: 1500,
-        showConfirmButton: false
-      });
-    });
-  }
-
-  function limpiarFormUsuario() {
-    document.getElementById('userId').value = '';
-    document.getElementById('userName').value = '';
-    document.getElementById('userEmail').value = '';
-    document.getElementById('userTipo').value = 'final';
-    document.getElementById('userDuration').value = '1';
-    document.getElementById('codigoGenerado').style.display = 'none';
-    document.getElementById('duracionGroup').style.display = 'block';
-  }
-
-  // ✅ FUNCIÓN AUXILIAR PARA CONVERTIR FECHAS DE FIRESTORE
-  function convertirFecha(fecha) {
-    if (!fecha) return new Date();
-    if (fecha.toDate) {
-      return fecha.toDate(); // Timestamp de Firestore
-    }
-    return new Date(fecha);
-  }
-
-  function cargarDatos() {
-    // Canales
-    db.collection("canales").onSnapshot((snapshot) => {
-      todosLosCanales = [];
-      const tbody = document.getElementById('tablaCanales');
-      tbody.innerHTML = '';
-      document.getElementById('totalCanales').textContent = snapshot.size + ' canales';
-      if (snapshot.empty) { tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No hay canales</td></tr>'; return; }
-      snapshot.forEach((doc) => {
-        const canal = doc.data();
-        todosLosCanales.push({ id: doc.id, ...canal });
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td><img src="${canal.logo}" class="img-circle elevation-2" width="40" height="40" onerror="this.src='https://via.placeholder.com/40'"></td>
-          <td><strong>${canal.nombre}</strong></td>
-          <td><span class="badge badge-info">${canal.categoria}</span></td>
-          <td><span class="badge badge-secondary">${canal.visitas || 0}</span></td>
-          <td><span class="badge badge-warning">★ ${canal.ratingPromedio || '0.0'}</span></td>
-          <td>
-            <button class="btn btn-sm btn-primary" onclick="editarCanal('${doc.id}', '${canal.nombre}', '${canal.logo}', '${canal.url}', '${canal.categoria}')"><i class="fas fa-edit"></i></button>
-            <button class="btn btn-sm btn-danger" onclick="borrarCanal('${doc.id}')"><i class="fas fa-trash"></i></button>
-          </td>`;
-        tbody.appendChild(tr);
-      });
-    });
-
-    // ✅ USUARIOS CON CORRECCIÓN DE FECHAS
-    db.collection("usuarios").onSnapshot((snapshot) => {
-      todosLosUsuarios = [];
-      const tbody = document.getElementById('tablaUsuarios');
-      tbody.innerHTML = '';
-      document.getElementById('totalUsuarios').textContent = snapshot.size + ' usuarios';
-      if (snapshot.empty) { tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No hay usuarios</td></tr>'; return; }
-      
-      const ahora = new Date();
-      
-      snapshot.forEach((doc) => {
-        const user = doc.data();
-        
-        // ✅ Convertir Timestamp de Firestore a Date
-        const fechaExpiracion = convertirFecha(user.fechaExpiracion);
-        const expirado = fechaExpiracion < ahora;
-        
-        todosLosUsuarios.push({ id: doc.id, ...user, fechaExpiracionObj: fechaExpiracion });
-        
-        const tipoBadge = user.tipo === 'demo' 
-          ? '<span class="tipo-demo">🎬 Demo</span>' 
-          : '<span class="tipo-final">👤 Final</span>';
-        
-        // ✅ Formatear fecha correctamente
-        const fechaFormateada = fechaExpiracion.toLocaleString('es-ES', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit'
-        });
-        
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td><strong>${user.nombre}</strong><br><small class="text-muted">${user.email || 'Sin email'}</small></td>
-          <td><code style="background: #1a1a1e; padding: 5px 10px; border-radius: 3px; font-size: 1.1em; letter-spacing: 2px;">${user.codigo}</code></td>
-          <td>${tipoBadge}</td>
-          <td>${fechaFormateada}</td>
-          <td>${expirado ? '<span class="expirado">❌ Expirado</span>' : '<span class="activo">✅ Activo</span>'}</td>
-          <td>
-            <button class="btn btn-sm btn-info" onclick="renovarUsuario('${doc.id}')"><i class="fas fa-sync"></i></button>
-            <button class="btn btn-sm btn-danger" onclick="borrarUsuario('${doc.id}')"><i class="fas fa-trash"></i></button>
-          </td>`;
-        tbody.appendChild(tr);
-      });
-    });
-
-    db.collection("ratings").onSnapshot(() => {
-      if(document.getElementById('seccionDashboard').style.display !== 'none') actualizarDashboard();
-    });
-  }
-
-  async function renovarUsuario(id) {
-    const user = todosLosUsuarios.find(u => u.id === id);
-    const tipo = user.tipo;
-    
-    let inputOptions = {};
-    if (tipo === 'demo') {
-      inputOptions = { '1': '1 hora' };
-    } else {
-      inputOptions = { '1': '1 Mes', '3': '3 Meses', '6': '6 Meses', '12': '12 Meses' };
-    }
-
-    const { value: duracion } = await Swal.fire({
-      title: 'Renovar suscripción',
-      input: 'select',
-      inputOptions: inputOptions,
-      inputPlaceholder: 'Selecciona duración',
-      showCancelButton: true,
-      confirmButtonText: 'Renovar',
-      cancelButtonText: 'Cancelar'
-    });
-
-    if (duracion) {
-      const fechaBase = user.fechaExpiracionObj < new Date() 
-        ? new Date() 
-        : new Date(user.fechaExpiracionObj);
-      
-      if (tipo === 'demo') {
-        fechaBase.setHours(fechaBase.getHours() + 1);
-      } else {
-        fechaBase.setMonth(fechaBase.getMonth() + parseInt(duracion));
-      }
-      
-      await db.collection("usuarios").doc(id).update({
-        fechaExpiracion: fechaBase
-      });
-      
-      Swal.fire('Renovado', `Suscripción renovada correctamente`, 'success');
-    }
-  }
-
-  function borrarUsuario(id) {
-    Swal.fire({
-      title: '¿Eliminar usuario?',
-      text: "Esta acción no se puede revertir",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        db.collection("usuarios").doc(id).delete().then(() => {
-          Swal.fire('Eliminado', 'El usuario ha sido eliminado', 'success');
-        });
-      }
-    });
-  }
-
-  function guardarCanal() {
-    const id = document.getElementById('channelId').value;
-    const data = {
-      nombre: document.getElementById('nombre').value,
-      logo: document.getElementById('logo').value,
-      url: document.getElementById('url').value,
-      categoria: document.getElementById('categoria').value,
-      fecha: new Date(),
-      visitas: 0 
-    };
-    if (!data.nombre || !data.url) { Swal.fire('Error', 'Nombre y URL son obligatorios', 'error'); return; }
-    if (id) {
-      db.collection("canales").doc(id).update(data).then(() => { Swal.fire('¡Actualizado!', 'Canal actualizado', 'success'); limpiarFormulario(); });
-    } else {
-      db.collection("canales").add(data).then(() => { Swal.fire('¡Creado!', 'Canal creado', 'success'); limpiarFormulario(); });
-    }
-  }
-
-  function editarCanal(id, nombre, logo, url, categoria) {
-    document.getElementById('channelId').value = id;
-    document.getElementById('nombre').value = nombre;
-    document.getElementById('logo').value = logo;
-    document.getElementById('url').value = url;
-    document.getElementById('categoria').value = categoria;
-    document.getElementById('formTitle').innerText = '✏️ Editar Canal';
-    document.getElementById('btnGuardar').innerHTML = '<i class="fas fa-sync"></i> Actualizar';
-    document.getElementById('btnGuardar').classList.remove('btn-success');
-    document.getElementById('btnGuardar').classList.add('btn-warning');
-    window.scrollTo(0, 0);
-  }
-
-  function borrarCanal(id) {
-    Swal.fire({ title: '¿Estás seguro?', text: "No podrás revertir esto", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Sí, eliminar', cancelButtonText: 'Cancelar' }).then((result) => {
-      if (result.isConfirmed) db.collection("canales").doc(id).delete().then(() => Swal.fire('Eliminado', 'El canal ha sido eliminado', 'success'));
-    });
-  }
-
-  function limpiarFormulario() {
-    document.getElementById('channelId').value = '';
-    document.getElementById('nombre').value = '';
-    document.getElementById('logo').value = '';
-    document.getElementById('url').value = '';
-    document.getElementById('formTitle').innerText = '➕ Agregar Canal';
-    document.getElementById('btnGuardar').innerHTML = '<i class="fas fa-save"></i> Guardar Canal';
-    document.getElementById('btnGuardar').classList.remove('btn-warning');
-    document.getElementById('btnGuardar').classList.add('btn-success');
-  }
-
-  function filtrarTabla() {
-    const texto = document.getElementById('buscarCanal').value.toLowerCase();
-    document.querySelectorAll('#tablaCanales tr').forEach(tr => {
-      const nombre = tr.cells[1] ? tr.cells[1].innerText.toLowerCase() : '';
-      tr.style.display = nombre.includes(texto) ? '' : 'none';
-    });
-  }
-
-  function filtrarUsuarios() {
-    const texto = document.getElementById('buscarUsuario').value.toLowerCase();
-    document.querySelectorAll('#tablaUsuarios tr').forEach(tr => {
-      const nombre = tr.cells[0] ? tr.cells[0].innerText.toLowerCase() : '';
-      const codigo = tr.cells[1] ? tr.cells[1].innerText.toLowerCase() : '';
-      tr.style.display = (nombre.includes(texto) || codigo.includes(texto)) ? '' : 'none';
-    });
-  }
-
-  async function actualizarDashboard() {
-    const ratingsSnap = await db.collection("ratings").get();
-    const ratingsMap = {};
-    let totalRatings = 0;
-    ratingsSnap.forEach(doc => {
-      const d = doc.data();
-      if(!ratingsMap[d.canalId]) ratingsMap[d.canalId] = [];
-      ratingsMap[d.canalId].push(d.rating);
-      totalRatings++;
-    });
-
-    todosLosCanales.forEach(c => {
-      const r = ratingsMap[c.id] || [];
-      c.ratingPromedio = r.length ? (r.reduce((a,b)=>a+b,0)/r.length).toFixed(1) : '0.0';
-    });
-
-    document.getElementById('statTotalCanales').innerText = todosLosCanales.length;
-    const totalVisitas = todosLosCanales.reduce((acc, c) => acc + (c.visitas || 0), 0);
-    document.getElementById('statTotalVisitas').innerText = totalVisitas;
-    document.getElementById('statTotalRatings').innerText = totalRatings;
-    
     const ahora = new Date();
-    // ✅ Corrección en dashboard
-    const usuariosActivos = todosLosUsuarios.filter(u => {
-      let fecha = u.fechaExpiracionObj || convertirFecha(u.fechaExpiracion);
-      return fecha > ahora;
-    }).length;
-    document.getElementById('statTotalUsuarios').innerText = usuariosActivos;
+    let usuariosActivos = 0;
+    usuariosSnap.forEach(doc => {
+      const fechaExp = convertirFecha(doc.data().fechaExpiracion);
+      if (fechaExp > ahora) usuariosActivos++;
+    });
 
-    const topVisitas = [...todosLosCanales].sort((a,b) => (b.visitas||0) - (a.visitas||0)).slice(0, 5);
-    document.getElementById('tablaTopVisitas').innerHTML = topVisitas.map((c, i) => `<tr><td>${i+1}</td><td>${c.nombre}</td><td><span class="badge badge-primary">${c.visitas||0}</span></td></tr>`).join('');
-
-    const topRatings = [...todosLosCanales].sort((a,b) => parseFloat(b.ratingPromedio) - parseFloat(a.ratingPromedio)).slice(0, 5);
-    document.getElementById('tablaTopRatings').innerHTML = topRatings.map((c, i) => `<tr><td>${i+1}</td><td>${c.nombre}</td><td><span class="badge badge-warning">★ ${c.ratingPromedio}</span></td></tr>`).join('');
+    document.getElementById('statCanales').innerText = canalesSnap.size;
+    document.getElementById('statPeliculas').innerText = peliculasSnap.size;
+    document.getElementById('statUsuarios').innerText = usuariosActivos;
+    document.getElementById('statVisitas').innerText = visitasTotales;
   }
-
-  function cerrarSesion() { location.reload(); }
-
-  $(document).ready(function() { loadSavedTheme(); });
+  cargarStats();
 </script>
 </body>
 </html>
