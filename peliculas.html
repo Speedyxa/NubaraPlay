@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Películas - NubaraPlay</title>
+  <title>Películas - Admin NubaraPlay</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
@@ -18,6 +18,9 @@
     .movie-preview { background: #1a1a1e; padding: 20px; border-radius: 8px; margin-top: 15px; display: none; }
     .movie-preview img { max-width: 200px; border-radius: 8px; display: block; margin: 0 auto; }
     .movie-preview h4 { color:#e50914; margin: 15px 0 10px; text-align: center; }
+    .movie-preview p { color: #ccc; font-size: 0.9em; line-height: 1.6; }
+    .generos-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+    .genero-tag { background: #e50914; padding: 4px 10px; border-radius: 12px; font-size: 0.8em; color: #fff; }
   </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -46,7 +49,7 @@
   </aside>
 
   <div class="content-wrapper">
-    <div class="content-header"><div class="container-fluid"><h1 class="m-0"> Gestión de Películas (TMDB)</h1></div></div>
+    <div class="content-header"><div class="container-fluid"><h1 class="m-0">🎬 Gestión de Películas (TMDB)</h1></div></div>
     <section class="content">
       <div class="container-fluid">
         <div class="row">
@@ -63,10 +66,15 @@
                 <div class="movie-preview" id="moviePreview">
                   <img id="previewPoster" src="" alt="Poster">
                   <h4 id="previewTitle"></h4>
+                  <p id="previewOverview" style="margin-top:10px;"></p>
+                  <div class="generos-tags" id="previewGeneros"></div>
                 </div>
                 <input type="hidden" id="peliculaNombre">
                 <input type="hidden" id="peliculaPoster">
                 <input type="hidden" id="peliculaAnio">
+                <input type="hidden" id="peliculaSinopsis">
+                <input type="hidden" id="peliculaRating">
+                <input type="hidden" id="peliculaGeneros">
                 <div class="form-group" style="margin-top: 15px;">
                   <label><i class="fas fa-link"></i> URL del Stream</label>
                   <input type="text" id="peliculaUrl" class="form-control" placeholder="https://vimeos.net/embed-xxxxx.htm">
@@ -82,8 +90,8 @@
               <div class="card-body">
                 <div class="table-responsive">
                   <table class="table table-striped table-hover">
-                    <thead><tr><th>Póster</th><th>Título</th><th>Año</th><th style="width:100px">Acciones</th></tr></thead>
-                    <tbody id="tablaPeliculas"><tr><td colspan="4" class="text-center">Cargando...</td></tr></tbody>
+                    <thead><tr><th>Póster</th><th>Título</th><th>Géneros</th><th>Año</th><th style="width:100px">Acciones</th></tr></thead>
+                    <tbody id="tablaPeliculas"><tr><td colspan="5" class="text-center">Cargando...</td></tr></tbody>
                   </table>
                 </div>
               </div>
@@ -116,12 +124,12 @@
     const sidebar = document.querySelector('.main-sidebar');
     if (body.classList.contains('dark-mode')) {
       body.classList.remove('dark-mode'); body.classList.add('light-mode');
-      navbar.classList.remove('navbar-dark', 'navbar-dark-primary'); navbar.classList.add('navbar-white', 'navbar-light');
+      navbar.classList.remove('navbar-dark'); navbar.classList.add('navbar-white', 'navbar-light');
       sidebar.classList.remove('sidebar-dark-primary'); sidebar.classList.add('sidebar-light-primary');
       localStorage.setItem('nubaraPlayTheme', 'light'); icon.classList.remove('fa-sun'); icon.classList.add('fa-moon');
     } else {
       body.classList.add('dark-mode'); body.classList.remove('light-mode');
-      navbar.classList.remove('navbar-white', 'navbar-light'); navbar.classList.add('navbar-dark', 'navbar-dark-primary');
+      navbar.classList.remove('navbar-white', 'navbar-light'); navbar.classList.add('navbar-dark');
       sidebar.classList.remove('sidebar-light-primary'); sidebar.classList.add('sidebar-dark-primary');
       localStorage.setItem('nubaraPlayTheme', 'dark'); icon.classList.remove('fa-moon'); icon.classList.add('fa-sun');
     }
@@ -129,14 +137,14 @@
 
   function loadSavedTheme() {
     const savedTheme = localStorage.getItem('nubaraPlayTheme');
-    const icon = document.getElementById('darkModeIcon');
-    const navbar = document.querySelector('.main-header');
-    const sidebar = document.querySelector('.main-sidebar');
     if (savedTheme === 'dark') {
       document.body.classList.add('dark-mode');
-      navbar.classList.remove('navbar-white', 'navbar-light'); navbar.classList.add('navbar-dark', 'navbar-dark-primary');
-      sidebar.classList.remove('sidebar-light-primary'); sidebar.classList.add('sidebar-dark-primary');
-      icon.classList.remove('fa-moon'); icon.classList.add('fa-sun');
+      document.querySelector('.main-header').classList.remove('navbar-white', 'navbar-light');
+      document.querySelector('.main-header').classList.add('navbar-dark');
+      document.querySelector('.main-sidebar').classList.remove('sidebar-light-primary');
+      document.querySelector('.main-sidebar').classList.add('sidebar-dark-primary');
+      document.getElementById('darkModeIcon').classList.remove('fa-moon');
+      document.getElementById('darkModeIcon').classList.add('fa-sun');
     }
   }
 
@@ -147,7 +155,7 @@
     const data = await response.json();
     const contenedor = document.getElementById('tmdbResults');
     contenedor.innerHTML = '';
-    if (data.results.length === 0) {
+    if (!data.results || data.results.length === 0) {
       contenedor.innerHTML = '<div style="padding:10px; color:#888; text-align:center;">No encontrado</div>';
     } else {
       data.results.slice(0, 8).forEach(peli => {
@@ -156,22 +164,45 @@
         const div = document.createElement('div');
         div.className = 'tmdb-item';
         div.innerHTML = `<img src="${poster}"><div><strong>${peli.title}</strong><br><small style="color:#888">${anio}</small></div>`;
-        div.onclick = () => seleccionarPelicula(peli.title, poster, anio);
+        div.onclick = () => seleccionarPelicula(peli.id);
         contenedor.appendChild(div);
       });
     }
     contenedor.style.display = 'block';
   }
 
-  function seleccionarPelicula(titulo, poster, anio) {
-    document.getElementById('peliculaNombre').value = titulo;
-    document.getElementById('peliculaPoster').value = poster;
-    document.getElementById('peliculaAnio').value = anio;
-    document.getElementById('previewPoster').src = poster;
-    document.getElementById('previewTitle').textContent = `${titulo} (${anio})`;
-    document.getElementById('moviePreview').style.display = 'block';
-    document.getElementById('tmdbResults').style.display = 'none';
-    document.getElementById('tmdbSearch').value = '';
+  async function seleccionarPelicula(id) {
+    try {
+      const response = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${TMDB_API_KEY}&language=es-ES`);
+      const peli = await response.json();
+      
+      const poster = peli.poster_path ? `${TMDB_IMAGE_URL}${peli.poster_path}` : 'https://via.placeholder.com/200x300';
+      const anio = peli.release_date ? peli.release_date.split('-')[0] : 'N/A';
+      const rating = peli.vote_average ? peli.vote_average.toFixed(1) : '0';
+      const overview = peli.overview || 'Sin sinopsis disponible.';
+      const generos = peli.genres || [];
+      const generosNombres = generos.map(g => g.name);
+      
+      document.getElementById('peliculaNombre').value = peli.title;
+      document.getElementById('peliculaPoster').value = poster;
+      document.getElementById('peliculaAnio').value = anio;
+      document.getElementById('peliculaSinopsis').value = overview;
+      document.getElementById('peliculaRating').value = rating;
+      document.getElementById('peliculaGeneros').value = generosNombres.join(',');
+      
+      document.getElementById('previewPoster').src = poster;
+      document.getElementById('previewTitle').textContent = `${peli.title} (${anio})`;
+      document.getElementById('previewOverview').textContent = overview;
+      
+      const generosDiv = document.getElementById('previewGeneros');
+      generosDiv.innerHTML = generosNombres.map(g => `<span class="genero-tag">${g}</span>`).join('');
+      
+      document.getElementById('moviePreview').style.display = 'block';
+      document.getElementById('tmdbResults').style.display = 'none';
+      document.getElementById('tmdbSearch').value = '';
+    } catch (error) {
+      Swal.fire('Error', 'No se pudo cargar la información', 'error');
+    }
   }
 
   function cargarPeliculas() {
@@ -179,21 +210,15 @@
       peliculasLocales = [];
       const tbody = document.getElementById('tablaPeliculas');
       tbody.innerHTML = '';
-      
-      if (snapshot.empty) { 
-        tbody.innerHTML = '<tr><td colspan="4" class="text-center">No hay películas</td></tr>'; 
-        return; 
-      }
-      
+      if (snapshot.empty) { tbody.innerHTML = '<tr><td colspan="5" class="text-center">No hay películas</td></tr>'; return; }
       snapshot.forEach((doc) => {
         const peli = doc.data();
         peliculasLocales.push({ id: doc.id, ...peli });
-        
         const tr = document.createElement('tr');
-        // ✅ Usar solo el ID en el onclick
         tr.innerHTML = `
           <td><img src="${peli.logo}" width="40" style="border-radius:3px;" onerror="this.src='https://via.placeholder.com/40'"></td>
           <td><strong>${peli.nombre}</strong></td>
+          <td><small style="color:#888">${peli.generos || 'Sin género'}</small></td>
           <td><span class="badge badge-secondary">${peli.anio || 'N/A'}</span></td>
           <td>
             <button class="btn btn-sm btn-primary" onclick="editarPelicula('${doc.id}')"><i class="fas fa-edit"></i></button>
@@ -204,30 +229,26 @@
     });
   }
 
-  // ✅ Buscar la película en el array local por ID
   function editarPelicula(id) {
     const peli = peliculasLocales.find(p => p.id === id);
-    if (!peli) {
-      Swal.fire('Error', 'No se encontró la película', 'error');
-      return;
-    }
-    
-    // Cargar datos en el formulario
+    if (!peli) return Swal.fire('Error', 'No se encontró la película', 'error');
     document.getElementById('peliculaId').value = peli.id;
     document.getElementById('peliculaNombre').value = peli.nombre;
     document.getElementById('peliculaPoster').value = peli.logo;
     document.getElementById('peliculaUrl').value = peli.url;
     document.getElementById('peliculaAnio').value = peli.anio || '';
+    document.getElementById('peliculaSinopsis').value = peli.sinopsis || '';
+    document.getElementById('peliculaRating').value = peli.rating || '0';
+    document.getElementById('peliculaGeneros').value = peli.generos || '';
     document.getElementById('previewPoster').src = peli.logo;
     document.getElementById('previewTitle').textContent = peli.nombre;
+    document.getElementById('previewOverview').textContent = peli.sinopsis || '';
+    const generosDiv = document.getElementById('previewGeneros');
+    generosDiv.innerHTML = (peli.generos || '').split(',').filter(g => g).map(g => `<span class="genero-tag">${g}</span>`).join('');
     document.getElementById('moviePreview').style.display = 'block';
-    
-    // Cambiar UI a modo edición
     document.getElementById('formTitle').innerHTML = '✏️ Editar Película';
     document.getElementById('btnText').textContent = 'Actualizar';
     document.getElementById('btnIcon').className = 'fas fa-sync';
-    
-    // Scroll al formulario
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -238,24 +259,21 @@
       logo: document.getElementById('peliculaPoster').value,
       url: document.getElementById('peliculaUrl').value,
       anio: document.getElementById('peliculaAnio').value,
+      sinopsis: document.getElementById('peliculaSinopsis').value,
+      rating: document.getElementById('peliculaRating').value,
+      generos: document.getElementById('peliculaGeneros').value,
       categoria: 'Peliculas',
       fecha: new Date()
     };
-    
-    if (!data.nombre || !data.url) {
-      return Swal.fire('Error', 'Título y URL son obligatorios', 'error');
-    }
-    
+    if (!data.nombre || !data.url) return Swal.fire('Error', 'Título y URL obligatorios', 'error');
     try {
       if (id) {
-        // Actualizar existente
         await db.collection("peliculas").doc(id).update(data);
-        Swal.fire('¡Actualizado!', 'Película actualizada correctamente', 'success');
+        Swal.fire('¡Actualizado!', 'Película actualizada', 'success');
       } else {
-        // Crear nueva
         data.visitas = 0;
         await db.collection("peliculas").add(data);
-        Swal.fire('¡Éxito!', 'Película guardada correctamente', 'success');
+        Swal.fire('¡Éxito!', 'Película guardada', 'success');
       }
       limpiarPelicula();
     } catch (error) {
@@ -264,17 +282,8 @@
   }
 
   function borrarPelicula(id) {
-    Swal.fire({ 
-      title: '¿Eliminar película?', 
-      icon: 'warning', 
-      showCancelButton: true, 
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
-    }).then((r) => {
-      if (r.isConfirmed) {
-        db.collection("peliculas").doc(id).delete();
-        Swal.fire('Eliminada', 'La película ha sido eliminada', 'success');
-      }
+    Swal.fire({ title: '¿Eliminar?', icon: 'warning', showCancelButton: true, confirmButtonText: 'Sí' }).then((r) => {
+      if (r.isConfirmed) db.collection("peliculas").doc(id).delete();
     });
   }
 
@@ -283,9 +292,12 @@
     document.getElementById('peliculaNombre').value = '';
     document.getElementById('peliculaPoster').value = '';
     document.getElementById('peliculaAnio').value = '';
+    document.getElementById('peliculaSinopsis').value = '';
+    document.getElementById('peliculaRating').value = '';
+    document.getElementById('peliculaGeneros').value = '';
     document.getElementById('peliculaUrl').value = '';
     document.getElementById('moviePreview').style.display = 'none';
-    document.getElementById('formTitle').innerHTML = ' Agregar Película';
+    document.getElementById('formTitle').innerHTML = '➕ Agregar Película';
     document.getElementById('btnText').textContent = 'Guardar';
     document.getElementById('btnIcon').className = 'fas fa-save';
   }
