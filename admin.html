@@ -83,7 +83,7 @@
             <div class="row">
               <div class="col-md-4">
                 <div class="card card-danger">
-                  <div class="card-header"><h3 class="card-title" id="formTitle"> Agregar Canal</h3></div>
+                  <div class="card-header"><h3 class="card-title" id="formTitle">➕ Agregar Canal</h3></div>
                   <div class="card-body">
                     <input type="hidden" id="channelId">
                     <div class="form-group"><label><i class="fas fa-tv"></i> Nombre del Canal</label><input type="text" id="nombre" class="form-control" placeholder="Ej: TUDN"></div>
@@ -91,8 +91,8 @@
                     <div class="form-group"><label><i class="fas fa-link"></i> URL del Stream</label><input type="text" id="url" class="form-control" placeholder="https://..."></div>
                     <div class="form-group"><label><i class="fas fa-folder"></i> Categoría</label>
                       <select id="categoria" class="form-control">
-                        <option value="Deportes">⚽ Deportes</option><option value="Noticias"> Noticias</option>
-                        <option value="Entretenimiento">📺 Entretenimiento</option><option value="Peliculas">🎬 Películas</option>
+                        <option value="Deportes">⚽ Deportes</option><option value="Noticias">📰 Noticias</option>
+                        <option value="Entretenimiento"> Entretenimiento</option><option value="Peliculas">🎬 Películas</option>
                         <option value="Musica">🎵 Música</option>
                       </select>
                     </div>
@@ -105,7 +105,7 @@
               <div class="col-md-8">
                 <div class="card card-primary">
                   <div class="card-header">
-                    <h3 class="card-title">📋 Canales Existentes</h3>
+                    <h3 class="card-title"> Canales Existentes</h3>
                     <div class="card-tools"><span class="badge badge-danger" id="totalCanales">0 canales</span></div>
                   </div>
                   <div class="card-body">
@@ -163,7 +163,6 @@
                   </div>
                 </div>
 
-                <!-- Código Generado -->
                 <div id="codigoGenerado" class="card card-warning" style="display: none;">
                   <div class="card-header"><h3 class="card-title">🔑 Código de Acceso</h3></div>
                   <div class="card-body text-center">
@@ -184,7 +183,7 @@
                     <div class="card-tools"><span class="badge badge-info" id="totalUsuarios">0 usuarios</span></div>
                   </div>
                   <div class="card-body">
-                    <input type="text" id="buscarUsuario" class="form-control mb-3" placeholder=" Buscar usuario..." onkeyup="filtrarUsuarios()">
+                    <input type="text" id="buscarUsuario" class="form-control mb-3" placeholder="🔍 Buscar usuario..." onkeyup="filtrarUsuarios()">
                     <div class="table-responsive">
                       <table class="table table-striped table-hover">
                         <thead>
@@ -326,13 +325,12 @@
       document.getElementById('seccionCanales').style.display = 'none';
       document.getElementById('seccionUsuarios').style.display = 'none';
       document.getElementById('seccionDashboard').style.display = 'block';
-      document.getElementById('tituloSeccion').innerText = '📊 Dashboard de Estadísticas';
+      document.getElementById('tituloSeccion').innerText = ' Dashboard de Estadísticas';
       document.getElementById('breadcrumbActivo').innerText = 'Dashboard';
       actualizarDashboard();
     }
   }
 
-  // CAMBIAR TIPO DE USUARIO
   function cambiarTipoUsuario() {
     const tipo = document.getElementById('userTipo').value;
     const duracionGroup = document.getElementById('duracionGroup');
@@ -343,9 +341,8 @@
     }
   }
 
-  // GENERAR CÓDIGO DE 5 CARACTERES
   function generarCodigo() {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Sin I, O, 1, 0 para evitar confusión
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     let codigo = '';
     for (let i = 0; i < 5; i++) {
       codigo += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -353,7 +350,6 @@
     return codigo;
   }
 
-  // CREAR USUARIO
   async function crearUsuario() {
     const nombre = document.getElementById('userName').value;
     const email = document.getElementById('userEmail').value;
@@ -370,10 +366,8 @@
     const fechaExpiracion = new Date();
     
     if (tipo === 'demo') {
-      // Demo: 1 hora
       fechaExpiracion.setHours(fechaExpiracion.getHours() + 1);
     } else {
-      // Final: meses seleccionados
       fechaExpiracion.setMonth(fechaExpiracion.getMonth() + duracion);
     }
 
@@ -391,13 +385,12 @@
     try {
       await db.collection("usuarios").add(userData);
       
-      // Mostrar código generado
       document.getElementById('codigoTexto').textContent = codigo;
       const tipoTexto = tipo === 'demo' ? '<span class="tipo-demo">🎬 Demo (1 hora)</span>' : '<span class="tipo-final">👤 Usuario Final</span>';
       document.getElementById('tipoUsuarioDisplay').innerHTML = tipoTexto;
       document.getElementById('codigoGenerado').style.display = 'block';
       
-      const duracionTexto = tipo === 'demo' ? 'Expira en 1 hora' : `Expira: ${fechaExpiracion.toLocaleDateString()}`;
+      const duracionTexto = tipo === 'demo' ? 'Expira en 1 hora' : `Expira: ${fechaExpiracion.toLocaleDateString('es-ES')}`;
       
       Swal.fire({
         icon: 'success',
@@ -436,7 +429,15 @@
     document.getElementById('duracionGroup').style.display = 'block';
   }
 
-  // CARGAR DATOS
+  // ✅ FUNCIÓN AUXILIAR PARA CONVERTIR FECHAS DE FIRESTORE
+  function convertirFecha(fecha) {
+    if (!fecha) return new Date();
+    if (fecha.toDate) {
+      return fecha.toDate(); // Timestamp de Firestore
+    }
+    return new Date(fecha);
+  }
+
   function cargarDatos() {
     // Canales
     db.collection("canales").onSnapshot((snapshot) => {
@@ -463,7 +464,7 @@
       });
     });
 
-    // Usuarios
+    // ✅ USUARIOS CON CORRECCIÓN DE FECHAS
     db.collection("usuarios").onSnapshot((snapshot) => {
       todosLosUsuarios = [];
       const tbody = document.getElementById('tablaUsuarios');
@@ -475,19 +476,32 @@
       
       snapshot.forEach((doc) => {
         const user = doc.data();
-        const expirado = new Date(user.fechaExpiracion) < ahora;
-        todosLosUsuarios.push({ id: doc.id, ...user });
+        
+        // ✅ Convertir Timestamp de Firestore a Date
+        const fechaExpiracion = convertirFecha(user.fechaExpiracion);
+        const expirado = fechaExpiracion < ahora;
+        
+        todosLosUsuarios.push({ id: doc.id, ...user, fechaExpiracionObj: fechaExpiracion });
         
         const tipoBadge = user.tipo === 'demo' 
-          ? '<span class="tipo-demo"> Demo</span>' 
+          ? '<span class="tipo-demo">🎬 Demo</span>' 
           : '<span class="tipo-final">👤 Final</span>';
+        
+        // ✅ Formatear fecha correctamente
+        const fechaFormateada = fechaExpiracion.toLocaleString('es-ES', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
         
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td><strong>${user.nombre}</strong><br><small class="text-muted">${user.email || 'Sin email'}</small></td>
           <td><code style="background: #1a1a1e; padding: 5px 10px; border-radius: 3px; font-size: 1.1em; letter-spacing: 2px;">${user.codigo}</code></td>
           <td>${tipoBadge}</td>
-          <td>${new Date(user.fechaExpiracion).toLocaleString()}</td>
+          <td>${fechaFormateada}</td>
           <td>${expirado ? '<span class="expirado">❌ Expirado</span>' : '<span class="activo">✅ Activo</span>'}</td>
           <td>
             <button class="btn btn-sm btn-info" onclick="renovarUsuario('${doc.id}')"><i class="fas fa-sync"></i></button>
@@ -497,25 +511,23 @@
       });
     });
 
-    // Ratings
     db.collection("ratings").onSnapshot(() => {
       if(document.getElementById('seccionDashboard').style.display !== 'none') actualizarDashboard();
     });
   }
 
-  // RENOVAR USUARIO
   async function renovarUsuario(id) {
     const user = todosLosUsuarios.find(u => u.id === id);
     const tipo = user.tipo;
     
     let inputOptions = {};
     if (tipo === 'demo') {
-      inputOptions = { '0.04167': '1 hora' }; // 1 hora en fracción de día
+      inputOptions = { '1': '1 hora' };
     } else {
       inputOptions = { '1': '1 Mes', '3': '3 Meses', '6': '6 Meses', '12': '12 Meses' };
     }
 
-    const { value: meses } = await Swal.fire({
+    const { value: duracion } = await Swal.fire({
       title: 'Renovar suscripción',
       input: 'select',
       inputOptions: inputOptions,
@@ -525,27 +537,25 @@
       cancelButtonText: 'Cancelar'
     });
 
-    if (meses) {
-      const fechaActual = new Date(user.fechaExpiracion) < new Date() ? new Date() : new Date(user.fechaExpiracion);
+    if (duracion) {
+      const fechaBase = user.fechaExpiracionObj < new Date() 
+        ? new Date() 
+        : new Date(user.fechaExpiracionObj);
       
-      if (tipo === 'demo' || parseFloat(meses) < 1) {
-        // 1 hora
-        fechaActual.setHours(fechaActual.getHours() + 1);
+      if (tipo === 'demo') {
+        fechaBase.setHours(fechaBase.getHours() + 1);
       } else {
-        // Meses
-        fechaActual.setMonth(fechaActual.getMonth() + parseInt(meses));
+        fechaBase.setMonth(fechaBase.getMonth() + parseInt(duracion));
       }
       
       await db.collection("usuarios").doc(id).update({
-        fechaExpiracion: fechaActual,
-        duracionMeses: tipo === 'demo' ? 0 : parseInt(meses)
+        fechaExpiracion: fechaBase
       });
       
-      Swal.fire('Renovado', `Suscripción renovada`, 'success');
+      Swal.fire('Renovado', `Suscripción renovada correctamente`, 'success');
     }
   }
 
-  // BORRAR USUARIO
   function borrarUsuario(id) {
     Swal.fire({
       title: '¿Eliminar usuario?',
@@ -565,7 +575,6 @@
     });
   }
 
-  // CANALES
   function guardarCanal() {
     const id = document.getElementById('channelId').value;
     const data = {
@@ -608,7 +617,7 @@
     document.getElementById('nombre').value = '';
     document.getElementById('logo').value = '';
     document.getElementById('url').value = '';
-    document.getElementById('formTitle').innerText = ' Agregar Canal';
+    document.getElementById('formTitle').innerText = '➕ Agregar Canal';
     document.getElementById('btnGuardar').innerHTML = '<i class="fas fa-save"></i> Guardar Canal';
     document.getElementById('btnGuardar').classList.remove('btn-warning');
     document.getElementById('btnGuardar').classList.add('btn-success');
@@ -653,7 +662,11 @@
     document.getElementById('statTotalRatings').innerText = totalRatings;
     
     const ahora = new Date();
-    const usuariosActivos = todosLosUsuarios.filter(u => new Date(u.fechaExpiracion) > ahora).length;
+    // ✅ Corrección en dashboard
+    const usuariosActivos = todosLosUsuarios.filter(u => {
+      let fecha = u.fechaExpiracionObj || convertirFecha(u.fechaExpiracion);
+      return fecha > ahora;
+    }).length;
     document.getElementById('statTotalUsuarios').innerText = usuariosActivos;
 
     const topVisitas = [...todosLosCanales].sort((a,b) => (b.visitas||0) - (a.visitas||0)).slice(0, 5);
