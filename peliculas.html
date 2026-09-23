@@ -8,29 +8,22 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
   <style>
-    .light-mode { background-color: #f4f6f9; }
-    .light-mode .content-wrapper { background-color: #f4f6f9; }
-    .light-mode .card { background-color: #fff; }
-    .tmdb-results { max-height: 300px; overflow-y: auto; border: 1px solid #333; border-radius: 5px; margin-top: 5px; display: none; background: #0a0a0c; }
-    .tmdb-item { padding: 10px; cursor: pointer; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #333; color: #fff; }
-    .tmdb-item:hover { background: #1a1a1e; }
+    .tmdb-results { max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px; margin-top: 5px; display: none; background: #fff; }
+    .tmdb-item { padding: 10px; cursor: pointer; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #eee; }
+    .tmdb-item:hover { background: #f0f0f0; }
     .tmdb-item img { width: 50px; height: 75px; object-fit: cover; border-radius: 3px; }
-    .movie-preview { background: #1a1a1e; padding: 20px; border-radius: 8px; margin-top: 15px; display: none; }
+    .movie-preview { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 15px; display: none; border: 1px solid #ddd; }
     .movie-preview img { max-width: 200px; border-radius: 8px; display: block; margin: 0 auto; }
     .movie-preview h4 { color:#e50914; margin: 15px 0 10px; text-align: center; }
-    .movie-preview p { color: #ccc; font-size: 0.9em; line-height: 1.6; }
-    .generos-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+    .generos-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; justify-content: center; }
     .genero-tag { background: #e50914; padding: 4px 10px; border-radius: 12px; font-size: 0.8em; color: #fff; }
-    .error-box { background: #dc3545; color: #fff; padding: 10px; border-radius: 5px; margin-top: 10px; display: none; }
-    .status-box { background: #28a745; color: #fff; padding: 10px; border-radius: 5px; margin-top: 10px; display: none; }
   </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
   <nav class="main-header navbar navbar-expand navbar-white navbar-light">
     <a href="#" class="navbar-brand"><span class="brand-text font-weight-bold">📺 NubaraPlay</span></a>
-    <ul class="navbar-nav">
-      <li class="nav-item"><a class="nav-link" href="#" onclick="toggleDarkMode()" role="button"><i class="fas fa-moon" id="darkModeIcon"></i></a></li>
+    <ul class="navbar-nav ml-auto">
       <li class="nav-item"><a class="nav-link" href="index.html" target="_blank"><i class="fas fa-external-link-alt"></i> Ver Web</a></li>
       <li class="nav-item"><a class="nav-link" href="#" onclick="cerrarSesionAdmin()"><i class="fas fa-sign-out-alt"></i> Salir</a></li>
     </ul>
@@ -57,24 +50,18 @@
         <div class="row">
           <div class="col-md-5">
             <div class="card card-warning">
-              <div class="card-header"><h3 class="card-title" id="formTitle">➕ Agregar Película</h3></div>
+              <div class="card-header"><h3 class="card-title">➕ Agregar Película</h3></div>
               <div class="card-body">
-                
-                <!-- Estado de conexión TMDB -->
-                <div class="status-box" id="statusBox"></div>
-                <div class="error-box" id="errorBox"></div>
-                
                 <input type="hidden" id="peliculaId">
                 <div class="form-group">
                   <label><i class="fas fa-search"></i> Buscar en TMDB</label>
-                  <input type="text" id="tmdbSearch" class="form-control" placeholder="Ej: Avatar, Batman..." onkeyup="buscarTMDB()">
-                  <small style="color:#888;">Escribe al menos 2 caracteres para buscar</small>
+                  <input type="text" id="tmdbSearch" class="form-control" placeholder="Ej: Avatar, Batman..." oninput="buscarTMDB()">
                   <div class="tmdb-results" id="tmdbResults"></div>
                 </div>
                 <div class="movie-preview" id="moviePreview">
                   <img id="previewPoster" src="" alt="Poster">
                   <h4 id="previewTitle"></h4>
-                  <p id="previewOverview" style="margin-top:10px;"></p>
+                  <p id="previewOverview"></p>
                   <div class="generos-tags" id="previewGeneros"></div>
                 </div>
                 <input type="hidden" id="peliculaNombre">
@@ -87,7 +74,7 @@
                   <label><i class="fas fa-link"></i> URL del Stream</label>
                   <input type="text" id="peliculaUrl" class="form-control" placeholder="https://vimeos.net/embed-xxxxx.htm">
                 </div>
-                <button onclick="guardarPelicula()" class="btn btn-success btn-block"><i class="fas fa-save" id="btnIcon"></i> <span id="btnText">Guardar</span></button>
+                <button onclick="guardarPelicula()" class="btn btn-success btn-block"><i class="fas fa-save"></i> Guardar</button>
                 <button onclick="limpiarPelicula()" class="btn btn-secondary btn-block mt-2"><i class="fas fa-times"></i> Limpiar</button>
               </div>
             </div>
@@ -98,7 +85,7 @@
               <div class="card-body">
                 <div class="table-responsive">
                   <table class="table table-striped table-hover">
-                    <thead><tr><th>Póster</th><th>Título</th><th>Géneros</th><th>Año</th><th style="width:100px">Acciones</th></tr></thead>
+                    <thead><tr><th>Póster</th><th>Título</th><th>Géneros</th><th>Año</th><th>Acciones</th></tr></thead>
                     <tbody id="tablaPeliculas"><tr><td colspan="5" class="text-center">Cargando...</td></tr></tbody>
                   </table>
                 </div>
@@ -120,144 +107,102 @@
 <script src="config.js"></script>
 
 <script>
-  verificarAdmin();
-  
-  // ⚠️ IMPORTANTE: Verifica esta API Key en https://www.themoviedb.org/settings/api
+  // Verificar admin
+  if (localStorage.getItem('nubaraPlayAdmin') !== 'true') {
+    window.location.href = 'login.html';
+  }
+
   const TMDB_API_KEY = "a85b85e615389ded96ae9e357c2f7ac1";
   const TMDB_IMAGE_URL = "https://image.tmdb.org/t/p/w500";
   let peliculasLocales = [];
+  let searchTimeout;
 
   // Test de conexión al cargar
-  window.addEventListener('DOMContentLoaded', () => {
-    testTMDBConnection();
+  window.addEventListener('load', () => {
+    console.log("Página cargada, probando TMDB...");
+    fetch(`https://api.themoviedb.org/3/configuration?api_key=${TMDB_API_KEY}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.status_code) {
+          console.error("TMDB Error:", data.status_message);
+          alert("Error TMDB: " + data.status_message);
+        } else {
+          console.log("TMDB conectado correctamente");
+        }
+      })
+      .catch(err => {
+        console.error("Error de conexión:", err);
+        alert("No se puede conectar a TMDB: " + err.message);
+      });
   });
 
-  async function testTMDBConnection() {
-    const statusBox = document.getElementById('statusBox');
-    const errorBox = document.getElementById('errorBox');
-    
-    try {
-      const response = await fetch(`https://api.themoviedb.org/3/configuration?api_key=${TMDB_API_KEY}`);
-      const data = await response.json();
-      
-      if (data.status_code) {
-        errorBox.textContent = `❌ Error TMDB: ${data.status_message} (Código: ${data.status_code})`;
-        errorBox.style.display = 'block';
-        statusBox.style.display = 'none';
-      } else {
-        statusBox.textContent = '✅ Conexión con TMDB activa';
-        statusBox.style.display = 'block';
-        errorBox.style.display = 'none';
-      }
-    } catch (error) {
-      errorBox.textContent = `❌ Error de conexión: ${error.message}`;
-      errorBox.style.display = 'block';
-      statusBox.style.display = 'none';
-    }
-  }
-
-  function toggleDarkMode() {
-    const body = document.body;
-    const icon = document.getElementById('darkModeIcon');
-    const navbar = document.querySelector('.main-header');
-    const sidebar = document.querySelector('.main-sidebar');
-    if (body.classList.contains('dark-mode')) {
-      body.classList.remove('dark-mode'); body.classList.add('light-mode');
-      navbar.classList.remove('navbar-dark'); navbar.classList.add('navbar-white', 'navbar-light');
-      sidebar.classList.remove('sidebar-dark-primary'); sidebar.classList.add('sidebar-light-primary');
-      localStorage.setItem('nubaraPlayTheme', 'light'); icon.classList.remove('fa-sun'); icon.classList.add('fa-moon');
-    } else {
-      body.classList.add('dark-mode'); body.classList.remove('light-mode');
-      navbar.classList.remove('navbar-white', 'navbar-light'); navbar.classList.add('navbar-dark');
-      sidebar.classList.remove('sidebar-light-primary'); sidebar.classList.add('sidebar-dark-primary');
-      localStorage.setItem('nubaraPlayTheme', 'dark'); icon.classList.remove('fa-moon'); icon.classList.add('fa-sun');
-    }
-  }
-
-  function loadSavedTheme() {
-    const savedTheme = localStorage.getItem('nubaraPlayTheme');
-    if (savedTheme === 'dark') {
-      document.body.classList.add('dark-mode');
-      document.querySelector('.main-header').classList.remove('navbar-white', 'navbar-light');
-      document.querySelector('.main-header').classList.add('navbar-dark');
-      document.querySelector('.main-sidebar').classList.remove('sidebar-light-primary');
-      document.querySelector('.main-sidebar').classList.add('sidebar-dark-primary');
-      document.getElementById('darkModeIcon').classList.remove('fa-moon');
-      document.getElementById('darkModeIcon').classList.add('fa-sun');
-    }
-  }
-
-  async function buscarTMDB() {
+  function buscarTMDB() {
+    clearTimeout(searchTimeout);
     const query = document.getElementById('tmdbSearch').value.trim();
-    const errorBox = document.getElementById('errorBox');
     
     if (query.length < 2) { 
       document.getElementById('tmdbResults').style.display = 'none'; 
       return; 
     }
     
-    const contenedor = document.getElementById('tmdbResults');
-    contenedor.innerHTML = '<div style="padding:10px; text-align:center; color:#888;"><i class="fas fa-spinner fa-spin"></i> Buscando...</div>';
-    contenedor.style.display = 'block';
-    errorBox.style.display = 'none';
+    // Esperar 500ms después de dejar de escribir
+    searchTimeout = setTimeout(async () => {
+      console.log("Buscando:", query);
+      const contenedor = document.getElementById('tmdbResults');
+      contenedor.innerHTML = '<div style="padding:10px; text-align:center;"><i class="fas fa-spinner fa-spin"></i> Buscando...</div>';
+      contenedor.style.display = 'block';
 
-    try {
-      const url = `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&language=es-ES&query=${encodeURIComponent(query)}&page=1`;
-      console.log("Buscando en:", url);
-      
-      const response = await fetch(url);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      try {
+        const url = `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&language=es-ES&query=${encodeURIComponent(query)}`;
+        console.log("URL:", url);
+        
+        const response = await fetch(url);
+        const data = await response.json();
+        console.log("Respuesta:", data);
+        
+        if (data.status_code) {
+          contenedor.innerHTML = `<div style="padding:10px; color:red;">Error: ${data.status_message}</div>`;
+          return;
+        }
+        
+        contenedor.innerHTML = '';
+        
+        if (!data.results || data.results.length === 0) {
+          contenedor.innerHTML = '<div style="padding:10px; text-align:center; color:#888;">Sin resultados</div>';
+        } else {
+          data.results.slice(0, 8).forEach(peli => {
+            const poster = peli.poster_path ? `${TMDB_IMAGE_URL}${peli.poster_path}` : 'https://via.placeholder.com/50x75';
+            const anio = peli.release_date ? peli.release_date.split('-')[0] : 'N/A';
+            const div = document.createElement('div');
+            div.className = 'tmdb-item';
+            div.innerHTML = `<img src="${poster}"><div><strong>${peli.title}</strong><br><small style="color:#888">${anio}</small></div>`;
+            div.onclick = () => seleccionarPelicula(peli.id);
+            contenedor.appendChild(div);
+          });
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        contenedor.innerHTML = `<div style="padding:10px; color:red;">Error: ${error.message}</div>`;
       }
-      
-      const data = await response.json();
-      console.log("Respuesta TMDB:", data);
-      
-      if (data.status_code) {
-        errorBox.textContent = ` Error TMDB: ${data.status_message}`;
-        errorBox.style.display = 'block';
-        contenedor.style.display = 'none';
-        return;
-      }
-      
-      contenedor.innerHTML = '';
-      
-      if (!data.results || data.results.length === 0) {
-        contenedor.innerHTML = '<div style="padding:10px; color:#888; text-align:center;">No se encontraron resultados</div>';
-      } else {
-        data.results.slice(0, 8).forEach(peli => {
-          const poster = peli.poster_path ? `${TMDB_IMAGE_URL}${peli.poster_path}` : 'https://via.placeholder.com/50x75';
-          const anio = peli.release_date ? peli.release_date.split('-')[0] : 'N/A';
-          const div = document.createElement('div');
-          div.className = 'tmdb-item';
-          div.innerHTML = `<img src="${poster}"><div><strong>${peli.title}</strong><br><small style="color:#888">${anio}</small></div>`;
-          div.onclick = () => seleccionarPelicula(peli.id);
-          contenedor.appendChild(div);
-        });
-      }
-    } catch (error) {
-      console.error("Error en buscarTMDB:", error);
-      errorBox.textContent = `❌ Error: ${error.message}`;
-      errorBox.style.display = 'block';
-      contenedor.style.display = 'none';
-    }
+    }, 500);
   }
 
   async function seleccionarPelicula(id) {
+    console.log("Seleccionando película ID:", id);
     try {
       const response = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${TMDB_API_KEY}&language=es-ES`);
       const peli = await response.json();
+      console.log("Detalle:", peli);
       
       if (peli.status_code) {
-        Swal.fire('Error TMDB', peli.status_message, 'error');
+        alert("Error: " + peli.status_message);
         return;
       }
       
       const poster = peli.poster_path ? `${TMDB_IMAGE_URL}${peli.poster_path}` : 'https://via.placeholder.com/200x300';
       const anio = peli.release_date ? peli.release_date.split('-')[0] : 'N/A';
       const rating = peli.vote_average ? peli.vote_average.toFixed(1) : '0';
-      const overview = peli.overview || 'Sin sinopsis disponible.';
+      const overview = peli.overview || 'Sin sinopsis.';
       const generos = peli.genres || [];
       const generosNombres = generos.map(g => g.name);
       
@@ -279,7 +224,7 @@
       document.getElementById('tmdbResults').style.display = 'none';
       document.getElementById('tmdbSearch').value = '';
     } catch (error) {
-      Swal.fire('Error', 'No se pudo cargar la información: ' + error.message, 'error');
+      alert("Error: " + error.message);
     }
   }
 
@@ -296,7 +241,7 @@
         tr.innerHTML = `
           <td><img src="${peli.logo}" width="40" style="border-radius:3px;" onerror="this.src='https://via.placeholder.com/40'"></td>
           <td><strong>${peli.nombre}</strong></td>
-          <td><small style="color:#888">${peli.generos || 'Sin género'}</small></td>
+          <td><small>${peli.generos || 'Sin género'}</small></td>
           <td><span class="badge badge-secondary">${peli.anio || 'N/A'}</span></td>
           <td>
             <button class="btn btn-sm btn-primary" onclick="editarPelicula('${doc.id}')"><i class="fas fa-edit"></i></button>
@@ -309,7 +254,7 @@
 
   function editarPelicula(id) {
     const peli = peliculasLocales.find(p => p.id === id);
-    if (!peli) return Swal.fire('Error', 'No se encontró la película', 'error');
+    if (!peli) return alert('No encontrada');
     document.getElementById('peliculaId').value = peli.id;
     document.getElementById('peliculaNombre').value = peli.nombre;
     document.getElementById('peliculaPoster').value = peli.logo;
@@ -324,9 +269,6 @@
     const generosDiv = document.getElementById('previewGeneros');
     generosDiv.innerHTML = (peli.generos || '').split(',').filter(g => g).map(g => `<span class="genero-tag">${g}</span>`).join('');
     document.getElementById('moviePreview').style.display = 'block';
-    document.getElementById('formTitle').innerHTML = '✏️ Editar Película';
-    document.getElementById('btnText').textContent = 'Actualizar';
-    document.getElementById('btnIcon').className = 'fas fa-sync';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -343,26 +285,24 @@
       categoria: 'Peliculas',
       fecha: new Date()
     };
-    if (!data.nombre || !data.url) return Swal.fire('Error', 'Título y URL obligatorios', 'error');
+    if (!data.nombre || !data.url) return alert('Título y URL obligatorios');
     try {
       if (id) {
         await db.collection("peliculas").doc(id).update(data);
-        Swal.fire('¡Actualizado!', 'Película actualizada', 'success');
+        alert('Actualizado');
       } else {
         data.visitas = 0;
         await db.collection("peliculas").add(data);
-        Swal.fire('¡Éxito!', 'Película guardada', 'success');
+        alert('Guardado');
       }
       limpiarPelicula();
     } catch (error) {
-      Swal.fire('Error', 'No se pudo guardar: ' + error.message, 'error');
+      alert('Error: ' + error.message);
     }
   }
 
   function borrarPelicula(id) {
-    Swal.fire({ title: '¿Eliminar?', icon: 'warning', showCancelButton: true, confirmButtonText: 'Sí' }).then((r) => {
-      if (r.isConfirmed) db.collection("peliculas").doc(id).delete();
-    });
+    if (confirm('¿Eliminar?')) db.collection("peliculas").doc(id).delete();
   }
 
   function limpiarPelicula() {
@@ -375,12 +315,13 @@
     document.getElementById('peliculaGeneros').value = '';
     document.getElementById('peliculaUrl').value = '';
     document.getElementById('moviePreview').style.display = 'none';
-    document.getElementById('formTitle').innerHTML = ' Agregar Película';
-    document.getElementById('btnText').textContent = 'Guardar';
-    document.getElementById('btnIcon').className = 'fas fa-save';
   }
 
-  loadSavedTheme();
+  function cerrarSesionAdmin() {
+    localStorage.removeItem('nubaraPlayAdmin');
+    window.location.href = 'login.html';
+  }
+
   cargarPeliculas();
 </script>
 </body>
