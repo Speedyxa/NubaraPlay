@@ -54,9 +54,9 @@
                 <div class="form-group"><label>Categoría</label>
                   <select id="categoria" class="form-control">
                     <option value="Deportes">⚽ Deportes</option>
-                    <option value="Noticias">📰 Noticias</option>
+                    <option value="Noticias"> Noticias</option>
                     <option value="Entretenimiento">📺 Entretenimiento</option>
-                    <option value="Musica">🎵 Música</option>
+                    <option value="Musica"> Música</option>
                   </select>
                 </div>
                 <button onclick="guardarCanal()" class="btn btn-success btn-block"><i class="fas fa-save" id="btnIcon"></i> <span id="btnText">Guardar</span></button>
@@ -93,7 +93,7 @@
 
 <script>
   verificarAdmin();
-  let modoEdicion = false;
+  let canalesLocales = [];
 
   function toggleDarkMode() {
     const body = document.body;
@@ -128,24 +128,59 @@
 
   function cargarCanales() {
     db.collection("canales").onSnapshot((snapshot) => {
+      canalesLocales = [];
       const tbody = document.getElementById('tablaCanales');
       tbody.innerHTML = '';
-      if (snapshot.empty) { tbody.innerHTML = '<tr><td colspan="4" class="text-center">No hay canales</td></tr>'; return; }
+      
+      if (snapshot.empty) { 
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center">No hay canales</td></tr>'; 
+        return; 
+      }
+      
       snapshot.forEach((doc) => {
         const canal = doc.data();
         if (canal.categoria === 'Peliculas') return;
+        
+        // Guardar en array local con el ID
+        canalesLocales.push({ id: doc.id, ...canal });
+        
         const tr = document.createElement('tr');
+        // ✅ Usar solo el ID en el onclick, los datos se buscan en el array
         tr.innerHTML = `
           <td><img src="${canal.logo}" width="40" height="40" style="object-fit:contain; background:#000; border-radius:4px;" onerror="this.src='https://via.placeholder.com/40'"></td>
           <td><strong>${canal.nombre}</strong></td>
           <td><span class="badge badge-info">${canal.categoria}</span></td>
           <td>
-            <button class="btn btn-sm btn-primary" onclick="editarCanal('${doc.id}', '${canal.nombre}', '${canal.logo}', '${canal.url}', '${canal.categoria}')"><i class="fas fa-edit"></i></button>
+            <button class="btn btn-sm btn-primary" onclick="editarCanal('${doc.id}')"><i class="fas fa-edit"></i></button>
             <button class="btn btn-sm btn-danger" onclick="borrarCanal('${doc.id}')"><i class="fas fa-trash"></i></button>
           </td>`;
         tbody.appendChild(tr);
       });
     });
+  }
+
+  // ✅ Buscar el canal en el array local por ID
+  function editarCanal(id) {
+    const canal = canalesLocales.find(c => c.id === id);
+    if (!canal) {
+      Swal.fire('Error', 'No se encontró el canal', 'error');
+      return;
+    }
+    
+    // Cargar datos en el formulario
+    document.getElementById('channelId').value = canal.id;
+    document.getElementById('nombre').value = canal.nombre;
+    document.getElementById('logo').value = canal.logo;
+    document.getElementById('url').value = canal.url;
+    document.getElementById('categoria').value = canal.categoria;
+    
+    // Cambiar UI a modo edición
+    document.getElementById('formTitle').innerHTML = '✏️ Editar Canal';
+    document.getElementById('btnText').textContent = 'Actualizar';
+    document.getElementById('btnIcon').className = 'fas fa-sync';
+    
+    // Scroll al formulario
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   async function guardarCanal() {
@@ -155,36 +190,42 @@
       logo: document.getElementById('logo').value,
       url: document.getElementById('url').value,
       categoria: document.getElementById('categoria').value,
-      fecha: new Date(),
-      visitas: id ? undefined : 0
+      fecha: new Date()
     };
-    if (!data.nombre || !data.url) return Swal.fire('Error', 'Nombre y URL son obligatorios', 'error');
     
-    if (id) {
-      await db.collection("canales").doc(id).update(data);
-      Swal.fire('¡Actualizado!', 'Canal actualizado', 'success');
-    } else {
-      await db.collection("canales").add(data);
-      Swal.fire('¡Éxito!', 'Canal guardado', 'success');
+    if (!data.nombre || !data.url) {
+      return Swal.fire('Error', 'Nombre y URL son obligatorios', 'error');
     }
-    limpiarForm();
-  }
-
-  function editarCanal(id, nombre, logo, url, categoria) {
-    document.getElementById('channelId').value = id;
-    document.getElementById('nombre').value = nombre;
-    document.getElementById('logo').value = logo;
-    document.getElementById('url').value = url;
-    document.getElementById('categoria').value = categoria;
-    document.getElementById('formTitle').innerHTML = '✏️ Editar Canal';
-    document.getElementById('btnText').textContent = 'Actualizar';
-    document.getElementById('btnIcon').className = 'fas fa-sync';
-    modoEdicion = true;
+    
+    try {
+      if (id) {
+        // Actualizar existente
+        await db.collection("canales").doc(id).update(data);
+        Swal.fire('¡Actualizado!', 'Canal actualizado correctamente', 'success');
+      } else {
+        // Crear nuevo
+        data.visitas = 0;
+        await db.collection("canales").add(data);
+        Swal.fire('¡Éxito!', 'Canal guardado correctamente', 'success');
+      }
+      limpiarForm();
+    } catch (error) {
+      Swal.fire('Error', 'No se pudo guardar: ' + error.message, 'error');
+    }
   }
 
   function borrarCanal(id) {
-    Swal.fire({ title: '¿Eliminar?', icon: 'warning', showCancelButton: true, confirmButtonText: 'Sí' }).then((r) => {
-      if (r.isConfirmed) db.collection("canales").doc(id).delete();
+    Swal.fire({ 
+      title: '¿Eliminar canal?', 
+      icon: 'warning', 
+      showCancelButton: true, 
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((r) => {
+      if (r.isConfirmed) {
+        db.collection("canales").doc(id).delete();
+        Swal.fire('Eliminado', 'El canal ha sido eliminado', 'success');
+      }
     });
   }
 
@@ -196,7 +237,6 @@
     document.getElementById('formTitle').innerHTML = '➕ Agregar Canal';
     document.getElementById('btnText').textContent = 'Guardar';
     document.getElementById('btnIcon').className = 'fas fa-save';
-    modoEdicion = false;
   }
 
   loadSavedTheme();
