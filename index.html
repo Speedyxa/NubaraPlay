@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NubaraPlay</title>
+    <title>NubaraPlay - TV y Películas Online</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📺</text></svg>">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #141414; color: #fff; overflow-x: hidden; }
 
-        /* LOGIN */
+        /* LOGIN SCREEN */
         #loginScreen { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://assets.nflxext.com/ffe/siteui/vlv3/9d3533b2-0e2b-40b2-95e0-ecd7979cc88b/a3873901-5b7c-46eb-b9fa-12f5173b3e48/US-en-20240311-popsignuptwoweeks-perspective_alpha_website_large.jpg'); background-size: cover; background-position: center; }
         .login-box { background: rgba(0,0,0,0.75); padding: 60px 68px 40px; border-radius: 4px; max-width: 450px; width: 90%; }
         .login-box h1 { font-size: 32px; font-weight: 700; margin-bottom: 28px; }
@@ -25,8 +25,8 @@
         .navbar-left { display: flex; align-items: center; gap: 25px; }
         .logo { color: #e50914; font-size: 28px; font-weight: bold; text-decoration: none; }
         .nav-links { display: flex; gap: 20px; list-style: none; }
-        .nav-links a { color: #e5e5e5; text-decoration: none; font-size: 14px; transition: color 0.4s; cursor: pointer; }
-        .nav-links a:hover { color: #b3b3b3; }
+        .nav-links a { color: #e5e5e5; text-decoration: none; font-size: 14px; transition: color 0.4s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; font-weight: bold; }
         .navbar-right { display: flex; align-items: center; gap: 20px; }
         .search-box { position: relative; }
         .search-box input { background: rgba(0,0,0,0.75); border: 1px solid #fff; color: #fff; padding: 7px 14px 7px 40px; border-radius: 4px; width: 250px; font-size: 14px; }
@@ -85,6 +85,7 @@
     </style>
 </head>
 <body>
+    <!-- LOGIN SCREEN -->
     <div id="loginScreen">
         <div class="login-box">
             <h1>Iniciar Sesión</h1>
@@ -94,22 +95,21 @@
         </div>
     </div>
 
+    <!-- MAIN APP -->
     <div id="mainApp" style="display: none;">
         <nav class="navbar" id="navbar">
             <div class="navbar-left">
                 <a href="index.html" class="logo">NUBARAPLAY</a>
                 <ul class="nav-links">
-                    <li><a href="index.html">Inicio</a></li>
-                    <li><a href="categoria.html?cat=Deportes">Deportes</a></li>
-                    <li><a href="categoria.html?cat=Noticias">Noticias</a></li>
-                    <li><a href="categoria.html?cat=Entretenimiento">Entretenimiento</a></li>
+                    <li><a href="index.html" class="active">Inicio</a></li>
+                    <li><a href="ver-canales.html">Canales TV</a></li>
                     <li><a href="genero.html">Películas</a></li>
                 </ul>
             </div>
             <div class="navbar-right">
                 <div class="search-box">
                     <span class="search-icon">🔍</span>
-                    <input type="text" id="buscador" placeholder="Títulos..." onkeyup="filtrarContenido()">
+                    <input type="text" id="buscador" placeholder="Títulos, géneros..." onkeyup="filtrarContenido()">
                 </div>
                 <span class="user-info" id="userInfo">Usuario</span>
                 <button class="logout-btn" onclick="cerrarSesion()">Salir</button>
@@ -119,39 +119,43 @@
         <div class="hero" id="hero">
             <div class="hero-content">
                 <h1 class="hero-title">Bienvenido a NubaraPlay</h1>
-                <p class="hero-description">Disfruta de los mejores canales de TV en vivo y películas. Contenido seleccionado especialmente para ti.</p>
+                <p class="hero-description">Disfruta de los mejores canales de TV en vivo y películas. Contenido seleccionado especialmente para ti, organizado por categorías y géneros.</p>
                 <div class="hero-buttons">
                     <button class="btn-play" onclick="reproducirDestacado()"><span>▶</span> Reproducir</button>
-                    <button class="btn-info"><span>ℹ</span> Más información</button>
+                    <button class="btn-info" onclick="window.location.href='genero.html'"><span>ℹ</span> Ver Catálogo</button>
                 </div>
             </div>
         </div>
 
         <div class="content-section">
+            <!-- FILA: DEPORTES -->
             <div class="row">
                 <div class="row-header">
-                    <h2 class="row-title" onclick="window.location.href='categoria.html?cat=Deportes'">⚽ Deportes</h2>
-                    <a class="ver-mas" href="categoria.html?cat=Deportes">Ver todo ›</a>
+                    <h2 class="row-title" onclick="window.location.href='ver-canales.html'">⚽ Deportes en Vivo</h2>
+                    <a class="ver-mas" href="ver-canales.html">Ver todo ›</a>
                 </div>
                 <div class="row-slider" id="rowDeportes"></div>
             </div>
 
+            <!-- FILA: NOTICIAS -->
             <div class="row">
                 <div class="row-header">
-                    <h2 class="row-title" onclick="window.location.href='categoria.html?cat=Noticias'">📰 Noticias</h2>
-                    <a class="ver-mas" href="categoria.html?cat=Noticias">Ver todo ›</a>
+                    <h2 class="row-title" onclick="window.location.href='ver-canales.html'">📰 Noticias</h2>
+                    <a class="ver-mas" href="ver-canales.html">Ver todo ›</a>
                 </div>
                 <div class="row-slider" id="rowNoticias"></div>
             </div>
 
+            <!-- FILA: ENTRETENIMIENTO -->
             <div class="row">
                 <div class="row-header">
-                    <h2 class="row-title" onclick="window.location.href='categoria.html?cat=Entretenimiento'">📺 Entretenimiento</h2>
-                    <a class="ver-mas" href="categoria.html?cat=Entretenimiento">Ver todo ›</a>
+                    <h2 class="row-title" onclick="window.location.href='ver-canales.html'">📺 Entretenimiento</h2>
+                    <a class="ver-mas" href="ver-canales.html">Ver todo ›</a>
                 </div>
                 <div class="row-slider" id="rowEntretenimiento"></div>
             </div>
 
+            <!-- FILA: PELÍCULAS -->
             <div class="row">
                 <div class="row-header">
                     <h2 class="row-title" onclick="window.location.href='genero.html'">🎬 Películas Populares</h2>
@@ -160,6 +164,7 @@
                 <div class="row-slider" id="rowPeliculas"></div>
             </div>
 
+            <!-- FILA: FAVORITOS -->
             <div class="row" id="rowFavoritos" style="display: none;">
                 <div class="row-header">
                     <h2 class="row-title">⭐ Mi Lista</h2>
@@ -189,35 +194,53 @@
         let todasLasPeliculas = [];
         let usuarioActual = null;
 
+        // Efecto Navbar al hacer scroll
         window.addEventListener('scroll', () => {
             const navbar = document.getElementById('navbar');
             navbar.classList.toggle('scrolled', window.scrollY > 50);
         });
 
+        // VERIFICAR CÓDIGO
         async function verificarCodigo() {
             const codigo = document.getElementById('accessCode').value.trim().toUpperCase();
             const errorMsg = document.getElementById('errorMsg');
-            if (!codigo || codigo.length !== 5) { errorMsg.textContent = 'Ingresa un código de 5 caracteres'; errorMsg.style.display = 'block'; return; }
+            
+            if (!codigo || codigo.length !== 5) {
+                errorMsg.textContent = 'Ingresa un código de 5 caracteres';
+                errorMsg.style.display = 'block';
+                return;
+            }
+
             try {
                 const snapshot = await db.collection("usuarios").where("codigo", "==", codigo).get();
                 if (snapshot.empty) { errorMsg.textContent = 'Código inválido'; errorMsg.style.display = 'block'; return; }
+                
                 const userDoc = snapshot.docs[0];
                 const userData = userDoc.data();
                 const fechaExpiracion = userData.fechaExpiracion?.toDate ? userData.fechaExpiracion.toDate() : new Date(userData.fechaExpiracion);
+                
                 if (fechaExpiracion < new Date()) { errorMsg.textContent = 'Código expirado'; errorMsg.style.display = 'block'; return; }
+
                 usuarioActual = { id: userDoc.id, ...userData };
                 localStorage.setItem('nubaraPlayUser', JSON.stringify(usuarioActual));
                 localStorage.setItem('nubaraPlayUserExpiry', fechaExpiracion.getTime());
+                
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('mainApp').style.display = 'block';
                 document.getElementById('userInfo').textContent = `${userData.tipo === 'demo' ? 'DEMO' : 'PREMIUM'} - ${userData.nombre}`;
+                
                 cargarTodo();
-            } catch (error) { errorMsg.textContent = 'Error de conexión'; errorMsg.style.display = 'block'; }
+            } catch (error) {
+                errorMsg.textContent = 'Error de conexión';
+                errorMsg.style.display = 'block';
+            }
         }
 
+        // VERIFICAR SESIÓN AL CARGAR
         window.addEventListener('DOMContentLoaded', () => {
             const savedUser = localStorage.getItem('nubaraPlayUser');
             const savedExpiry = localStorage.getItem('nubaraPlayUserExpiry');
+            
             if (savedUser && savedExpiry && Date.now() < parseInt(savedExpiry)) {
                 usuarioActual = JSON.parse(savedUser);
                 document.getElementById('loginScreen').style.display = 'none';
@@ -227,8 +250,13 @@
             }
         });
 
-        function cerrarSesion() { localStorage.removeItem('nubaraPlayUser'); localStorage.removeItem('nubaraPlayUserExpiry'); location.reload(); }
+        function cerrarSesion() {
+            localStorage.removeItem('nubaraPlayUser');
+            localStorage.removeItem('nubaraPlayUserExpiry');
+            window.location.href = 'index.html';
+        }
 
+        // CARGAR DATOS
         function cargarTodo() {
             db.collection("canales").onSnapshot((snapshot) => {
                 todosLosCanales = [];
@@ -255,7 +283,8 @@
             const contenedorPeliculas = document.getElementById('rowPeliculas');
             if (contenedorPeliculas) {
                 contenedorPeliculas.innerHTML = '';
-                todasLasPeliculas.forEach(peli => contenedorPeliculas.appendChild(crearCardPelicula(peli)));
+                // Mostrar las últimas 10 películas agregadas
+                todasLasPeliculas.slice(0, 10).forEach(peli => contenedorPeliculas.appendChild(crearCardPelicula(peli)));
             }
 
             cargarFavoritos();
@@ -274,7 +303,11 @@
                     <div class="card-info"><span>👁 ${canal.visitas || 0} vistas</span></div>
                 </div>
             `;
-            card.onclick = (e) => { if (!e.target.classList.contains('fav-btn')) window.location.href = `categoria.html?cat=${canal.categoria}`; };
+            card.onclick = (e) => {
+                if (!e.target.classList.contains('fav-btn')) {
+                    window.open(canal.url, '_blank');
+                }
+            };
             return card;
         }
 
@@ -291,7 +324,11 @@
                     <div class="card-info"><span>${pelicula.anio || 'N/A'}</span><span>⭐ ${pelicula.rating || '0'}</span></div>
                 </div>
             `;
-            card.onclick = (e) => { if (!e.target.classList.contains('fav-btn')) window.location.href = `detalle.html?id=${pelicula.id}`; };
+            card.onclick = (e) => {
+                if (!e.target.classList.contains('fav-btn')) {
+                    window.location.href = `detalle.html?id=${pelicula.id}`;
+                }
+            };
             return card;
         }
 
@@ -299,11 +336,15 @@
             const favoritos = JSON.parse(localStorage.getItem('nubaraPlayFavoritos') || '[]');
             const seccion = document.getElementById('rowFavoritos');
             const contenedor = document.getElementById('contenedorFavoritos');
+            
             if (favoritos.length === 0) { seccion.style.display = 'none'; return; }
+            
             seccion.style.display = 'block';
             contenedor.innerHTML = '';
+            
             const canalesFav = todosLosCanales.filter(c => favoritos.includes(c.id));
             const peliculasFav = todasLasPeliculas.filter(p => favoritos.includes(p.id));
+            
             [...canalesFav, ...peliculasFav].forEach(item => {
                 const card = item.categoria ? crearCardCanal(item) : crearCardPelicula(item);
                 contenedor.appendChild(card);
@@ -320,15 +361,31 @@
         }
 
         function reproducirDestacado() {
-            if (todasLasPeliculas.length > 0) window.location.href = `detalle.html?id=${todasLasPeliculas[0].id}`;
-            else if (todosLosCanales.length > 0) window.location.href = `categoria.html?cat=${todosLosCanales[0].categoria}`;
+            if (todasLasPeliculas.length > 0) {
+                window.location.href = `detalle.html?id=${todasLasPeliculas[0].id}`;
+            } else if (todosLosCanales.length > 0) {
+                window.open(todosLosCanales[0].url, '_blank');
+            }
         }
 
         function filtrarContenido() {
             const texto = document.getElementById('buscador').value.toLowerCase().trim();
             const canalesFiltrados = todosLosCanales.filter(c => c.nombre.toLowerCase().includes(texto));
             const peliculasFiltradas = todasLasPeliculas.filter(p => p.nombre.toLowerCase().includes(texto));
-            document.getElementById('noResults').style.display = (canalesFiltrados.length === 0 && peliculasFiltradas.length === 0) ? 'block' : 'none';
+            
+            // Si hay búsqueda, mostramos un mensaje simple o filtramos las filas (para mantenerlo simple, ocultamos filas y mostramos no-results si está vacío)
+            if (texto.length > 0) {
+                document.querySelectorAll('.row').forEach(row => row.style.display = 'none');
+                if (canalesFiltrados.length === 0 && peliculasFiltradas.length === 0) {
+                    document.getElementById('noResults').style.display = 'block';
+                } else {
+                    document.getElementById('noResults').style.display = 'none';
+                    // Opcional: Aquí podrías crear una fila de "Resultados de búsqueda"
+                }
+            } else {
+                document.querySelectorAll('.row').forEach(row => row.style.display = 'block');
+                document.getElementById('noResults').style.display = 'none';
+            }
         }
     </script>
 </body>
