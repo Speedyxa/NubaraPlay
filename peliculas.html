@@ -9,11 +9,17 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
   <style>
     .tmdb-results { max-height: 300px; overflow-y: auto; border: 1px solid #333; border-radius: 5px; margin-top: 5px; display: none; }
-    .tmdb-item { padding: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #333; background: #0a0a0c; color: #fff; }
+    .tmdb-item { padding: 10px; cursor: pointer; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #333; background: #0a0a0c; color: #fff; }
     .tmdb-item:hover { background: #1a1a1e; }
-    .tmdb-item img { width: 40px; height: 60px; object-fit: cover; border-radius: 3px; }
-    .movie-preview { background: #1a1a1e; padding: 15px; border-radius: 8px; margin-top: 15px; display: none; text-align: center; }
-    .movie-preview img { max-width: 150px; border-radius: 8px; }
+    .tmdb-item img { width: 50px; height: 75px; object-fit: cover; border-radius: 3px; }
+    .movie-preview { background: #1a1a1e; padding: 20px; border-radius: 8px; margin-top: 15px; display: none; }
+    .movie-preview img { max-width: 200px; border-radius: 8px; display: block; margin: 0 auto; }
+    .movie-preview h4 { color:#e50914; margin: 15px 0 10px; text-align: center; }
+    .movie-preview p { color: #aaa; font-size: 0.9em; line-height: 1.6; text-align: justify; }
+    .movie-info { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+    .movie-info div { background: #0a0a0c; padding: 10px; border-radius: 5px; }
+    .movie-info label { color: #888; font-size: 0.85em; display: block; margin-bottom: 5px; }
+    .movie-info strong { color: #fff; }
   </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -50,31 +56,78 @@
               <div class="card-header"><h3 class="card-title">➕ Agregar Película</h3></div>
               <div class="card-body">
                 <div class="form-group">
-                  <label>Buscar en TMDB</label>
-                  <input type="text" id="tmdbSearch" class="form-control" placeholder="Ej: Avatar, Batman..." onkeyup="buscarTMDB()">
+                  <label><i class="fas fa-search"></i> Buscar en TMDB</label>
+                  <input type="text" id="tmdbSearch" class="form-control" placeholder="Ej: Avatar, Batman, Avengers..." onkeyup="buscarTMDB()">
                   <div class="tmdb-results" id="tmdbResults"></div>
                 </div>
+
                 <div class="movie-preview" id="moviePreview">
                   <img id="previewPoster" src="" alt="Poster">
-                  <h4 id="previewTitle" style="color:#e50914; margin-top:10px;"></h4>
+                  <h4 id="previewTitle"></h4>
+                  
+                  <div class="movie-info">
+                    <div>
+                      <label>Año</label>
+                      <strong id="previewYear"></strong>
+                    </div>
+                    <div>
+                      <label>Rating</label>
+                      <strong id="previewRating"></strong>
+                    </div>
+                    <div style="grid-column: 1/-1;">
+                      <label>Duración</label>
+                      <strong id="previewRuntime"></strong>
+                    </div>
+                    <div style="grid-column: 1/-1;">
+                      <label>Géneros</label>
+                      <strong id="previewGenres"></strong>
+                    </div>
+                  </div>
+
+                  <div style="margin-top: 15px;">
+                    <label style="color: #888; font-size: 0.85em;">Sinopsis</label>
+                    <p id="previewOverview" style="margin-top: 5px;"></p>
+                  </div>
                 </div>
+
                 <input type="hidden" id="peliculaNombre">
                 <input type="hidden" id="peliculaPoster">
                 <input type="hidden" id="peliculaAnio">
-                <div class="form-group"><label>URL del Stream</label><input type="text" id="peliculaUrl" class="form-control" placeholder="https://..."></div>
-                <button onclick="guardarPelicula()" class="btn btn-success btn-block"><i class="fas fa-save"></i> Guardar Película</button>
-                <button onclick="limpiarPelicula()" class="btn btn-secondary btn-block mt-2"><i class="fas fa-times"></i> Limpiar</button>
+                <input type="hidden" id="peliculaSinopsis">
+                <input type="hidden" id="peliculaRating">
+                
+                <div class="form-group" style="margin-top: 15px;">
+                  <label><i class="fas fa-link"></i> URL del Stream (embed)</label>
+                  <input type="text" id="peliculaUrl" class="form-control" placeholder="Ej: https://vimeos.net/embed-xxxxx.htm">
+                </div>
+                
+                <button onclick="guardarPelicula()" class="btn btn-success btn-block" id="btnGuardar" disabled>
+                  <i class="fas fa-save"></i> Guardar Película
+                </button>
+                <button onclick="limpiarPelicula()" class="btn btn-secondary btn-block mt-2">
+                  <i class="fas fa-times"></i> Limpiar
+                </button>
               </div>
             </div>
           </div>
+          
           <div class="col-md-7">
             <div class="card card-info">
               <div class="card-header"><h3 class="card-title">Películas Agregadas</h3></div>
               <div class="card-body">
                 <div class="table-responsive">
                   <table class="table table-striped table-hover">
-                    <thead><tr><th>Póster</th><th>Título</th><th>Año</th><th>Acciones</th></tr></thead>
-                    <tbody id="tablaPeliculas"><tr><td colspan="4" class="text-center">Cargando...</td></tr></tbody>
+                    <thead>
+                      <tr>
+                        <th style="width: 60px">Póster</th>
+                        <th>Título</th>
+                        <th style="width: 80px">Año</th>
+                        <th style="width: 100px">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tablaPeliculas">
+                      <tr><td colspan="4" class="text-center">Cargando...</td></tr>
+                    </tbody>
                   </table>
                 </div>
               </div>
@@ -96,40 +149,90 @@
 
 <script>
   verificarAdmin();
+  let peliculaSeleccionada = null;
 
   async function buscarTMDB() {
     const query = document.getElementById('tmdbSearch').value.trim();
-    if (query.length < 2) { document.getElementById('tmdbResults').style.display = 'none'; return; }
-    const response = await fetch(`${TMDB_BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&language=es-ES&query=${encodeURIComponent(query)}`);
-    const data = await response.json();
-    
-    const contenedor = document.getElementById('tmdbResults');
-    contenedor.innerHTML = '';
-    if (data.results.length === 0) {
-      contenedor.innerHTML = '<div style="padding:10px; color:#888;">No encontrado</div>';
-    } else {
-      data.results.slice(0, 8).forEach(peli => {
-        const poster = peli.poster_path ? `${TMDB_IMAGE_URL}${peli.poster_path}` : 'https://via.placeholder.com/40x60/1a1a1e/fff?text=No+Img';
-        const anio = peli.release_date ? peli.release_date.split('-')[0] : 'N/A';
-        const div = document.createElement('div');
-        div.className = 'tmdb-item';
-        div.innerHTML = `<img src="${poster}"><div><strong>${peli.title}</strong><br><small>${anio}</small></div>`;
-        div.onclick = () => seleccionarPelicula(peli.title, poster, anio);
-        contenedor.appendChild(div);
-      });
+    if (query.length < 2) { 
+      document.getElementById('tmdbResults').style.display = 'none'; 
+      return; 
     }
-    contenedor.style.display = 'block';
+    
+    document.getElementById('tmdbResults').innerHTML = '<div style="padding:10px; text-align:center;"><i class="fas fa-spinner fa-spin"></i> Buscando...</div>';
+    document.getElementById('tmdbResults').style.display = 'block';
+
+    try {
+      const response = await fetch(`${TMDB_BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&language=es-ES&query=${encodeURIComponent(query)}&page=1`);
+      const data = await response.json();
+      
+      const contenedor = document.getElementById('tmdbResults');
+      contenedor.innerHTML = '';
+      
+      if (data.results.length === 0) {
+        contenedor.innerHTML = '<div style="padding:10px; color:#888; text-align:center;">No se encontraron resultados</div>';
+      } else {
+        data.results.slice(0, 8).forEach(peli => {
+          const poster = peli.poster_path ? `${TMDB_IMAGE_URL}${peli.poster_path}` : 'https://via.placeholder.com/50x75/1a1a1e/fff?text=No+Img';
+          const anio = peli.release_date ? peli.release_date.split('-')[0] : 'N/A';
+          const rating = peli.vote_average ? peli.vote_average.toFixed(1) : 'N/A';
+          
+          const div = document.createElement('div');
+          div.className = 'tmdb-item';
+          div.innerHTML = `
+            <img src="${poster}" alt="${peli.title}">
+            <div>
+              <strong>${peli.title}</strong><br>
+              <small style="color: #888;">${anio} | ⭐ ${rating}</small>
+            </div>
+          `;
+          div.onclick = () => seleccionarPelicula(peli.id);
+          contenedor.appendChild(div);
+        });
+      }
+      contenedor.style.display = 'block';
+    } catch (error) {
+      console.error('Error:', error);
+      document.getElementById('tmdbResults').innerHTML = '<div style="padding:10px; color:#e50914;">Error al buscar</div>';
+    }
   }
 
-  function seleccionarPelicula(titulo, poster, anio) {
-    document.getElementById('peliculaNombre').value = titulo;
-    document.getElementById('peliculaPoster').value = poster;
-    document.getElementById('peliculaAnio').value = anio;
-    document.getElementById('previewPoster').src = poster;
-    document.getElementById('previewTitle').textContent = `${titulo} (${anio})`;
-    document.getElementById('moviePreview').style.display = 'block';
-    document.getElementById('tmdbResults').style.display = 'none';
-    document.getElementById('tmdbSearch').value = '';
+  async function seleccionarPelicula(id) {
+    try {
+      const response = await fetch(`${TMDB_BASE_URL}/movie/${id}?api_key=${TMDB_API_KEY}&language=es-ES`);
+      const peli = await response.json();
+      
+      peliculaSeleccionada = peli;
+      
+      const poster = peli.poster_path ? `${TMDB_IMAGE_URL}${peli.poster_path}` : 'https://via.placeholder.com/200x300/1a1a1e/fff?text=No+Img';
+      const anio = peli.release_date ? peli.release_date.split('-')[0] : 'N/A';
+      const rating = peli.vote_average ? peli.vote_average.toFixed(1) : 'N/A';
+      const runtime = peli.runtime ? `${peli.runtime} minutos` : 'N/A';
+      const genres = peli.genres ? peli.genres.map(g => g.name).join(', ') : 'N/A';
+      const overview = peli.overview || 'Sin sinopsis disponible';
+      
+      document.getElementById('previewPoster').src = poster;
+      document.getElementById('previewTitle').textContent = peli.title;
+      document.getElementById('previewYear').textContent = anio;
+      document.getElementById('previewRating').textContent = `⭐ ${rating}`;
+      document.getElementById('previewRuntime').textContent = runtime;
+      document.getElementById('previewGenres').textContent = genres;
+      document.getElementById('previewOverview').textContent = overview;
+      
+      document.getElementById('peliculaNombre').value = peli.title;
+      document.getElementById('peliculaPoster').value = poster;
+      document.getElementById('peliculaAnio').value = anio;
+      document.getElementById('peliculaSinopsis').value = overview;
+      document.getElementById('peliculaRating').value = rating;
+      
+      document.getElementById('moviePreview').style.display = 'block';
+      document.getElementById('tmdbResults').style.display = 'none';
+      document.getElementById('tmdbSearch').value = '';
+      document.getElementById('btnGuardar').disabled = false;
+      
+    } catch (error) {
+      console.error('Error:', error);
+      Swal.fire('Error', 'No se pudo cargar la información de la película', 'error');
+    }
   }
 
   async function guardarPelicula() {
@@ -137,40 +240,97 @@
     const poster = document.getElementById('peliculaPoster').value;
     const url = document.getElementById('peliculaUrl').value;
     const anio = document.getElementById('peliculaAnio').value;
+    const sinopsis = document.getElementById('peliculaSinopsis').value;
+    const rating = document.getElementById('peliculaRating').value;
 
-    if (!nombre || !url) return Swal.fire('Error', 'Título y URL son obligatorios', 'error');
+    if (!nombre || !url) {
+      return Swal.fire('Error', 'Título y URL del stream son obligatorios', 'error');
+    }
 
-    await db.collection("peliculas").add({
-      nombre, logo: poster, url, anio, categoria: 'Peliculas', fecha: new Date(), visitas: 0
-    });
-    Swal.fire('¡Éxito!', 'Película guardada', 'success');
-    limpiarPelicula();
+    const peliculaData = {
+      tipo: 'pelicula',
+      nombre: nombre,
+      logo: poster,
+      url: url,
+      categoria: 'Peliculas',
+      anio: anio,
+      sinopsis: sinopsis,
+      rating: rating,
+      fecha: new Date(),
+      visitas: 0
+    };
+
+    try {
+      await db.collection("peliculas").add(peliculaData);
+      Swal.fire('¡Éxito!', 'Película guardada correctamente', 'success');
+      limpiarPelicula();
+      cargarPeliculas();
+    } catch (error) {
+      Swal.fire('Error', 'No se pudo guardar: ' + error.message, 'error');
+    }
   }
 
   function cargarPeliculas() {
     db.collection("peliculas").onSnapshot((snapshot) => {
       const tbody = document.getElementById('tablaPeliculas');
       tbody.innerHTML = '';
-      if (snapshot.empty) { tbody.innerHTML = '<tr><td colspan="4" class="text-center">No hay películas</td></tr>'; return; }
+      
+      if (snapshot.empty) { 
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center">No hay películas</td></tr>'; 
+        return; 
+      }
+
       snapshot.forEach((doc) => {
         const peli = doc.data();
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td><img src="${peli.logo}" width="40" style="border-radius:3px;" onerror="this.src='https://via.placeholder.com/40'"></td>
+          <td><img src="${peli.logo}" width="40" style="border-radius:3px; object-fit:cover;" onerror="this.src='https://via.placeholder.com/40'"></td>
           <td><strong>${peli.nombre}</strong></td>
           <td>${peli.anio || 'N/A'}</td>
-          <td><button class="btn btn-sm btn-danger" onclick="db.collection('peliculas').doc('${doc.id}').delete()"><i class="fas fa-trash"></i></button></td>`;
+          <td>
+            <button class="btn btn-sm btn-danger" onclick="borrarPelicula('${doc.id}')">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        `;
         tbody.appendChild(tr);
       });
+      
+      document.getElementById('totalPeliculas').textContent = snapshot.size + ' películas';
+    });
+  }
+
+  function borrarPelicula(id) {
+    Swal.fire({
+      title: '¿Eliminar película?',
+      text: "Esta acción no se puede revertir",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        db.collection("peliculas").doc(id).delete().then(() => {
+          Swal.fire('Eliminada', 'La película ha sido eliminada', 'success');
+        });
+      }
     });
   }
 
   function limpiarPelicula() {
+    document.getElementById('tmdbSearch').value = '';
     document.getElementById('peliculaNombre').value = '';
     document.getElementById('peliculaPoster').value = '';
     document.getElementById('peliculaAnio').value = '';
+    document.getElementById('peliculaSinopsis').value = '';
+    document.getElementById('peliculaRating').value = '';
     document.getElementById('peliculaUrl').value = '';
     document.getElementById('moviePreview').style.display = 'none';
+    document.getElementById('tmdbResults').style.display = 'none';
+    document.getElementById('btnGuardar').disabled = true;
+    peliculaSeleccionada = null;
   }
 
   cargarPeliculas();
