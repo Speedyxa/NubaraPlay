@@ -7,11 +7,25 @@
     <meta name="theme-color" content="#e50914">
     <meta name="description" content="NubaraPlay - TV Online en vivo">
     <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiTnViYXJhUGxheSIsInNob3J0X25hbWUiOiJOdWJhcmFQbGF5Iiwic3RhcnRfdXJsIjoiLiIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMwYTBhMGMiLCJ0aGVtZV9jb2xvciI6IiNlNTA5MTQiLCJpY29ucyI6W119">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📺</text></svg>">
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0a0a0c; color: #fff; min-height: 100vh; }
+        
+        /* LOGIN SCREEN */
+        #loginScreen { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); }
+        .login-box { background: rgba(20, 20, 20, 0.95); padding: 40px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); max-width: 400px; width: 90%; text-align: center; }
+        .login-box h1 { font-size: 2em; background: linear-gradient(90deg, #e50914, #ff6b6b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
+        .login-box p { color: #aaa; margin-bottom: 30px; }
+        .login-box input { width: 100%; padding: 15px; border-radius: 8px; border: 1px solid #333; background: #1a1a1e; color: #fff; font-size: 1.1em; text-align: center; letter-spacing: 2px; margin-bottom: 20px; }
+        .login-box input:focus { border-color: #e50914; outline: none; }
+        .login-box button { width: 100%; padding: 15px; background: #e50914; color: white; border: none; border-radius: 8px; font-size: 1.1em; font-weight: bold; cursor: pointer; transition: all 0.3s; }
+        .login-box button:hover { background: #ff1f2c; transform: translateY(-2px); }
+        .error-msg { color: #e50914; margin-top: 15px; display: none; }
+        
+        /* MAIN APP */
+        #mainApp { display: none; }
         header { background: rgba(20, 20, 20, 0.85); backdrop-filter: blur(10px); padding: 15px 20px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .header-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
         header h1 { font-size: 1.8em; background: linear-gradient(90deg, #e50914, #ff6b6b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; }
@@ -76,48 +90,63 @@
     </style>
 </head>
 <body>
-    <header>
-        <div class="header-top">
+    <!-- LOGIN SCREEN -->
+    <div id="loginScreen">
+        <div class="login-box">
             <h1>📺 NubaraPlay</h1>
-            <div class="header-controls">
-                <button class="control-btn" id="viewToggle" onclick="toggleView()">🔲 Grid</button>
-                <button class="control-btn" id="langToggle" onclick="toggleLanguage()">🌐 EN</button>
-                <button class="install-btn" id="installBtn" onclick="installPWA()">📱 Instalar</button>
-            </div>
+            <p>Ingresa tu código de acceso</p>
+            <input type="text" id="accessCode" placeholder="NP-XXXXXXXX" maxlength="11" onkeyup="this.value = this.value.toUpperCase()">
+            <button onclick="verificarCodigo()">🔓 Acceder</button>
+            <p class="error-msg" id="errorMsg">❌ Código inválido o expirado</p>
         </div>
-        <div class="search-box">
-            <input type="text" id="buscador" placeholder="🔍 Buscar canal..." onkeyup="filtrarCanales()">
-        </div>
-    </header>
-
-    <div class="container">
-        <div id="favoritosSection" class="favoritos-section" style="display: none;">
-            <h2>⭐ <span data-i18n="favoritos">Mis Favoritos</span></h2>
-            <div id="favoritosGrid" class="grid"></div>
-        </div>
-
-        <div id="contenedor"><div class="loading">⏳ Cargando canales...</div></div>
-        <div class="no-results" id="noResults">😕 No se encontraron canales.</div>
     </div>
 
-    <div class="modal" id="modal" onclick="cerrarModalFuera(event)">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <div class="modal-header">
-                <h3 id="modalTitulo">Cargando...</h3>
-                <div style="display: flex; gap: 8px;">
-                    <a href="#" id="externalLink" target="_blank" class="btn btn-external"> <span data-i18n="abrirFuera">Abrir fuera</span></a>
-                    <button class="btn btn-close" onclick="cerrarModal()">✖ <span data-i18n="cerrar">Cerrar</span></button>
+    <!-- MAIN APP -->
+    <div id="mainApp">
+        <header>
+            <div class="header-top">
+                <h1>📺 NubaraPlay</h1>
+                <div class="header-controls">
+                    <button class="control-btn" id="viewToggle" onclick="toggleView()">🔲 Grid</button>
+                    <button class="control-btn" id="langToggle" onclick="toggleLanguage()">🌐 EN</button>
+                    <button class="control-btn" onclick="cerrarSesion()"> Salir</button>
+                    <button class="install-btn" id="installBtn" onclick="installPWA()">📱 Instalar</button>
                 </div>
             </div>
-            <iframe id="playerFrame" src="" allowfullscreen></iframe>
-            <div class="rating-section">
-                <p data-i18n="calificar">¿Cómo calificarías este canal?</p>
-                <div class="rating-stars" id="ratingStars">
-                    <span class="star" data-rating="1">★</span><span class="star" data-rating="2">★</span>
-                    <span class="star" data-rating="3">★</span><span class="star" data-rating="4">★</span>
-                    <span class="star" data-rating="5">★</span>
+            <div class="search-box">
+                <input type="text" id="buscador" placeholder="🔍 Buscar canal..." onkeyup="filtrarCanales()">
+            </div>
+        </header>
+
+        <div class="container">
+            <div id="favoritosSection" class="favoritos-section" style="display: none;">
+                <h2>⭐ <span data-i18n="favoritos">Mis Favoritos</span></h2>
+                <div id="favoritosGrid" class="grid"></div>
+            </div>
+
+            <div id="contenedor"><div class="loading">⏳ Cargando canales...</div></div>
+            <div class="no-results" id="noResults">😕 No se encontraron canales.</div>
+        </div>
+
+        <div class="modal" id="modal" onclick="cerrarModalFuera(event)">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <div class="modal-header">
+                    <h3 id="modalTitulo">Cargando...</h3>
+                    <div style="display: flex; gap: 8px;">
+                        <a href="#" id="externalLink" target="_blank" class="btn btn-external">🔗 <span data-i18n="abrirFuera">Abrir fuera</span></a>
+                        <button class="btn btn-close" onclick="cerrarModal()">✖ <span data-i18n="cerrar">Cerrar</span></button>
+                    </div>
                 </div>
-                <p id="ratingText"></p>
+                <iframe id="playerFrame" src="" allowfullscreen></iframe>
+                <div class="rating-section">
+                    <p data-i18n="calificar">¿Cómo calificarías este canal?</p>
+                    <div class="rating-stars" id="ratingStars">
+                        <span class="star" data-rating="1">★</span><span class="star" data-rating="2">★</span>
+                        <span class="star" data-rating="3">★</span><span class="star" data-rating="4">★</span>
+                        <span class="star" data-rating="5">★</span>
+                    </div>
+                    <p id="ratingText"></p>
+                </div>
             </div>
         </div>
     </div>
@@ -140,14 +169,100 @@
         let canalActual = null;
         let vistaActual = 'grid';
         let idiomaActual = 'es';
+        let usuarioActual = null;
 
         const traducciones = {
-            es: { favoritos: 'Mis Favoritos', abrirFuera: 'Abrir fuera', cerrar: 'Cerrar', calificar: '¿Cómo calificarías este canal?', buscar: '🔍 Buscar canal...', cargando: '⏳ Cargando canales...', noResultados: '😕 No se encontraron canales.' },
-            en: { favoritos: 'My Favorites', abrirFuera: 'Open outside', cerrar: 'Close', calificar: 'How would you rate this channel?', buscar: '🔍 Search channel...', cargando: '⏳ Loading channels...', noResultados: '😕 No channels found.' }
+            es: { favoritos: 'Mis Favoritos', abrirFuera: 'Abrir fuera', cerrar: 'Cerrar', calificar: '¿Cómo calificarías este canal?', buscar: '🔍 Buscar canal...', cargando: ' Cargando canales...', noResultados: '😕 No se encontraron canales.' },
+            en: { favoritos: 'My Favorites', abrirFuera: 'Open outside', cerrar: 'Close', calificar: 'How would you rate this channel?', buscar: ' Search channel...', cargando: '⏳ Loading channels...', noResultados: '😕 No channels found.' }
         };
 
-        const iconosCategorias = { 'Deportes': '⚽', 'Noticias': '', 'Entretenimiento': '📺', 'Peliculas': '🎬', 'Musica': '🎵', 'Default': '' };
+        const iconosCategorias = { 'Deportes': '⚽', 'Noticias': '📰', 'Entretenimiento': '📺', 'Peliculas': '🎬', 'Musica': '', 'Default': '📡' };
 
+        // VERIFICAR CÓDIGO
+        async function verificarCodigo() {
+            const codigo = document.getElementById('accessCode').value.trim().toUpperCase();
+            const errorMsg = document.getElementById('errorMsg');
+            
+            if (!codigo) {
+                errorMsg.textContent = '❌ Ingresa un código';
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            try {
+                const snapshot = await db.collection("usuarios").where("codigo", "==", codigo).get();
+                
+                if (snapshot.empty) {
+                    errorMsg.textContent = '❌ Código inválido';
+                    errorMsg.style.display = 'block';
+                    return;
+                }
+
+                const userDoc = snapshot.docs[0];
+                const userData = userDoc.data();
+                const fechaExpiracion = new Date(userData.fechaExpiracion);
+                const ahora = new Date();
+
+                if (fechaExpiracion < ahora) {
+                    errorMsg.textContent = '❌ Código expirado';
+                    errorMsg.style.display = 'block';
+                    return;
+                }
+
+                // Código válido
+                usuarioActual = { id: userDoc.id, ...userData };
+                localStorage.setItem('nubaraPlayUser', JSON.stringify(usuarioActual));
+                localStorage.setItem('nubaraPlayUserExpiry', fechaExpiracion.getTime());
+                
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('mainApp').style.display = 'block';
+                
+                cargarCanales();
+            } catch (error) {
+                errorMsg.textContent = '❌ Error de conexión';
+                errorMsg.style.display = 'block';
+            }
+        }
+
+        // VERIFICAR SESIÓN AL CARGAR
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedUser = localStorage.getItem('nubaraPlayUser');
+            const savedExpiry = localStorage.getItem('nubaraPlayUserExpiry');
+            
+            if (savedUser && savedExpiry) {
+                const expiry = parseInt(savedExpiry);
+                if (Date.now() < expiry) {
+                    usuarioActual = JSON.parse(savedUser);
+                    document.getElementById('loginScreen').style.display = 'none';
+                    document.getElementById('mainApp').style.display = 'block';
+                    cargarCanales();
+                } else {
+                    localStorage.removeItem('nubaraPlayUser');
+                    localStorage.removeItem('nubaraPlayUserExpiry');
+                }
+            }
+
+            const vistaGuardada = localStorage.getItem('nubaraPlayVista');
+            if (vistaGuardada) {
+                vistaActual = vistaGuardada;
+                document.getElementById('viewToggle').innerHTML = vistaActual === 'grid' ? '🔲 Grid' : '📋 Lista';
+            }
+            
+            const idiomaGuardado = localStorage.getItem('nubaraPlayIdioma');
+            if (idiomaGuardado) {
+                idiomaActual = idiomaGuardado;
+                document.getElementById('langToggle').innerHTML = idiomaActual === 'es' ? ' EN' : '🌐 ES';
+            }
+            aplicarTraducciones();
+        });
+
+        function cerrarSesion() {
+            localStorage.removeItem('nubaraPlayUser');
+            localStorage.removeItem('nubaraPlayUserExpiry');
+            location.reload();
+        }
+
+        // PWA
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
@@ -259,14 +374,16 @@
             return (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1);
         }
 
-        db.collection("canales").onSnapshot(async (snapshot) => {
-            todosLosCanales = [];
-            snapshot.forEach((doc) => todosLosCanales.push({ id: doc.id, ...doc.data() }));
-            const ratings = await cargarRatings();
-            todosLosCanales.forEach(canal => { canal.ratingPromedio = calcularPromedio(ratings[canal.id] || []); });
-            renderizarCanales(todosLosCanales);
-            renderizarFavoritos();
-        });
+        function cargarCanales() {
+            db.collection("canales").onSnapshot(async (snapshot) => {
+                todosLosCanales = [];
+                snapshot.forEach((doc) => todosLosCanales.push({ id: doc.id, ...doc.data() }));
+                const ratings = await cargarRatings();
+                todosLosCanales.forEach(canal => { canal.ratingPromedio = calcularPromedio(ratings[canal.id] || []); });
+                renderizarCanales(todosLosCanales);
+                renderizarFavoritos();
+            });
+        }
 
         function renderizarCanales(canales) {
             const contenedor = document.getElementById('contenedor');
@@ -342,20 +459,6 @@
             canalActual = null;
         }
         function cerrarModalFuera(event) { if (event.target.id === 'modal') cerrarModal(); }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            const vistaGuardada = localStorage.getItem('nubaraPlayVista');
-            if (vistaGuardada) {
-                vistaActual = vistaGuardada;
-                document.getElementById('viewToggle').innerHTML = vistaActual === 'grid' ? '🔲 Grid' : ' Lista';
-            }
-            const idiomaGuardado = localStorage.getItem('nubaraPlayIdioma');
-            if (idiomaGuardado) {
-                idiomaActual = idiomaGuardado;
-                document.getElementById('langToggle').innerHTML = idiomaActual === 'es' ? '🌐 EN' : '🌐 ES';
-            }
-            aplicarTraducciones();
-        });
     </script>
 </body>
 </html>
