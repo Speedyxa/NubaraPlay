@@ -112,8 +112,10 @@
     window.location.href = 'login.html';
   }
 
-  const TMDB_API_KEY = "a85b85e615389ded96ae9e357c2f7ac1";
-  const TMDB_IMAGE_URL = "https://image.tmdb.org/t/p/w500";
+  // ⚠️ YA ESTÁN DECLARADAS EN config.js, NO las redeclaramos aquí:
+  // TMDB_API_KEY
+  // TMDB_IMAGE_URL
+  
   let peliculasLocales = [];
   let searchTimeout;
 
@@ -125,14 +127,12 @@
       .then(data => {
         if (data.status_code) {
           console.error("TMDB Error:", data.status_message);
-          alert("Error TMDB: " + data.status_message);
         } else {
-          console.log("TMDB conectado correctamente");
+          console.log("✅ TMDB conectado correctamente");
         }
       })
       .catch(err => {
-        console.error("Error de conexión:", err);
-        alert("No se puede conectar a TMDB: " + err.message);
+        console.error("❌ Error de conexión:", err);
       });
   });
 
@@ -145,7 +145,7 @@
       return; 
     }
     
-    // Esperar 500ms después de dejar de escribir
+    // Esperar 500ms después de dejar de escribir para no saturar la API
     searchTimeout = setTimeout(async () => {
       console.log("Buscando:", query);
       const contenedor = document.getElementById('tmdbResults');
@@ -154,11 +154,10 @@
 
       try {
         const url = `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&language=es-ES&query=${encodeURIComponent(query)}`;
-        console.log("URL:", url);
         
         const response = await fetch(url);
         const data = await response.json();
-        console.log("Respuesta:", data);
+        console.log("Respuesta TMDB:", data);
         
         if (data.status_code) {
           contenedor.innerHTML = `<div style="padding:10px; color:red;">Error: ${data.status_message}</div>`;
@@ -181,7 +180,7 @@
           });
         }
       } catch (error) {
-        console.error("Error:", error);
+        console.error("Error en búsqueda:", error);
         contenedor.innerHTML = `<div style="padding:10px; color:red;">Error: ${error.message}</div>`;
       }
     }, 500);
@@ -289,11 +288,11 @@
     try {
       if (id) {
         await db.collection("peliculas").doc(id).update(data);
-        alert('Actualizado');
+        alert('✅ Actualizado');
       } else {
         data.visitas = 0;
         await db.collection("peliculas").add(data);
-        alert('Guardado');
+        alert('✅ Guardado');
       }
       limpiarPelicula();
     } catch (error) {
@@ -302,7 +301,9 @@
   }
 
   function borrarPelicula(id) {
-    if (confirm('¿Eliminar?')) db.collection("peliculas").doc(id).delete();
+    if (confirm('¿Eliminar esta película?')) {
+      db.collection("peliculas").doc(id).delete();
+    }
   }
 
   function limpiarPelicula() {
