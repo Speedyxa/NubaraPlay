@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📺 TV Online - Canales en Vivo</title>
+    <title>📺 NubaraPlay - TV Online</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -14,20 +14,44 @@
         }
         header {
             background: linear-gradient(90deg, #141414, #2a0845);
-            padding: 20px;
+            padding: 25px;
             text-align: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
         header h1 {
-            font-size: 2em;
+            font-size: 2.2em;
             color: #e50914;
             letter-spacing: 1px;
         }
+        header p { color: #aaa; margin-top: 5px; }
+        
         .container {
             max-width: 1200px;
-            margin: 30px auto;
-            padding: 0 20px;
+            margin: 0 auto;
+            padding: 30px 20px;
         }
+        
+        /* Secciones */
+        .seccion {
+            margin-bottom: 40px;
+        }
+        .seccion-titulo {
+            font-size: 1.5em;
+            color: #e50914;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .seccion-titulo span {
+            font-size: 1.2em;
+        }
+        
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -60,13 +84,13 @@
             font-size: 0.95em;
         }
         
-        /* Modal / Reproductor */
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.95);
             z-index: 1000;
             justify-content: center;
             align-items: center;
@@ -79,7 +103,6 @@
             background: #000;
             border-radius: 10px;
             overflow: hidden;
-            position: relative;
         }
         .modal-content iframe {
             width: 100%;
@@ -90,112 +113,164 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 15px;
+            padding: 12px 15px;
             background: #1a1a1a;
         }
-        .close-btn {
-            background: #e50914;
-            color: white;
-            border: none;
+        .modal-header h3 { color: #e50914; }
+        .btn {
             padding: 8px 15px;
             border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
-        }
-        .external-btn {
-            background: #333;
-            color: white;
+            border: none;
             text-decoration: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            font-size: 0.9em;
+            display: inline-block;
+            margin-left: 10px;
         }
+        .btn-external { background: #333; color: white; }
+        .btn-close { background: #e50914; color: white; }
+        
         @media (max-width: 600px) {
             .modal-content iframe { height: 250px; }
+            header h1 { font-size: 1.5em; }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>📺 TV ONLINE</h1>
-        <p style="color: #aaa; margin-top: 5px;">Selecciona un canal para ver en vivo</p>
+        <h1>📺 NubaraPlay</h1>
+        <p>TV Online - Canales en vivo organizados por categoría</p>
     </header>
 
-    <div class="container">
-        <div class="grid" id="canalGrid"></div>
-    </div>
+    <div class="container" id="contenedor"></div>
 
     <!-- Modal Reproductor -->
     <div class="modal" id="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 id="modalTitulo" style="color: #e50914;">Nombre del Canal</h3>
+                <h3 id="modalTitulo">Canal</h3>
                 <div>
-                    <a href="#" id="externalLink" target="_blank" class="external-btn">🔗 Abrir en nueva pestaña</a>
-                    <button class="close-btn" onclick="cerrarModal()">✖ Cerrar</button>
+                    <a href="#" id="externalLink" target="_blank" class="btn btn-external">🔗 Abrir fuera</a>
+                    <button class="btn btn-close" onclick="cerrarModal()">✖ Cerrar</button>
                 </div>
             </div>
-            <!-- Aquí se carga el .php o .html -->
             <iframe id="playerFrame" src="" allowfullscreen></iframe>
         </div>
     </div>
 
     <script>
         // =====================================================
-        // 📝 EDITA AQUÍ TUS CANALES
-        // Solo cambia: nombre, logo y url (puede ser .php o .html)
+        // 📝 EDITA AQUÍ TUS CANALES ORGANIZADOS POR SECCIONES
         // =====================================================
-        const canales = [
+        const secciones = [
             {
-                nombre: "Canal 1 - Noticias",
-                logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/Flag_of_Italy.svg/320px-Flag_of_Italy.svg.png",
-                url: "https://dlive.sx/stream/stream-399.php" 
+                nombre: "⚽ Deportes",
+                icono: "⚽",
+                canales: [
+                    {
+                        nombre: "ESPN",
+                        logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/ESPN_wordmark.svg/320px-ESPN_wordmark.svg.png",
+                        url: "https://dlive.sx/stream/stream-399.php"
+                    },
+                    {
+                        nombre: "Fox Sports",
+                        logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Fox_Sports_2019.svg/320px-Fox_Sports_2019.svg.png",
+                        url: "https://ejemplo.com/foxsports.php"
+                    }
+                ]
             },
             {
-                nombre: "Canal 2 - Deportes",
-                logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Flag_of_Spain.svg/320px-Flag_of_Spain.svg.png",
-                url: "https://ejemplo.com/canal2.html"
+                nombre: "📰 Noticias",
+                icono: "📰",
+                canales: [
+                    {
+                        nombre: "CNN en Español",
+                        logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/CNN.svg/320px-CNN.svg.png",
+                        url: "https://ejemplo.com/cnn.php"
+                    },
+                    {
+                        nombre: "BBC World",
+                        logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/BBC_World_News_2022_%28Print%29.svg/320px-BBC_World_News_2022_%28Print%29.svg.png",
+                        url: "https://ejemplo.com/bbc.html"
+                    }
+                ]
             },
             {
-                nombre: "Canal 3 - Películas",
-                logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Flag_of_France.svg/320px-Flag_of_France.svg.png",
-                url: "https://ejemplo.com/peliculas.php"
+                nombre: "🎬 Películas",
+                icono: "🎬",
+                canales: [
+                    {
+                        nombre: "HBO",
+                        logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/HBO_logo.svg/320px-HBO_logo.svg.png",
+                        url: "https://ejemplo.com/hbo.php"
+                    },
+                    {
+                        nombre: "Cine Premium",
+                        logo: "https://via.placeholder.com/200x120/e50914/fff?text=CINE",
+                        url: "https://ejemplo.com/cine.php"
+                    }
+                ]
+            },
+            {
+                nombre: "🎵 Música",
+                icono: "🎵",
+                canales: [
+                    {
+                        nombre: "MTV",
+                        logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/MTV_2021_%28brand_version%29.svg/320px-MTV_2021_%28brand_version%29.svg.png",
+                        url: "https://ejemplo.com/mtv.php"
+                    }
+                ]
             }
-            // 👉 Copia y pega un bloque { } para añadir más canales
+            // 👉 Copia un bloque completo { } para añadir más secciones
         ];
         // =====================================================
 
-        const grid = document.getElementById('canalGrid');
+        const contenedor = document.getElementById('contenedor');
         const modal = document.getElementById('modal');
         const iframe = document.getElementById('playerFrame');
         const titulo = document.getElementById('modalTitulo');
         const extLink = document.getElementById('externalLink');
 
-        // Generar las tarjetas
-        canales.forEach(canal => {
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.innerHTML = `
-                <img src="${canal.logo}" alt="${canal.nombre}" onerror="this.src='https://via.placeholder.com/200x120/000/fff?text=TV'">
-                <div class="card-title">${canal.nombre}</div>
-            `;
-            card.onclick = () => abrirCanal(canal);
-            grid.appendChild(card);
+        // Generar secciones y canales
+        secciones.forEach(seccion => {
+            const secDiv = document.createElement('div');
+            secDiv.className = 'seccion';
+            
+            const tituloSec = document.createElement('h2');
+            tituloSec.className = 'seccion-titulo';
+            tituloSec.innerHTML = `<span>${seccion.icono}</span> ${seccion.nombre}`;
+            secDiv.appendChild(tituloSec);
+            
+            const grid = document.createElement('div');
+            grid.className = 'grid';
+            
+            seccion.canales.forEach(canal => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <img src="${canal.logo}" alt="${canal.nombre}" onerror="this.src='https://via.placeholder.com/200x120/000/fff?text=TV'">
+                    <div class="card-title">${canal.nombre}</div>
+                `;
+                card.onclick = () => abrirCanal(canal);
+                grid.appendChild(card);
+            });
+            
+            secDiv.appendChild(grid);
+            contenedor.appendChild(secDiv);
         });
 
-        // Abrir el reproductor
         function abrirCanal(canal) {
             titulo.textContent = canal.nombre;
-            iframe.src = canal.url; // Carga el .php o .html en el iframe
-            extLink.href = canal.url; // Botón de respaldo por si falla el iframe
+            iframe.src = canal.url;
+            extLink.href = canal.url;
             modal.classList.add('active');
         }
 
-        // Cerrar el reproductor
         function cerrarModal() {
             modal.classList.remove('active');
-            iframe.src = ''; // Detiene la carga del video
+            iframe.src = '';
         }
     </script>
 
