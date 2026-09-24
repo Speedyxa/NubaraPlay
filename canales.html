@@ -48,30 +48,63 @@
               <div class="card-header"><h3 class="card-title" id="formTitle">➕ Agregar Canal</h3></div>
               <div class="card-body">
                 <input type="hidden" id="channelId">
-                <div class="form-group"><label>Nombre del Canal</label><input type="text" id="nombre" class="form-control" placeholder="Ej: TUDN"></div>
-                <div class="form-group"><label>URL del Logo</label><input type="text" id="logo" class="form-control" placeholder="https://..."></div>
-                <div class="form-group"><label>URL del Stream</label><input type="text" id="url" class="form-control" placeholder="https://..."></div>
-                <div class="form-group"><label>Categoría</label>
-                  <select id="categoria" class="form-control">
-                    <option value="Deportes">⚽ Deportes</option>
-                    <option value="Noticias"> Noticias</option>
-                    <option value="Entretenimiento">📺 Entretenimiento</option>
-                    <option value="Musica"> Música</option>
-                  </select>
+                <div class="form-group">
+                  <label><i class="fas fa-tv"></i> Nombre del Canal</label>
+                  <input type="text" id="nombre" class="form-control" placeholder="Ej: TUDN, ESPN, CNN">
                 </div>
-                <button onclick="guardarCanal()" class="btn btn-success btn-block"><i class="fas fa-save" id="btnIcon"></i> <span id="btnText">Guardar</span></button>
-                <button onclick="limpiarForm()" class="btn btn-secondary btn-block mt-2"><i class="fas fa-times"></i> Limpiar</button>
+                <div class="form-group">
+                  <label><i class="fas fa-image"></i> URL del Logo</label>
+                  <input type="text" id="logo" class="form-control" placeholder="https://...">
+                </div>
+                <div class="form-group">
+                  <label><i class="fas fa-link"></i> URL del Stream</label>
+                  <input type="text" id="url" class="form-control" placeholder="https://...">
+                </div>
+                
+                <!-- ✅ CAMBIO CLAVE: Input de texto con sugerencias en lugar de select fijo -->
+                <div class="form-group">
+                  <label><i class="fas fa-folder"></i> Categoría (Escribe una nueva o selecciona)</label>
+                  <input type="text" id="categoria" class="form-control" list="categoriasSugeridas" placeholder="Ej: Deportes, Noticias, Cine, Infantil...">
+                  <datalist id="categoriasSugeridas">
+                    <option value="Deportes">
+                    <option value="Noticias">
+                    <option value="Entretenimiento">
+                    <option value="Musica">
+                    <option value="Infantil">
+                    <option value="Cine">
+                    <option value="Documentales">
+                    <option value="Variedades">
+                  </datalist>
+                  <small class="text-muted">Puedes escribir cualquier nombre de categoría nuevo.</small>
+                </div>
+
+                <button onclick="guardarCanal()" class="btn btn-success btn-block">
+                  <i class="fas fa-save" id="btnIcon"></i> <span id="btnText">Guardar</span>
+                </button>
+                <button onclick="limpiarForm()" class="btn btn-secondary btn-block mt-2">
+                  <i class="fas fa-times"></i> Limpiar
+                </button>
               </div>
             </div>
           </div>
+
           <div class="col-md-8">
             <div class="card card-primary">
               <div class="card-header"><h3 class="card-title">Canales Existentes</h3></div>
               <div class="card-body">
                 <div class="table-responsive">
                   <table class="table table-striped table-hover">
-                    <thead><tr><th>Logo</th><th>Nombre</th><th>Categoría</th><th style="width:150px">Acciones</th></tr></thead>
-                    <tbody id="tablaCanales"><tr><td colspan="4" class="text-center">Cargando...</td></tr></tbody>
+                    <thead>
+                      <tr>
+                        <th style="width: 60px">Logo</th>
+                        <th>Nombre</th>
+                        <th>Categoría</th>
+                        <th style="width: 150px">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tablaCanales">
+                      <tr><td colspan="4" class="text-center">Cargando...</td></tr>
+                    </tbody>
                   </table>
                 </div>
               </div>
@@ -102,12 +135,12 @@
     const sidebar = document.querySelector('.main-sidebar');
     if (body.classList.contains('dark-mode')) {
       body.classList.remove('dark-mode'); body.classList.add('light-mode');
-      navbar.classList.remove('navbar-dark', 'navbar-dark-primary'); navbar.classList.add('navbar-white', 'navbar-light');
+      navbar.classList.remove('navbar-dark'); navbar.classList.add('navbar-white', 'navbar-light');
       sidebar.classList.remove('sidebar-dark-primary'); sidebar.classList.add('sidebar-light-primary');
       localStorage.setItem('nubaraPlayTheme', 'light'); icon.classList.remove('fa-sun'); icon.classList.add('fa-moon');
     } else {
       body.classList.add('dark-mode'); body.classList.remove('light-mode');
-      navbar.classList.remove('navbar-white', 'navbar-light'); navbar.classList.add('navbar-dark', 'navbar-dark-primary');
+      navbar.classList.remove('navbar-white', 'navbar-light'); navbar.classList.add('navbar-dark');
       sidebar.classList.remove('sidebar-light-primary'); sidebar.classList.add('sidebar-dark-primary');
       localStorage.setItem('nubaraPlayTheme', 'dark'); icon.classList.remove('fa-moon'); icon.classList.add('fa-sun');
     }
@@ -115,14 +148,14 @@
 
   function loadSavedTheme() {
     const savedTheme = localStorage.getItem('nubaraPlayTheme');
-    const icon = document.getElementById('darkModeIcon');
-    const navbar = document.querySelector('.main-header');
-    const sidebar = document.querySelector('.main-sidebar');
     if (savedTheme === 'dark') {
       document.body.classList.add('dark-mode');
-      navbar.classList.remove('navbar-white', 'navbar-light'); navbar.classList.add('navbar-dark', 'navbar-dark-primary');
-      sidebar.classList.remove('sidebar-light-primary'); sidebar.classList.add('sidebar-dark-primary');
-      icon.classList.remove('fa-moon'); icon.classList.add('fa-sun');
+      document.querySelector('.main-header').classList.remove('navbar-white', 'navbar-light');
+      document.querySelector('.main-header').classList.add('navbar-dark');
+      document.querySelector('.main-sidebar').classList.remove('sidebar-light-primary');
+      document.querySelector('.main-sidebar').classList.add('sidebar-dark-primary');
+      document.getElementById('darkModeIcon').classList.remove('fa-moon');
+      document.getElementById('darkModeIcon').classList.add('fa-sun');
     }
   }
 
@@ -139,17 +172,15 @@
       
       snapshot.forEach((doc) => {
         const canal = doc.data();
-        if (canal.categoria === 'Peliculas') return;
+        if (canal.categoria === 'Peliculas') return; // Ignorar películas en esta tabla
         
-        // Guardar en array local con el ID
         canalesLocales.push({ id: doc.id, ...canal });
         
         const tr = document.createElement('tr');
-        // ✅ Usar solo el ID en el onclick, los datos se buscan en el array
         tr.innerHTML = `
           <td><img src="${canal.logo}" width="40" height="40" style="object-fit:contain; background:#000; border-radius:4px;" onerror="this.src='https://via.placeholder.com/40'"></td>
           <td><strong>${canal.nombre}</strong></td>
-          <td><span class="badge badge-info">${canal.categoria}</span></td>
+          <td><span class="badge badge-info">${canal.categoria || 'Sin categoría'}</span></td>
           <td>
             <button class="btn btn-sm btn-primary" onclick="editarCanal('${doc.id}')"><i class="fas fa-edit"></i></button>
             <button class="btn btn-sm btn-danger" onclick="borrarCanal('${doc.id}')"><i class="fas fa-trash"></i></button>
@@ -159,7 +190,6 @@
     });
   }
 
-  // ✅ Buscar el canal en el array local por ID
   function editarCanal(id) {
     const canal = canalesLocales.find(c => c.id === id);
     if (!canal) {
@@ -172,24 +202,23 @@
     document.getElementById('nombre').value = canal.nombre;
     document.getElementById('logo').value = canal.logo;
     document.getElementById('url').value = canal.url;
-    document.getElementById('categoria').value = canal.categoria;
+    document.getElementById('categoria').value = canal.categoria || ''; // ✅ Carga la categoría para editarla
     
     // Cambiar UI a modo edición
     document.getElementById('formTitle').innerHTML = '✏️ Editar Canal';
     document.getElementById('btnText').textContent = 'Actualizar';
     document.getElementById('btnIcon').className = 'fas fa-sync';
     
-    // Scroll al formulario
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   async function guardarCanal() {
     const id = document.getElementById('channelId').value;
     const data = {
-      nombre: document.getElementById('nombre').value,
-      logo: document.getElementById('logo').value,
-      url: document.getElementById('url').value,
-      categoria: document.getElementById('categoria').value,
+      nombre: document.getElementById('nombre').value.trim(),
+      logo: document.getElementById('logo').value.trim(),
+      url: document.getElementById('url').value.trim(),
+      categoria: document.getElementById('categoria').value.trim() || 'General', // ✅ Guarda la categoría escrita
       fecha: new Date()
     };
     
@@ -234,6 +263,7 @@
     document.getElementById('nombre').value = '';
     document.getElementById('logo').value = '';
     document.getElementById('url').value = '';
+    document.getElementById('categoria').value = ''; // ✅ Limpia la categoría
     document.getElementById('formTitle').innerHTML = '➕ Agregar Canal';
     document.getElementById('btnText').textContent = 'Guardar';
     document.getElementById('btnIcon').className = 'fas fa-save';
