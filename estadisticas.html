@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Estadísticas - NubaraPlay Admin</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <a href="#" class="navbar-brand"><span class="brand-text font-weight-bold">📺 NubaraPlay</span></a>
+    <ul class="navbar-nav">
+      <li class="nav-item"><a class="nav-link" href="index.html" target="_blank"><i class="fas fa-external-link-alt"></i> Ver Web</a></li>
+      <li class="nav-item"><a class="nav-link" href="#" onclick="cerrarSesionAdmin()"><i class="fas fa-sign-out-alt"></i> Salir</a></li>
+    </ul>
+  </nav>
+
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <a href="admin.html" class="brand-link"><span class="brand-text font-weight-light">Panel Admin</span></a>
+    <div class="sidebar">
+      <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
+          <li class="nav-item"><a href="admin.html" class="nav-link"><i class="nav-icon fas fa-chart-line"></i><p>Dashboard</p></a></li>
+          <li class="nav-item"><a href="canales.html" class="nav-link"><i class="nav-icon fas fa-tv"></i><p>Canales TV</p></a></li>
+          <li class="nav-item"><a href="peliculas.html" class="nav-link"><i class="nav-icon fas fa-film"></i><p>Películas TMDB</p></a></li>
+          <li class="nav-item"><a href="agenda.html" class="nav-link"><i class="nav-icon fas fa-calendar-alt"></i><p>Agenda Deportiva</p></a></li>
+          <li class="nav-item"><a href="estadisticas.html" class="nav-link active"><i class="nav-icon fas fa-chart-bar"></i><p>Estadísticas</p></a></li>
+          <li class="nav-item"><a href="usuarios.html" class="nav-link"><i class="nav-icon fas fa-users"></i><p>Usuarios</p></a></li>
+        </ul>
+      </nav>
+    </div>
+  </aside>
+
+  <div class="content-wrapper">
+    <div class="content-header">
+      <div class="container-fluid">
+        <h1 class="m-0">📊 Estadísticas por Usuario</h1>
+      </div>
+    </div>
+
+    <section class="content">
+      <div class="container-fluid">
+        <!-- Resumen General -->
+        <div class="row">
+          <div class="col-lg-3 col-6">
+            <div class="small-box bg-info">
+              <div class="inner"><h3 id="totalRegistros">0</h3><p>Registros Totales</p></div>
+              <div class="icon"><i class="fas fa-database"></i></div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-6">
+            <div class="small-box bg-success">
+              <div class="inner"><h3 id="usuariosActivos">0</h3><p>Usuarios Activos</p></div>
+              <div class="icon"><i class="fas fa-user-check"></i></div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-6">
+            <div class="small-box bg-warning">
+              <div class="inner"><h3 id="totalVisitasHoy">0</h3><p>Visitas Hoy</p></div>
+              <div class="icon"><i class="fas fa-calendar-day"></i></div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-6">
+            <div class="small-box bg-danger">
+              <div class="inner"><h3 id="contenidoMasVisto">-</h3><p>Más Visto</p></div>
+              <div class="icon"><i class="fas fa-fire"></i></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gráficos -->
+        <div class="row">
+          <div class="col-md-6">
+            <div class="card card-primary">
+              <div class="card-header"><h3 class="card-title">📈 Actividad por Día (Últimos 7 días)</h3></div>
+              <div class="card-body">
+                <canvas id="chartActividad"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card card-success">
+              <div class="card-header"><h3 class="card-title">🥧 Canales vs Películas</h3></div>
+              <div class="card-body">
+                <canvas id="chartTipos"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Estadísticas por Usuario -->
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card card-warning">
+              <div class="card-header"><h3 class="card-title"> Actividad por Usuario</h3></div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-striped table-hover">
+                    <thead>
+                      <tr>
+                        <th>Usuario</th>
+                        <th>Tipo</th>
+                        <th>Total Visto</th>
+                        <th>Última Actividad</th>
+                        <th>Detalle</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tablaUsuarios"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Registro Detallado -->
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card card-info">
+              <div class="card-header"><h3 class="card-title"> Registro Detallado de Reproducciones</h3></div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-striped table-hover">
+                    <thead>
+                      <tr>
+                        <th>Fecha/Hora</th>
+                        <th>Usuario</th>
+                        <th>Tipo</th>
+                        <th>Contenido</th>
+                        <th>Categoría</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tablaRegistros"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="config.js"></script>
+
+<script>
+  verificarAdmin();
+
+  function cerrarSesionAdmin() {
+    localStorage.removeItem('nubaraPlayAdmin');
+    window.location.href = 'login.html';
+  }
+
+  let todosLosRegistros = [];
+
+  // Cargar todos los registros de visualización
+  db.collection("visualizaciones").orderBy("fecha", "desc").limit(500).onSnapshot((snapshot) => {
+    todosLosRegistros = [];
+    snapshot.forEach((doc) => {
+      todosLosRegistros.push({ id: doc.id, ...doc.data() });
+    });
+    
+    actualizarDashboard();
+    actualizarGraficos();
+    actualizarTablaUsuarios();
+    actualizarTablaRegistros();
+  });
+
+  function actualizarDashboard() {
+    document.getElementById('totalRegistros').textContent = todosLosRegistros.length;
+    
+    // Usuarios únicos
+    const usuariosUnicos = new Set(todosLosRegistros.map(r => r.usuarioId)).size;
+    document.getElementById('usuariosActivos').textContent = usuariosUnicos;
+    
+    // Visitas de hoy
+    const hoy = new Date().toDateString();
+    const visitasHoy = todosLosRegistros.filter(r => new Date(r.fecha.toDate ? r.fecha.toDate() : r.fecha).toDateString() === hoy).length;
+    document.getElementById('totalVisitasHoy').textContent = visitasHoy;
+    
+    // Contenido más visto
+    const conteo = {};
+    todosLosRegistros.forEach(r => {
+      const key = r.nombre;
+      conteo[key] = (conteo[key] || 0) + 1;
+    });
+    const masVisto = Object.entries(conteo).sort((a, b) => b[1] - a[1])[0];
+    document.getElementById('contenidoMasVisto').textContent = masVisto ? masVisto[0].substring(0, 15) + '...' : '-';
+  }
+
+  function actualizarGraficos() {
+    // Gráfico de actividad por día
+    const dias = {};
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      dias[d.toDateString()] = 0;
+    }
+    todosLosRegistros.forEach(r => {
+      const fecha = new Date(r.fecha.toDate ? r.fecha.toDate() : r.fecha).toDateString();
+      if (dias[fecha] !== undefined) dias[fecha]++;
+    });
+    
+    const ctx1 = document.getElementById('chartActividad').getContext('2d');
+    new Chart(ctx1, {
+      type: 'line',
+      data: {
+        labels: Object.keys(dias).map(d => d.split(' ')[0]),
+        datasets: [{
+          label: 'Visualizaciones',
+          data: Object.values(dias),
+          borderColor: '#e50914',
+          backgroundColor: 'rgba(229, 9, 20, 0.1)',
+          fill: true,
+          tension: 0.4
+        }]
+      },
+      options: { responsive: true, scales: { y: { beginAtZero: true } } }
+    });
+
+    // Gráfico de tipos
+    const canales = todosLosRegistros.filter(r => r.tipo === 'canal').length;
+    const peliculas = todosLosRegistros.filter(r => r.tipo === 'pelicula').length;
+    
+    const ctx2 = document.getElementById('chartTipos').getContext('2d');
+    new Chart(ctx2, {
+      type: 'doughnut',
+      data: {
+        labels: ['Canales TV', 'Películas'],
+        datasets: [{
+          data: [canales, peliculas],
+          backgroundColor: ['#17a2b8', '#dc3545']
+        }]
+      },
+      options: { responsive: true }
+    });
+  }
+
+  function actualizarTablaUsuarios() {
+    const usuariosMap = {};
+    todosLosRegistros.forEach(r => {
+      const key = r.usuarioId || 'Anónimo';
+      if (!usuariosMap[key]) {
+        usuariosMap[key] = { nombre: r.usuarioNombre || 'Anónimo', total: 0, canales: 0, peliculas: 0, ultima: r.fecha };
+      }
+      usuariosMap[key].total++;
+      if (r.tipo === 'canal') usuariosMap[key].canales++;
+      else usuariosMap[key].peliculas++;
+      if (new Date(r.fecha.toDate ? r.fecha.toDate() : r.fecha) > new Date(usuariosMap[key].ultima.toDate ? usuariosMap[key].ultima.toDate() : usuariosMap[key].ultima)) {
+        usuariosMap[key].ultima = r.fecha;
+      }
+    });
+
+    const tbody = document.getElementById('tablaUsuarios');
+    tbody.innerHTML = Object.entries(usuariosMap).map(([id, data]) => {
+      const fecha = new Date(data.ultima.toDate ? data.ultima.toDate() : data.ultima);
+      return `<tr>
+        <td><strong>${data.nombre}</strong><br><small class="text-muted">${id}</small></td>
+        <td><span class="badge badge-info">${data.canales} canales</span> <span class="badge badge-danger">${data.peliculas} pelis</span></td>
+        <td><span class="badge badge-success">${data.total} vistas</span></td>
+        <td>${fecha.toLocaleDateString()} ${fecha.toLocaleTimeString()}</td>
+        <td><button class="btn btn-sm btn-primary" onclick="verDetalleUsuario('${id}')"><i class="fas fa-eye"></i> Ver</button></td>
+      </tr>`;
+    }).join('');
+  }
+
+  function actualizarTablaRegistros() {
+    const tbody = document.getElementById('tablaRegistros');
+    tbody.innerHTML = todosLosRegistros.slice(0, 50).map(r => {
+      const fecha = new Date(r.fecha.toDate ? r.fecha.toDate() : r.fecha);
+      return `<tr>
+        <td>${fecha.toLocaleDateString()} ${fecha.toLocaleTimeString()}</td>
+        <td>${r.usuarioNombre || 'Anónimo'}</td>
+        <td><span class="badge ${r.tipo === 'canal' ? 'badge-info' : 'badge-danger'}">${r.tipo}</span></td>
+        <td>${r.nombre}</td>
+        <td>${r.categoria || '-'}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  function verDetalleUsuario(usuarioId) {
+    const registros = todosLosRegistros.filter(r => r.usuarioId === usuarioId);
+    const contenido = registros.map(r => `${r.tipo}: ${r.nombre}`).join('\n');
+    alert(`Detalle del usuario:\n\n${contenido}`);
+  }
+</script>
+</body>
+</html>
