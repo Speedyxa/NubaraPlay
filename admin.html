@@ -11,7 +11,7 @@
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
   <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-    <a href="#" class="navbar-brand"><span class="brand-text font-weight-bold"> NubaraPlay</span></a>
+    <a href="#" class="navbar-brand"><span class="brand-text font-weight-bold">📺 NubaraPlay</span></a>
     <ul class="navbar-nav">
       <li class="nav-item"><a class="nav-link" href="index.html" target="_blank"><i class="fas fa-external-link-alt"></i> Ver Web</a></li>
       <li class="nav-item"><a class="nav-link" href="#" onclick="cerrarSesionAdmin()"><i class="fas fa-sign-out-alt"></i> Salir</a></li>
@@ -27,6 +27,7 @@
           <li class="nav-item"><a href="canales.html" class="nav-link"><i class="nav-icon fas fa-tv"></i><p>Canales TV</p></a></li>
           <li class="nav-item"><a href="peliculas.html" class="nav-link"><i class="nav-icon fas fa-film"></i><p>Películas TMDB</p></a></li>
           <li class="nav-item"><a href="agenda.html" class="nav-link"><i class="nav-icon fas fa-calendar-alt"></i><p>Agenda Deportiva</p></a></li>
+          <li class="nav-item"><a href="estadisticas.html" class="nav-link"><i class="nav-icon fas fa-chart-bar"></i><p>Estadísticas</p></a></li>
           <li class="nav-item"><a href="usuarios.html" class="nav-link"><i class="nav-icon fas fa-users"></i><p>Usuarios</p></a></li>
         </ul>
       </nav>
@@ -43,7 +44,6 @@
     <section class="content">
       <div class="container-fluid">
         <div class="row">
-          <!-- Canales TV -->
           <div class="col-lg-3 col-6">
             <div class="small-box bg-success">
               <div class="inner"><h3 id="totalCanales">0</h3><p>Canales TV</p></div>
@@ -52,7 +52,6 @@
             </div>
           </div>
 
-          <!-- Películas -->
           <div class="col-lg-3 col-6">
             <div class="small-box bg-danger">
               <div class="inner"><h3 id="totalPeliculas">0</h3><p>Películas</p></div>
@@ -61,7 +60,6 @@
             </div>
           </div>
 
-          <!-- Eventos Agenda -->
           <div class="col-lg-3 col-6">
             <div class="small-box bg-warning">
               <div class="inner"><h3 id="totalAgenda">0</h3><p>Eventos Agenda</p></div>
@@ -70,7 +68,6 @@
             </div>
           </div>
 
-          <!-- Usuarios -->
           <div class="col-lg-3 col-6">
             <div class="small-box bg-info">
               <div class="inner"><h3 id="totalUsuarios">0</h3><p>Usuarios</p></div>
@@ -79,7 +76,6 @@
             </div>
           </div>
 
-          <!-- ✅ NUEVA TARJETA: Total Reproducciones -->
           <div class="col-lg-3 col-6">
             <div class="small-box bg-purple">
               <div class="inner"><h3 id="totalReproducciones">0</h3><p>Reproducciones Totales</p></div>
@@ -113,7 +109,6 @@
           </div>
         </div>
 
-        <!-- ✅ SECCIÓN TOP REPRODUCIDOS -->
         <div class="row" id="topReproducidosSection" style="display: none;">
           <div class="col-md-12">
             <div class="card card-success">
@@ -165,7 +160,6 @@
   let totalCanales = 0, totalPeliculas = 0, totalAgenda = 0, totalUsuarios = 0;
   let todosLosCanales = [], todasLasPeliculas = [];
 
-  // Contar Canales y guardar datos
   db.collection("canales").onSnapshot((snapshot) => {
     totalCanales = snapshot.size;
     document.getElementById('totalCanales').textContent = totalCanales;
@@ -176,22 +170,17 @@
       todosLosCanales.push({ id: doc.id, ...c });
     });
     
-    // Actualizar lista de últimos canales
     const lista = document.getElementById('listaCanales');
     const canalesRecientes = todosLosCanales.slice(0, 5);
     if (canalesRecientes.length > 0) {
       lista.innerHTML = canalesRecientes.map(c => 
-        `<li class="list-group-item d-flex justify-content-between align-items-center">
-          ${c.nombre}
-          <span class="badge badge-primary badge-pill">${c.categoria || 'General'}</span>
-        </li>`
+        '<li class="list-group-item d-flex justify-content-between align-items-center">' + c.nombre + '<span class="badge badge-primary badge-pill">' + (c.categoria || 'General') + '</span></li>'
       ).join('');
     }
     
     calcularTotalReproducciones();
   });
 
-  // Contar Películas y guardar datos
   db.collection("peliculas").onSnapshot((snapshot) => {
     totalPeliculas = snapshot.size;
     document.getElementById('totalPeliculas').textContent = totalPeliculas;
@@ -202,34 +191,27 @@
       todasLasPeliculas.push({ id: doc.id, ...p });
     });
     
-    // Actualizar lista de últimas películas
     const lista = document.getElementById('listaPeliculas');
     const pelisRecientes = todasLasPeliculas.slice(0, 5);
     if (pelisRecientes.length > 0) {
       lista.innerHTML = pelisRecientes.map(p => 
-        `<li class="list-group-item d-flex justify-content-between align-items-center">
-          ${p.nombre}
-          <span class="badge badge-danger badge-pill">${p.anio || 'N/A'}</span>
-        </li>`
+        '<li class="list-group-item d-flex justify-content-between align-items-center">' + p.nombre + '<span class="badge badge-danger badge-pill">' + (p.anio || 'N/A') + '</span></li>'
       ).join('');
     }
     
     calcularTotalReproducciones();
   });
 
-  // Contar Eventos de Agenda
   db.collection("agenda").onSnapshot((snapshot) => {
     totalAgenda = snapshot.size;
     document.getElementById('totalAgenda').textContent = totalAgenda;
   });
 
-  // Contar Usuarios
   db.collection("usuarios").onSnapshot((snapshot) => {
     totalUsuarios = snapshot.size;
     document.getElementById('totalUsuarios').textContent = totalUsuarios;
   });
 
-  // ✅ CALCULAR TOTAL DE REPRODUCCIONES
   function calcularTotalReproducciones() {
     let totalVisitasCanales = todosLosCanales.reduce((sum, c) => sum + (c.visitas || 0), 0);
     let totalVisitasPeliculas = todasLasPeliculas.reduce((sum, p) => sum + (p.visitas || 0), 0);
@@ -238,31 +220,20 @@
     document.getElementById('totalReproducciones').textContent = totalReproducciones;
   }
 
-  // ✅ MOSTRAR TOP 10 MÁS REPRODUCIDOS
   function mostrarTopReproducidos() {
     const section = document.getElementById('topReproducidosSection');
     const tbody = document.getElementById('tablaTopReproducidos');
     
-    // Combinar canales y películas con su tipo
     let todos = [
       ...todosLosCanales.map(c => ({ tipo: 'Canal', nombre: c.nombre, categoria: c.categoria || 'General', visitas: c.visitas || 0 })),
       ...todasLasPeliculas.map(p => ({ tipo: 'Película', nombre: p.nombre, categoria: p.generos || 'Sin género', visitas: p.visitas || 0 }))
     ];
     
-    // Ordenar por visitas (mayor a menor)
     todos.sort((a, b) => b.visitas - a.visitas);
-    
-    // Tomar top 10
     const top10 = todos.slice(0, 10);
     
     tbody.innerHTML = top10.map((item, index) => 
-      `<tr>
-        <td><strong>${index + 1}</strong></td>
-        <td><span class="badge ${item.tipo === 'Canal' ? 'badge-info' : 'badge-danger'}">${item.tipo}</span></td>
-        <td><strong>${item.nombre}</strong></td>
-        <td>${item.categoria}</td>
-        <td><span class="badge badge-success">👁 ${item.visitas}</span></td>
-      </tr>`
+      '<tr><td><strong>' + (index + 1) + '</strong></td><td><span class="badge ' + (item.tipo === 'Canal' ? 'badge-info' : 'badge-danger') + '">' + item.tipo + '</span></td><td><strong>' + item.nombre + '</strong></td><td>' + item.categoria + '</td><td><span class="badge badge-success">👁 ' + item.visitas + '</span></td></tr>'
     ).join('');
     
     section.style.display = 'block';
