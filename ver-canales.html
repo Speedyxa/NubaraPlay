@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Canales TV - NubaraPlay</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📺</text></svg>">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #141414; color: #fff; min-height: 100vh; overflow-x: hidden; }
@@ -104,7 +104,7 @@
 
     <div class="agenda-section" id="agenda">
         <div class="section-header">
-            <h2 class="section-title">📅 Agenda Deportiva Destacada</h2>
+            <h2 class="section-title"> Agenda Deportiva Destacada</h2>
         </div>
         <div class="agenda-scroll" id="agendaContainer">
             <div class="loading" style="padding: 20px;">Cargando agenda...</div>
@@ -153,7 +153,6 @@
 
         const iconosCat = { 'Deportes': '⚽', 'Noticias': '📰', 'Entretenimiento': '📺', 'Musica': '🎵', 'Infantil': '🧸', 'Default': '📡' };
 
-        // CARGAR AGENDA DESDE FIREBASE
         db.collection("agenda").orderBy("horaRaw", "asc").onSnapshot((snapshot) => {
             const container = document.getElementById('agendaContainer');
             if (snapshot.empty) { 
@@ -165,16 +164,12 @@
                     const card = document.createElement('div');
                     card.className = 'agenda-card';
                     card.innerHTML = '<div class="agenda-time">🕒 ' + ev.hora + '</div><div class="agenda-match">' + ev.nombre + '</div><div class="agenda-channel">📺 ' + ev.canal + '</div>';
-                    card.onclick = function() { abrirModal({ nombre: ev.nombre, url: ev.url }); };
+                    card.onclick = function() { abrirModal({ nombre: ev.nombre, url: ev.url, id: doc.id }); };
                     container.appendChild(card);
                 });
             }
-        }, (error) => {
-            console.error("Error cargando agenda:", error);
-            document.getElementById('agendaContainer').innerHTML = '<div style="padding: 20px; color: #e50914;">Error al cargar agenda</div>';
         });
 
-        // CARGAR CANALES DESDE FIREBASE
         db.collection("canales").onSnapshot((snapshot) => {
             const contenido = document.getElementById('contenido');
             if (snapshot.empty) { contenido.innerHTML = '<div class="no-results">No hay canales disponibles</div>'; return; }
@@ -210,17 +205,29 @@
                     grid.appendChild(card);
                 });
             });
-        }, (error) => {
-            console.error("Error cargando canales:", error);
-            document.getElementById('contenido').innerHTML = '<div class="no-results">Error al cargar canales</div>';
         });
 
+        // ✅ FUNCIÓN MODIFICADA: Registra visualización con usuario
         function abrirModal(canal) {
             document.getElementById('modalTitulo').textContent = canal.nombre;
             document.getElementById('modalIframe').src = canal.url;
             document.getElementById('modalCanal').classList.add('activo');
             document.body.style.overflow = 'hidden';
+            
+            // Sumar visita al canal
             if(canal.id) db.collection("canales").doc(canal.id).update({ visitas: (canal.visitas || 0) + 1 }).catch(() => {});
+            
+            // ✅ REGISTRAR VISUALIZACIÓN CON USUARIO
+            const usuario = JSON.parse(localStorage.getItem('nubaraPlayUser') || '{}');
+            db.collection("visualizaciones").add({
+                usuarioId: usuario.id || 'anonimo',
+                usuarioNombre: usuario.nombre || 'Anónimo',
+                tipo: 'canal',
+                contenidoId: canal.id,
+                nombre: canal.nombre,
+                categoria: canal.categoria || 'General',
+                fecha: new Date()
+            }).catch((err) => console.log("Error registrando visualización:", err));
         }
 
         function cerrarModal(e) {
