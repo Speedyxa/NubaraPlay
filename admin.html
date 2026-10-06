@@ -11,7 +11,7 @@
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
   <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-    <a href="#" class="navbar-brand"><span class="brand-text font-weight-bold">📺 NubaraPlay</span></a>
+    <a href="#" class="navbar-brand"><span class="brand-text font-weight-bold"> NubaraPlay</span></a>
     <ul class="navbar-nav">
       <li class="nav-item"><a class="nav-link" href="index.html" target="_blank"><i class="fas fa-external-link-alt"></i> Ver Web</a></li>
       <li class="nav-item"><a class="nav-link" href="#" onclick="cerrarSesionAdmin()"><i class="fas fa-sign-out-alt"></i> Salir</a></li>
@@ -43,6 +43,7 @@
     <section class="content">
       <div class="container-fluid">
         <div class="row">
+          <!-- Canales TV -->
           <div class="col-lg-3 col-6">
             <div class="small-box bg-success">
               <div class="inner"><h3 id="totalCanales">0</h3><p>Canales TV</p></div>
@@ -51,6 +52,7 @@
             </div>
           </div>
 
+          <!-- Películas -->
           <div class="col-lg-3 col-6">
             <div class="small-box bg-danger">
               <div class="inner"><h3 id="totalPeliculas">0</h3><p>Películas</p></div>
@@ -59,6 +61,7 @@
             </div>
           </div>
 
+          <!-- Eventos Agenda -->
           <div class="col-lg-3 col-6">
             <div class="small-box bg-warning">
               <div class="inner"><h3 id="totalAgenda">0</h3><p>Eventos Agenda</p></div>
@@ -67,11 +70,21 @@
             </div>
           </div>
 
+          <!-- Usuarios -->
           <div class="col-lg-3 col-6">
             <div class="small-box bg-info">
               <div class="inner"><h3 id="totalUsuarios">0</h3><p>Usuarios</p></div>
               <div class="icon"><i class="fas fa-users"></i></div>
               <a href="usuarios.html" class="small-box-footer">Ver más <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+
+          <!-- ✅ NUEVA TARJETA: Total Reproducciones -->
+          <div class="col-lg-3 col-6">
+            <div class="small-box bg-purple">
+              <div class="inner"><h3 id="totalReproducciones">0</h3><p>Reproducciones Totales</p></div>
+              <div class="icon"><i class="fas fa-play-circle"></i></div>
+              <a href="#" class="small-box-footer" onclick="mostrarTopReproducidos(); return false;">Ver Top <i class="fas fa-arrow-circle-right"></i></a>
             </div>
           </div>
         </div>
@@ -99,6 +112,31 @@
             </div>
           </div>
         </div>
+
+        <!-- ✅ SECCIÓN TOP REPRODUCIDOS -->
+        <div class="row" id="topReproducidosSection" style="display: none;">
+          <div class="col-md-12">
+            <div class="card card-success">
+              <div class="card-header"><h3 class="card-title">🏆 Top 10 Más Reproducidos</h3></div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-striped table-hover">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Tipo</th>
+                        <th>Nombre</th>
+                        <th>Categoría</th>
+                        <th>Visitas</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tablaTopReproducidos"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   </div>
@@ -111,6 +149,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="config.js"></script>
@@ -124,41 +163,58 @@
   }
 
   let totalCanales = 0, totalPeliculas = 0, totalAgenda = 0, totalUsuarios = 0;
+  let todosLosCanales = [], todasLasPeliculas = [];
 
-  // Contar Canales
+  // Contar Canales y guardar datos
   db.collection("canales").onSnapshot((snapshot) => {
     totalCanales = snapshot.size;
     document.getElementById('totalCanales').textContent = totalCanales;
+    todosLosCanales = [];
     
+    snapshot.forEach((doc) => {
+      const c = doc.data();
+      todosLosCanales.push({ id: doc.id, ...c });
+    });
+    
+    // Actualizar lista de últimos canales
     const lista = document.getElementById('listaCanales');
-    const canalesRecientes = snapshot.docs.slice(0, 5);
+    const canalesRecientes = todosLosCanales.slice(0, 5);
     if (canalesRecientes.length > 0) {
-      lista.innerHTML = canalesRecientes.map(doc => {
-        const c = doc.data();
-        return `<li class="list-group-item d-flex justify-content-between align-items-center">
+      lista.innerHTML = canalesRecientes.map(c => 
+        `<li class="list-group-item d-flex justify-content-between align-items-center">
           ${c.nombre}
           <span class="badge badge-primary badge-pill">${c.categoria || 'General'}</span>
-        </li>`;
-      }).join('');
+        </li>`
+      ).join('');
     }
+    
+    calcularTotalReproducciones();
   });
 
-  // Contar Películas
+  // Contar Películas y guardar datos
   db.collection("peliculas").onSnapshot((snapshot) => {
     totalPeliculas = snapshot.size;
     document.getElementById('totalPeliculas').textContent = totalPeliculas;
+    todasLasPeliculas = [];
     
+    snapshot.forEach((doc) => {
+      const p = doc.data();
+      todasLasPeliculas.push({ id: doc.id, ...p });
+    });
+    
+    // Actualizar lista de últimas películas
     const lista = document.getElementById('listaPeliculas');
-    const pelisRecientes = snapshot.docs.slice(0, 5);
+    const pelisRecientes = todasLasPeliculas.slice(0, 5);
     if (pelisRecientes.length > 0) {
-      lista.innerHTML = pelisRecientes.map(doc => {
-        const p = doc.data();
-        return `<li class="list-group-item d-flex justify-content-between align-items-center">
+      lista.innerHTML = pelisRecientes.map(p => 
+        `<li class="list-group-item d-flex justify-content-between align-items-center">
           ${p.nombre}
           <span class="badge badge-danger badge-pill">${p.anio || 'N/A'}</span>
-        </li>`;
-      }).join('');
+        </li>`
+      ).join('');
     }
+    
+    calcularTotalReproducciones();
   });
 
   // Contar Eventos de Agenda
@@ -172,6 +228,46 @@
     totalUsuarios = snapshot.size;
     document.getElementById('totalUsuarios').textContent = totalUsuarios;
   });
+
+  // ✅ CALCULAR TOTAL DE REPRODUCCIONES
+  function calcularTotalReproducciones() {
+    let totalVisitasCanales = todosLosCanales.reduce((sum, c) => sum + (c.visitas || 0), 0);
+    let totalVisitasPeliculas = todasLasPeliculas.reduce((sum, p) => sum + (p.visitas || 0), 0);
+    let totalReproducciones = totalVisitasCanales + totalVisitasPeliculas;
+    
+    document.getElementById('totalReproducciones').textContent = totalReproducciones;
+  }
+
+  // ✅ MOSTRAR TOP 10 MÁS REPRODUCIDOS
+  function mostrarTopReproducidos() {
+    const section = document.getElementById('topReproducidosSection');
+    const tbody = document.getElementById('tablaTopReproducidos');
+    
+    // Combinar canales y películas con su tipo
+    let todos = [
+      ...todosLosCanales.map(c => ({ tipo: 'Canal', nombre: c.nombre, categoria: c.categoria || 'General', visitas: c.visitas || 0 })),
+      ...todasLasPeliculas.map(p => ({ tipo: 'Película', nombre: p.nombre, categoria: p.generos || 'Sin género', visitas: p.visitas || 0 }))
+    ];
+    
+    // Ordenar por visitas (mayor a menor)
+    todos.sort((a, b) => b.visitas - a.visitas);
+    
+    // Tomar top 10
+    const top10 = todos.slice(0, 10);
+    
+    tbody.innerHTML = top10.map((item, index) => 
+      `<tr>
+        <td><strong>${index + 1}</strong></td>
+        <td><span class="badge ${item.tipo === 'Canal' ? 'badge-info' : 'badge-danger'}">${item.tipo}</span></td>
+        <td><strong>${item.nombre}</strong></td>
+        <td>${item.categoria}</td>
+        <td><span class="badge badge-success">👁 ${item.visitas}</span></td>
+      </tr>`
+    ).join('');
+    
+    section.style.display = 'block';
+    section.scrollIntoView({ behavior: 'smooth' });
+  }
 </script>
 </body>
 </html>
