@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Agenda Deportiva - Admin NubaraPlay</title>
+  <title>Agenda Deportiva - NubaraPlay Admin</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
@@ -27,6 +27,7 @@
           <li class="nav-item"><a href="canales.html" class="nav-link"><i class="nav-icon fas fa-tv"></i><p>Canales TV</p></a></li>
           <li class="nav-item"><a href="peliculas.html" class="nav-link"><i class="nav-icon fas fa-film"></i><p>Películas TMDB</p></a></li>
           <li class="nav-item"><a href="agenda.html" class="nav-link active"><i class="nav-icon fas fa-calendar-alt"></i><p>Agenda Deportiva</p></a></li>
+          <li class="nav-item"><a href="estadisticas.html" class="nav-link"><i class="nav-icon fas fa-chart-bar"></i><p>Estadísticas</p></a></li>
           <li class="nav-item"><a href="usuarios.html" class="nav-link"><i class="nav-icon fas fa-users"></i><p>Usuarios</p></a></li>
         </ul>
       </nav>
@@ -49,22 +50,43 @@
               <div class="card-header"><h3 class="card-title" id="formTitle">➕ Agregar Evento</h3></div>
               <div class="card-body">
                 <input type="hidden" id="eventoId">
+                
                 <div class="form-group">
-                  <label><i class="fas fa-futbol"></i> Nombre del Evento / Partido</label>
-                  <input type="text" id="eventoNombre" class="form-control" placeholder="Ej: Real Madrid vs Barcelona">
+                  <label><i class="fas fa-calendar-day"></i> Día</label>
+                  <select id="eventoDia" class="form-control">
+                    <option value="HOY">HOY</option>
+                    <option value="MAÑANA">MAÑANA</option>
+                    <option value="LUNES">LUNES</option>
+                    <option value="MARTES">MARTES</option>
+                    <option value="MIÉRCOLES">MIÉRCOLES</option>
+                    <option value="JUEVES">JUEVES</option>
+                    <option value="VIERNES">VIERNES</option>
+                    <option value="SÁBADO">SÁBADO</option>
+                    <option value="DOMINGO">DOMINGO</option>
+                  </select>
                 </div>
+
                 <div class="form-group">
                   <label><i class="fas fa-clock"></i> Hora</label>
-                  <input type="text" id="eventoHora" class="form-control" placeholder="Ej: 14:00 HRS">
+                  <input type="time" id="eventoHora" class="form-control" placeholder="14:00">
+                  <small class="text-muted">Formato 24h (ej: 14:30)</small>
                 </div>
+
+                <div class="form-group">
+                  <label><i class="fas fa-futbol"></i> Evento / Partido</label>
+                  <input type="text" id="eventoNombre" class="form-control" placeholder="Ej: Real Madrid vs Barcelona">
+                </div>
+
                 <div class="form-group">
                   <label><i class="fas fa-tv"></i> Canal</label>
                   <input type="text" id="eventoCanal" class="form-control" placeholder="Ej: ESPN 1 HD">
                 </div>
+
                 <div class="form-group">
                   <label><i class="fas fa-link"></i> URL del Stream (Embed)</label>
                   <input type="text" id="eventoUrl" class="form-control" placeholder="https://dlive.sx/stream/...">
                 </div>
+
                 <button onclick="guardarEvento()" class="btn btn-success btn-block">
                   <i class="fas fa-save" id="btnIcon"></i> <span id="btnText">Guardar</span>
                 </button>
@@ -78,12 +100,13 @@
           <!-- Tabla -->
           <div class="col-md-8">
             <div class="card card-primary">
-              <div class="card-header"><h3 class="card-title">Eventos Programados</h3></div>
+              <div class="card-header"><h3 class="card-title">Eventos Programados (Ordenados por Hora)</h3></div>
               <div class="card-body">
                 <div class="table-responsive">
                   <table class="table table-striped table-hover">
                     <thead>
                       <tr>
+                        <th>Día</th>
                         <th>Hora</th>
                         <th>Evento</th>
                         <th>Canal</th>
@@ -91,7 +114,7 @@
                       </tr>
                     </thead>
                     <tbody id="tablaAgenda">
-                      <tr><td colspan="4" class="text-center">Cargando...</td></tr>
+                      <tr><td colspan="5" class="text-center">Cargando...</td></tr>
                     </tbody>
                   </table>
                 </div>
@@ -118,32 +141,50 @@
 
   function cerrarSesionAdmin() { localStorage.removeItem('nubaraPlayAdmin'); window.location.href = 'login.html'; }
 
+  // ✅ CARGAR Y ORDENAR EVENTOS POR HORA
   function cargarEventos() {
-    db.collection("agenda").orderBy("horaRaw", "asc").onSnapshot((snapshot) => {
+    db.collection("agenda").onSnapshot((snapshot) => {
       eventosLocales = [];
-      const tbody = document.getElementById('tablaAgenda');
-      tbody.innerHTML = '';
-      
-      if (snapshot.empty) { 
-        tbody.innerHTML = '<tr><td colspan="4" class="text-center">No hay eventos en la agenda</td></tr>'; 
-        return; 
-      }
       
       snapshot.forEach((doc) => {
-        const ev = doc.data();
-        eventosLocales.push({ id: doc.id, ...ev });
-        
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td><span class="badge badge-warning">${ev.hora}</span></td>
-          <td><strong>${ev.nombre}</strong></td>
-          <td>${ev.canal}</td>
-          <td>
-            <button class="btn btn-sm btn-primary" onclick="editarEvento('${doc.id}')"><i class="fas fa-edit"></i></button>
-            <button class="btn btn-sm btn-danger" onclick="borrarEvento('${doc.id}')"><i class="fas fa-trash"></i></button>
-          </td>`;
-        tbody.appendChild(tr);
+        eventosLocales.push({ id: doc.id, ...doc.data() });
       });
+      
+      // ✅ ORDENAR: primero por día (HOY, MAÑANA, luego días de semana), luego por hora
+      const ordenDias = { 'HOY': 0, 'MAÑANA': 1, 'LUNES': 2, 'MARTES': 3, 'MIÉRCOLES': 4, 'JUEVES': 5, 'VIERNES': 6, 'SÁBADO': 7, 'DOMINGO': 8 };
+      
+      eventosLocales.sort((a, b) => {
+        const diaA = ordenDias[a.dia?.toUpperCase()] ?? 99;
+        const diaB = ordenDias[b.dia?.toUpperCase()] ?? 99;
+        if (diaA !== diaB) return diaA - diaB;
+        return (a.hora || '').localeCompare(b.hora || '');
+      });
+      
+      renderizarTabla();
+    });
+  }
+
+  function renderizarTabla() {
+    const tbody = document.getElementById('tablaAgenda');
+    tbody.innerHTML = '';
+    
+    if (eventosLocales.length === 0) { 
+      tbody.innerHTML = '<tr><td colspan="5" class="text-center">No hay eventos en la agenda</td></tr>'; 
+      return; 
+    }
+    
+    eventosLocales.forEach((ev) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><span class="badge badge-warning">${ev.dia || '-'}</span></td>
+        <td><strong>${ev.hora || '-'}</strong></td>
+        <td><strong>${ev.nombre}</strong></td>
+        <td>${ev.canal}</td>
+        <td>
+          <button class="btn btn-sm btn-primary" onclick="editarEvento('${ev.id}')"><i class="fas fa-edit"></i></button>
+          <button class="btn btn-sm btn-danger" onclick="borrarEvento('${ev.id}')"><i class="fas fa-trash"></i></button>
+        </td>`;
+      tbody.appendChild(tr);
     });
   }
 
@@ -151,8 +192,9 @@
     const ev = eventosLocales.find(e => e.id === id);
     if (!ev) return;
     document.getElementById('eventoId').value = ev.id;
+    document.getElementById('eventoDia').value = ev.dia || 'HOY';
+    document.getElementById('eventoHora').value = ev.hora || '';
     document.getElementById('eventoNombre').value = ev.nombre;
-    document.getElementById('eventoHora').value = ev.hora;
     document.getElementById('eventoCanal').value = ev.canal;
     document.getElementById('eventoUrl').value = ev.url;
     
@@ -165,15 +207,15 @@
   async function guardarEvento() {
     const id = document.getElementById('eventoId').value;
     const data = {
-      nombre: document.getElementById('eventoNombre').value.trim(),
+      dia: document.getElementById('eventoDia').value.trim(),
       hora: document.getElementById('eventoHora').value.trim(),
+      nombre: document.getElementById('eventoNombre').value.trim(),
       canal: document.getElementById('eventoCanal').value.trim(),
-      url: document.getElementById('eventoUrl').value.trim(),
-      horaRaw: document.getElementById('eventoHora').value.trim() // Para ordenar
+      url: document.getElementById('eventoUrl').value.trim()
     };
     
-    if (!data.nombre || !data.url) {
-      return Swal.fire('Error', 'El nombre y la URL son obligatorios', 'error');
+    if (!data.nombre || !data.url || !data.hora) {
+      return Swal.fire('Error', 'El nombre, hora y URL son obligatorios', 'error');
     }
     
     try {
@@ -201,8 +243,9 @@
 
   function limpiarForm() {
     document.getElementById('eventoId').value = '';
-    document.getElementById('eventoNombre').value = '';
+    document.getElementById('eventoDia').value = 'HOY';
     document.getElementById('eventoHora').value = '';
+    document.getElementById('eventoNombre').value = '';
     document.getElementById('eventoCanal').value = '';
     document.getElementById('eventoUrl').value = '';
     document.getElementById('formTitle').innerHTML = '➕ Agregar Evento';
