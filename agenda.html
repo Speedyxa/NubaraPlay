@@ -66,10 +66,19 @@
                   </select>
                 </div>
 
-                <div class="form-group">
-                  <label><i class="fas fa-clock"></i> Hora</label>
-                  <input type="time" id="eventoHora" class="form-control" placeholder="14:00">
-                  <small class="text-muted">Formato 24h (ej: 14:30)</small>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label><i class="fas fa-play"></i> Hora Inicio</label>
+                      <input type="time" id="eventoHoraInicio" class="form-control">
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label><i class="fas fa-stop"></i> Hora Fin</label>
+                      <input type="time" id="eventoHoraFin" class="form-control">
+                    </div>
+                  </div>
                 </div>
 
                 <div class="form-group">
@@ -107,14 +116,15 @@
                     <thead>
                       <tr>
                         <th>Día</th>
-                        <th>Hora</th>
+                        <th>Horario</th>
                         <th>Evento</th>
                         <th>Canal</th>
+                        <th>Estado</th>
                         <th style="width: 100px">Acciones</th>
                       </tr>
                     </thead>
                     <tbody id="tablaAgenda">
-                      <tr><td colspan="5" class="text-center">Cargando...</td></tr>
+                      <tr><td colspan="6" class="text-center">Cargando...</td></tr>
                     </tbody>
                   </table>
                 </div>
@@ -141,7 +151,7 @@
 
   function cerrarSesionAdmin() { localStorage.removeItem('nubaraPlayAdmin'); window.location.href = 'login.html'; }
 
-  // ✅ CARGAR Y ORDENAR EVENTOS POR HORA
+  // ✅ CARGAR EVENTOS Y ORDENARLOS
   function cargarEventos() {
     db.collection("agenda").onSnapshot((snapshot) => {
       eventosLocales = [];
@@ -150,18 +160,44 @@
         eventosLocales.push({ id: doc.id, ...doc.data() });
       });
       
-      // ✅ ORDENAR: primero por día (HOY, MAÑANA, luego días de semana), luego por hora
+      // Ordenar por día y hora de inicio
       const ordenDias = { 'HOY': 0, 'MAÑANA': 1, 'LUNES': 2, 'MARTES': 3, 'MIÉRCOLES': 4, 'JUEVES': 5, 'VIERNES': 6, 'SÁBADO': 7, 'DOMINGO': 8 };
       
       eventosLocales.sort((a, b) => {
         const diaA = ordenDias[a.dia?.toUpperCase()] ?? 99;
         const diaB = ordenDias[b.dia?.toUpperCase()] ?? 99;
         if (diaA !== diaB) return diaA - diaB;
-        return (a.hora || '').localeCompare(b.hora || '');
+        return (a.horaInicio || '').localeCompare(b.horaInicio || '');
       });
       
       renderizarTabla();
     });
+  }
+
+  // ✅ VERIFICAR SI UN EVENTO YA TERMINÓ
+  function eventoYaTermino(evento) {
+    if (!evento.horaFin || evento.dia?.toUpperCase() !== 'HOY') return false;
+    
+    const ahora = new Date();
+    const horaActual = ahora.getHours().toString().padStart(2, '0') + ':' + ahora.getMinutes().toString().padStart(2, '0');
+    
+    return horaActual > evento.horaFin;
+  }
+
+  // ✅ OBTENER ESTADO DEL EVENTO
+  function getEstadoEvento(evento) {
+    if (evento.dia?.toUpperCase() !== 'HOY') return '<span class="badge badge-secondary">Pendiente</span>';
+    
+    const ahora = new Date();
+    const horaActual = ahora.getHours().toString().padStart(2, '0') + ':' + ahora.getMinutes().toString().padStart(2, '0');
+    
+    if (horaActual < evento.horaInicio) {
+      return '<span class="badge badge-info">Próximo</span>';
+    } else if (horaActual >= evento.horaInicio && horaActual <= evento.horaFin) {
+      return '<span class="badge badge-success"> EN VIVO</span>';
+    } else {
+      return '<span class="badge badge-danger">Finalizado</span>';
+    }
   }
 
   function renderizarTabla() {
@@ -169,17 +205,19 @@
     tbody.innerHTML = '';
     
     if (eventosLocales.length === 0) { 
-      tbody.innerHTML = '<tr><td colspan="5" class="text-center">No hay eventos en la agenda</td></tr>'; 
+      tbody.innerHTML = '<tr><td colspan="6" class="text-center">No hay eventos en la agenda</td></tr>'; 
       return; 
     }
     
     eventosLocales.forEach((ev) => {
+      const estado = getEstadoEvento(ev);
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td><span class="badge badge-warning">${ev.dia || '-'}</span></td>
-        <td><strong>${ev.hora || '-'}</strong></td>
+        <td><strong>${ev.horaInicio || '-'} - ${ev.horaFin || '-'}</strong></td>
         <td><strong>${ev.nombre}</strong></td>
         <td>${ev.canal}</td>
+        <td>${estado}</td>
         <td>
           <button class="btn btn-sm btn-primary" onclick="editarEvento('${ev.id}')"><i class="fas fa-edit"></i></button>
           <button class="btn btn-sm btn-danger" onclick="borrarEvento('${ev.id}')"><i class="fas fa-trash"></i></button>
@@ -193,12 +231,13 @@
     if (!ev) return;
     document.getElementById('eventoId').value = ev.id;
     document.getElementById('eventoDia').value = ev.dia || 'HOY';
-    document.getElementById('eventoHora').value = ev.hora || '';
+    document.getElementById('eventoHoraInicio').value = ev.horaInicio || '';
+    document.getElementById('eventoHoraFin').value = ev.horaFin || '';
     document.getElementById('eventoNombre').value = ev.nombre;
     document.getElementById('eventoCanal').value = ev.canal;
     document.getElementById('eventoUrl').value = ev.url;
     
-    document.getElementById('formTitle').innerHTML = '✏️ Editar Evento';
+    document.getElementById('formTitle').innerHTML = '️ Editar Evento';
     document.getElementById('btnText').textContent = 'Actualizar';
     document.getElementById('btnIcon').className = 'fas fa-sync';
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -208,14 +247,15 @@
     const id = document.getElementById('eventoId').value;
     const data = {
       dia: document.getElementById('eventoDia').value.trim(),
-      hora: document.getElementById('eventoHora').value.trim(),
+      horaInicio: document.getElementById('eventoHoraInicio').value.trim(),
+      horaFin: document.getElementById('eventoHoraFin').value.trim(),
       nombre: document.getElementById('eventoNombre').value.trim(),
       canal: document.getElementById('eventoCanal').value.trim(),
       url: document.getElementById('eventoUrl').value.trim()
     };
     
-    if (!data.nombre || !data.url || !data.hora) {
-      return Swal.fire('Error', 'El nombre, hora y URL son obligatorios', 'error');
+    if (!data.nombre || !data.url || !data.horaInicio || !data.horaFin) {
+      return Swal.fire('Error', 'El nombre, horario y URL son obligatorios', 'error');
     }
     
     try {
@@ -244,16 +284,22 @@
   function limpiarForm() {
     document.getElementById('eventoId').value = '';
     document.getElementById('eventoDia').value = 'HOY';
-    document.getElementById('eventoHora').value = '';
+    document.getElementById('eventoHoraInicio').value = '';
+    document.getElementById('eventoHoraFin').value = '';
     document.getElementById('eventoNombre').value = '';
     document.getElementById('eventoCanal').value = '';
     document.getElementById('eventoUrl').value = '';
-    document.getElementById('formTitle').innerHTML = '➕ Agregar Evento';
+    document.getElementById('formTitle').innerHTML = ' Agregar Evento';
     document.getElementById('btnText').textContent = 'Guardar';
     document.getElementById('btnIcon').className = 'fas fa-save';
   }
 
   cargarEventos();
+  
+  // Actualizar estado cada minuto
+  setInterval(() => {
+    renderizarTabla();
+  }, 60000);
 </script>
 </body>
 </html>
