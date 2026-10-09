@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Canales TV - NubaraPlay</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📺</text></svg>">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #141414; color: #fff; min-height: 100vh; overflow-x: hidden; }
@@ -32,11 +32,15 @@
         .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
         .section-title { font-size: 24px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
         .agenda-scroll { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 15px; scrollbar-width: thin; scrollbar-color: #e50914 transparent; }
-        .agenda-card { flex: 0 0 300px; background: #181818; border: 1px solid #333; border-radius: 12px; padding: 20px; transition: all 0.3s; cursor: pointer; }
+        .agenda-card { flex: 0 0 300px; background: #181818; border: 1px solid #333; border-radius: 12px; padding: 20px; transition: all 0.3s; cursor: pointer; position: relative; }
         .agenda-card:hover { border-color: #e50914; transform: translateY(-3px); background: rgba(229, 9, 20, 0.05); }
+        .agenda-card.en-vivo { border-color: #e50914; animation: pulse-border 2s infinite; }
         .agenda-time { color: #e50914; font-size: 13px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
         .agenda-match { font-size: 18px; font-weight: 700; margin-bottom: 8px; line-height: 1.3; }
         .agenda-channel { font-size: 13px; color: #808080; display: flex; align-items: center; gap: 6px; }
+        .agenda-badge { position: absolute; top: 10px; right: 10px; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; }
+        .badge-en-vivo { background: #e50914; color: #fff; animation: pulse 1.5s infinite; }
+        .badge-proximo { background: #17a2b8; color: #fff; }
 
         .content-section { padding: 40px 4%; }
         .categoria-section { margin-bottom: 60px; }
@@ -67,6 +71,9 @@
         .modal-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
 
         .loading, .no-results { text-align: center; padding: 80px 20px; color: #808080; font-size: 18px; }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        @keyframes pulse-border { 0% { border-color: #e50914; } 50% { border-color: #ff4444; } 100% { border-color: #e50914; } }
 
         @media (max-width: 768px) {
             .hero-title { font-size: 32px; }
@@ -151,40 +158,83 @@
         window.addEventListener('scroll', () => document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50));
         document.addEventListener('keydown', (e) => { if (e.key === 'Escape') cerrarModal(); });
 
-        const iconosCat = { 'Deportes': '⚽', 'Noticias': '📰', 'Entretenimiento': '📺', 'Musica': '', 'Infantil': '🧸', 'Default': '📡' };
+        const iconosCat = { 'Deportes': '⚽', 'Noticias': '📰', 'Entretenimiento': '', 'Musica': '🎵', 'Infantil': '🧸', 'Default': '📡' };
 
-        // ✅ CARGAR AGENDA ORDENADA POR DÍA Y HORA
+        // ✅ VERIFICAR SI UN EVENTO YA TERMINÓ
+        function eventoYaTermino(evento) {
+            if (!evento.horaFin || evento.dia?.toUpperCase() !== 'HOY') return false;
+            
+            const ahora = new Date();
+            const horaActual = ahora.getHours().toString().padStart(2, '0') + ':' + ahora.getMinutes().toString().padStart(2, '0');
+            
+            return horaActual > evento.horaFin;
+        }
+
+        // ✅ OBTENER ESTADO DEL EVENTO
+        function getEstadoEvento(evento) {
+            if (evento.dia?.toUpperCase() !== 'HOY') return { texto: 'Próximo', clase: 'badge-proximo' };
+            
+            const ahora = new Date();
+            const horaActual = ahora.getHours().toString().padStart(2, '0') + ':' + ahora.getMinutes().toString().padStart(2, '0');
+            
+            if (horaActual < evento.horaInicio) {
+                return { texto: 'Próximo', clase: 'badge-proximo' };
+            } else if (horaActual >= evento.horaInicio && horaActual <= evento.horaFin) {
+                return { texto: '🔴 EN VIVO', clase: 'badge-en-vivo' };
+            } else {
+                return { texto: 'Finalizado', clase: '' };
+            }
+        }
+
+        // ✅ CARGAR AGENDA FILTRANDO EVENTOS FINALIZADOS
         db.collection("agenda").onSnapshot((snapshot) => {
             const container = document.getElementById('agendaContainer');
             
             if (snapshot.empty) { 
-                container.innerHTML = '<div style="padding: 20px; color: #888;">No hay eventos programados hoy.</div>'; 
+                container.innerHTML = '<div style="padding: 20px; color: #888;">No hay eventos programados.</div>'; 
                 return;
             }
             
             let eventos = [];
             snapshot.forEach((doc) => {
-                eventos.push({ id: doc.id, ...doc.data() });
+                const ev = { id: doc.id, ...doc.data() };
+                // ✅ FILTRAR: Solo mostrar eventos que NO han terminado
+                if (!eventoYaTermino(ev)) {
+                    eventos.push(ev);
+                }
             });
             
-            // Ordenar por día y hora
+            // Ordenar por día y hora de inicio
             const ordenDias = { 'HOY': 0, 'MAÑANA': 1, 'LUNES': 2, 'MARTES': 3, 'MIÉRCOLES': 4, 'JUEVES': 5, 'VIERNES': 6, 'SÁBADO': 7, 'DOMINGO': 8 };
             
             eventos.sort((a, b) => {
                 const diaA = ordenDias[a.dia?.toUpperCase()] ?? 99;
                 const diaB = ordenDias[b.dia?.toUpperCase()] ?? 99;
                 if (diaA !== diaB) return diaA - diaB;
-                return (a.hora || '').localeCompare(b.hora || '');
+                return (a.horaInicio || '').localeCompare(b.horaInicio || '');
             });
+            
+            if (eventos.length === 0) {
+                container.innerHTML = '<div style="padding: 20px; color: #888;">No hay eventos activos en este momento.</div>';
+                return;
+            }
             
             container.innerHTML = '';
             eventos.forEach((ev) => {
+                const estado = getEstadoEvento(ev);
                 const card = document.createElement('div');
-                card.className = 'agenda-card';
+                card.className = 'agenda-card' + (estado.clase === 'badge-en-vivo' ? ' en-vivo' : '');
+                
+                let badgeHTML = '';
+                if (estado.clase) {
+                    badgeHTML = `<div class="agenda-badge ${estado.clase}">${estado.texto}</div>`;
+                }
+                
                 card.innerHTML = `
-                    <div class="agenda-time">🕒 ${ev.dia || ''} - ${ev.hora || ''}</div>
+                    ${badgeHTML}
+                    <div class="agenda-time">🕒 ${ev.dia || ''} - ${ev.horaInicio || ''} a ${ev.horaFin || ''}</div>
                     <div class="agenda-match">${ev.nombre}</div>
-                    <div class="agenda-channel">📺 ${ev.canal || ''}</div>
+                    <div class="agenda-channel"> ${ev.canal || ''}</div>
                 `;
                 card.onclick = function() { abrirModal({ nombre: ev.nombre, url: ev.url, id: ev.id }); };
                 container.appendChild(card);
@@ -242,10 +292,8 @@
             document.getElementById('modalCanal').classList.add('activo');
             document.body.style.overflow = 'hidden';
             
-            // Sumar visita al canal
             if(canal.id) db.collection("canales").doc(canal.id).update({ visitas: (canal.visitas || 0) + 1 }).catch(() => {});
             
-            // Registrar visualización para estadísticas
             const usuario = JSON.parse(localStorage.getItem('nubaraPlayUser') || '{}');
             db.collection("visualizaciones").add({
                 usuarioId: usuario.id || 'anonimo',
@@ -275,6 +323,11 @@
             if (index > -1) { btn.classList.remove('active'); btn.innerHTML = '☆'; } 
             else { btn.classList.add('active'); btn.innerHTML = '★'; }
         }
+
+        // ✅ ACTUALIZAR AGENDA CADA MINUTO (para ocultar eventos finalizados)
+        setInterval(() => {
+            location.reload();
+        }, 60000);
     </script>
 </body>
 </html>
